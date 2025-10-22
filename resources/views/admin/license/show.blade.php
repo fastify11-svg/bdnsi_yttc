@@ -33,6 +33,17 @@
                                 <p>Scan to verify</p>
                                 <p>License: {{ $license->license_number }}</p>
                             </div>
+                            <!-- Copy Button -->
+                            <button
+                                id="copyLinkBtn"
+                                class="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded hover:bg-blue-600 transition-colors duration-200 flex items-center space-x-1"
+                                onclick="copyLicenseLink()"
+                            >
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                                <span id="copyBtnText">Copy Link</span>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -174,6 +185,73 @@
                     correctLevel: QRCode.CorrectLevel.H
                 });
             });
+
+            // Function to copy license link to clipboard
+            function copyLicenseLink() {
+                const licenseLink = '{{route('license.view',$license->license_number)}}';
+                const copyBtn = document.getElementById('copyLinkBtn');
+                const copyBtnText = document.getElementById('copyBtnText');
+
+                // Use the Clipboard API if available
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(licenseLink).then(function() {
+                        // Success feedback
+                        copyBtnText.textContent = 'Copied!';
+                        copyBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                        copyBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+
+                        // Reset after 2 seconds
+                        setTimeout(function() {
+                            copyBtnText.textContent = 'Copy Link';
+                            copyBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                            copyBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                        }, 2000);
+                    }).catch(function(err) {
+                        console.error('Failed to copy: ', err);
+                        fallbackCopyTextToClipboard(licenseLink);
+                    });
+                } else {
+                    // Fallback for older browsers
+                    fallbackCopyTextToClipboard(licenseLink);
+                }
+            }
+
+            // Fallback function for older browsers
+            function fallbackCopyTextToClipboard(text) {
+                const textArea = document.createElement("textarea");
+                textArea.value = text;
+                textArea.style.top = "0";
+                textArea.style.left = "0";
+                textArea.style.position = "fixed";
+                textArea.style.opacity = "0";
+
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+
+                try {
+                    const successful = document.execCommand('copy');
+                    if (successful) {
+                        const copyBtn = document.getElementById('copyLinkBtn');
+                        const copyBtnText = document.getElementById('copyBtnText');
+
+                        copyBtnText.textContent = 'Copied!';
+                        copyBtn.classList.remove('bg-blue-500', 'hover:bg-blue-600');
+                        copyBtn.classList.add('bg-green-500', 'hover:bg-green-600');
+
+                        setTimeout(function() {
+                            copyBtnText.textContent = 'Copy Link';
+                            copyBtn.classList.remove('bg-green-500', 'hover:bg-green-600');
+                            copyBtn.classList.add('bg-blue-500', 'hover:bg-blue-600');
+                        }, 2000);
+                    }
+                } catch (err) {
+                    console.error('Fallback: Oops, unable to copy', err);
+                    alert('Unable to copy link. Please copy manually: ' + text);
+                }
+
+                document.body.removeChild(textArea);
+            }
         </script>
     </x-slot>
 </x-admin-app-layout>
