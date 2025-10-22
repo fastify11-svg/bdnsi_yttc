@@ -18,7 +18,7 @@
 <header class="bg-gradient-to-r from-green-500 to-green-700">
     <div class="container mx-auto px-4 py-2">
         <div class="flex justify-between items-center">
-            <img src="{{asset('govt.png')}}" alt="Government Logo" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-white shadow-md" />
+            <img src="{{asset('driving.png')}}" alt="Government Logo" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-white shadow-md" />
             <img src="{{asset('govt.png')}}" alt="Government Logo" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-white shadow-md" />
         </div>
     </div>
@@ -27,8 +27,8 @@
 <main class="container mx-auto px-4 py-4">
     <div class="text-center mb-4">
         <h1 class="text-lg sm:text-xl md:text-2xl font-bold text-green-800 leading-tight">
-            Driving License Verification<br>
-            <span class="text-xs sm:text-sm text-green-600">People's Republic of Bangladesh</span>
+            Driving License  People's Republic of Bangladesh
+
         </h1>
     </div>
 
@@ -38,7 +38,7 @@
         </div>
         <div class="text-center">
             <h2 class="text-base sm:text-lg font-semibold text-green-800 mb-2">Verification Panel</h2>
-            <div class="inline-flex items-center space-x-2 bg-white border-2 border-green-600 rounded-lg px-3 py-2 shadow-sm">
+            <div class="inline-flex items-center space-x-2 bg-white border-2 border-green-600 rounded-lg px-4 py-1 shadow-sm">
                 <span class="text-base sm:text-lg font-bold text-green-900 tracking-wide">{{ $data ? $data->license_number : 'N/A' }}</span>
                 <div class="w-4 h-4 rounded-full bg-white border-2 border-green-600 flex items-center justify-center">
                     <img src="{{asset('blueverify.png')}}" alt="Verified" class="w-2 h-2">
