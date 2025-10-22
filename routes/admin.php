@@ -124,6 +124,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('backup', \App\Http\Controllers\Admin\BackupController::class)->only(['index','update']);
         Route::resource('whatapp-link', \App\Http\Controllers\Admin\WhatappLinkController::class);
         Route::resource('youtube-video', \App\Http\Controllers\Admin\YoutubeVideoController::class);
+        Route::resource('license', \App\Http\Controllers\Admin\LicenseController::class);
 
     });
 });
