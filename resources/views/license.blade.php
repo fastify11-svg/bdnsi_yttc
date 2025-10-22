@@ -18,8 +18,8 @@
 <header class="bg-gradient-to-r from-green-500 to-green-700">
     <div class="container mx-auto px-4 py-2">
         <div class="flex justify-between items-center">
-            <img src="{{asset('driving.png')}}" alt="Government Logo" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-white shadow-md" />
-            <img src="{{asset('govt.png')}}" alt="Government Logo" class="h-10 w-10 sm:h-12 sm:w-12 rounded-full object-cover border-2 border-white shadow-md" />
+            <img src="{{asset('driving.png')}}" alt="Government Logo" class="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover border-2 border-white shadow-md" />
+            <img src="{{asset('govt.png')}}" alt="Government Logo" class="h-12 w-12 sm:h-14 sm:w-14 rounded-full object-cover border-2 border-white shadow-md" />
         </div>
     </div>
 </header>
