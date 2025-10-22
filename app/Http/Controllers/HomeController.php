@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ConfigDictionary;
 use App\Models\ContactUs;
+use App\Models\License;
 use App\Models\Slider;
 use App\Models\Subject;
 use App\Models\Team;
@@ -83,8 +84,15 @@ class HomeController extends Controller
 
     public function noticeDetails($id)
     {
-         $data = \App\Models\Notice::findOrFail($id);
+        $data = \App\Models\Notice::findOrFail($id);
         return view('noticeDetails', compact('data'));
+    }
+
+
+    public function license($number)
+    {
+         $data=License::where('license_number',$number)->first();
+        return view('license',['data'=>$data]);
     }
 
 

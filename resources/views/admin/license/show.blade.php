@@ -162,7 +162,7 @@
             document.addEventListener('DOMContentLoaded', function() {
                 // Generate QR code for license number
                 const qrCodeElement = document.getElementById('qrcode');
-                const licenseNumber = '{{ $license->license_number }}';
+                const licenseNumber = '{{route('license.view',$license->license_number)  }}';
 
                 // Create QR code with license number
                 const qr = new QRCode(qrCodeElement, {
