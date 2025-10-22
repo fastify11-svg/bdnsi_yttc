@@ -23,6 +23,18 @@
                     <div class="border-2 border-gray-200 rounded-lg p-4">
                         <img src="{{ $license->image }}" alt="License Photo" class="w-full h-64 object-cover rounded">
                     </div>
+
+                    <!-- QR Code below photo -->
+                    <div class="mt-6">
+                        <h4 class="text-md font-medium mb-3">{{ __('QR Code') }}</h4>
+                        <div class="flex flex-col items-center space-y-2">
+                            <div id="qrcode" class="border border-gray-200 rounded p-2 bg-white"></div>
+                            <div class="text-xs text-gray-500 text-center">
+                                <p>Scan to verify</p>
+                                <p>License: {{ $license->license_number }}</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -143,4 +155,25 @@
             </div>
         </div>
     </div>
+
+    <x-slot name="script">
+        <script src="{{ asset('js/qrcode.js') }}"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Generate QR code for license number
+                const qrCodeElement = document.getElementById('qrcode');
+                const licenseNumber = '{{ $license->license_number }}';
+
+                // Create QR code with license number
+                const qr = new QRCode(qrCodeElement, {
+                    text: licenseNumber,
+                    width: 120,
+                    height: 120,
+                    colorDark: "#000000",
+                    colorLight: "#ffffff",
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+            });
+        </script>
+    </x-slot>
 </x-admin-app-layout>
