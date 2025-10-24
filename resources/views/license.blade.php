@@ -87,7 +87,28 @@
                     <span class="font-medium text-gray-600">Valid To:</span> {{ $data->valid_to ? $data->valid_to->format('d M Y') : 'N/A' }}
                 </div>
                 <div class="w-full border border-green-700 rounded-md px-3 py-1.5 bg-white text-left text-sm">
-                    <span class="font-medium text-gray-600">License Type:</span> {{ $data->allowed_vehicles ? \App\Models\License::getVehicleOptions()[$data->allowed_vehicles] ?? $data->allowed_vehicles : 'N/A' }}
+                    <span class="font-medium text-gray-600">License Type:</span>
+                    @php
+                        $vehicleOptions = \App\Models\License::getVehicleOptions();
+                        $allowedVehicles = $data->allowed_vehicles;
+
+                        // Handle both array and string formats
+                        if (!is_array($allowedVehicles)) {
+                            $allowedVehicles = [$allowedVehicles];
+                        }
+                    @endphp
+
+                    @if(count($allowedVehicles) > 0)
+                        <div class="inline-flex flex-wrap gap-1 mt-1">
+                            @foreach($allowedVehicles as $vehicle)
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800 border border-green-200">
+                                    {{ $vehicleOptions[$vehicle] ?? $vehicle }}
+                                </span>
+                            @endforeach
+                        </div>
+                    @else
+                        <span class="text-gray-500">N/A</span>
+                    @endif
                 </div>
             </div>
         </div>
@@ -122,9 +143,6 @@
             <div class="flex flex-wrap items-center space-x-3 text-xs">
                 <a href="#" class="border border-gray-400 rounded-full px-2 py-1 hover:bg-white hover:text-gray-900 transition-colors">Terms & Support</a>
                 <a href="#" class="hover:underline">Privacy Policy</a>
-            </div>
-            <div class="text-gray-400 text-xs">
-                Designed with <span class="text-red-500">❤️</span>
             </div>
         </div>
     </div>
