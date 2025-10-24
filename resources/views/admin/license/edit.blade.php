@@ -41,12 +41,25 @@
 
             <x-labeled-input name="valid_to" required type="date" value="{{ old('valid_to', $license->valid_to ? $license->valid_to->format('Y-m-d') : '') }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
 
-            <x-labeled-select name="allowed_vehicles" required class="w-full p-1 md:w-1/2 lg:w-1/3">
-                <option value="">Select Vehicle Type</option>
-                @foreach($vehicleOptions as $key => $value)
-                    <option value="{{ $key }}" {{ old('allowed_vehicles', $license->allowed_vehicles) == $key ? 'selected' : '' }}>{{ $value }}</option>
-                @endforeach
-            </x-labeled-select>
+            <div class="w-full p-1 md:w-1/2 lg:w-1/3">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Allowed Vehicle Types <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-1 gap-2">
+                    @php
+                        $selectedVehicles = old('allowed_vehicles', is_array($license->allowed_vehicles) ? $license->allowed_vehicles : [$license->allowed_vehicles]);
+                    @endphp
+                    @foreach($vehicleOptions as $key => $value)
+                        <label class="flex items-center space-x-2">
+                            <input type="checkbox" name="allowed_vehicles[]" value="{{ $key }}"
+                                   {{ in_array($key, $selectedVehicles) ? 'checked' : '' }}
+                                   class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                            <span class="text-sm text-gray-700">{{ $value }}</span>
+                        </label>
+                    @endforeach
+                </div>
+                @error('allowed_vehicles')
+                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                @enderror
+            </div>
 
             <div class="w-full py-8 flex justify-center">
                 <x-button>{{ __('Update') }}</x-button>

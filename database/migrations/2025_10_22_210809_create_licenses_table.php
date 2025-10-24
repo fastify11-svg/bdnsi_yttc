@@ -25,7 +25,7 @@ class CreateLicensesTable extends Migration
             $table->timestamp('issue_date');
             $table->timestamp('valid_from');
             $table->timestamp('valid_to');
-            $table->string('allowed_vehicles')->nullable();
+            $table->json('allowed_vehicles')->nullable();
             $table->integer('status')->default(1);
             $table->timestamps();
         });

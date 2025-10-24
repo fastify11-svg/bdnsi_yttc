@@ -48,7 +48,8 @@ class LicenseController extends Controller
             'issue_date' => 'required|date',
             'valid_from' => 'required|date',
             'valid_to' => 'required|date|after:valid_from',
-            'allowed_vehicles' => 'required|string|in:M,CYCLE,CAR,JEEP'
+            'allowed_vehicles' => 'required|array|min:1',
+            'allowed_vehicles.*' => 'required|string|in:M,CYCLE,CAR,JEEP'
         ]);
 
 
@@ -83,7 +84,8 @@ class LicenseController extends Controller
             'issue_date' => 'required|date',
             'valid_from' => 'required|date',
             'valid_to' => 'required|date|after:valid_from',
-            'allowed_vehicles' => 'required|string|in:M,CYCLE,CAR,JEEP'
+            'allowed_vehicles' => 'required|array|min:1',
+            'allowed_vehicles.*' => 'required|string|in:M,CYCLE,CAR,JEEP'
         ]);
 
         $license->update($validated);

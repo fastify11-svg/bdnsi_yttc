@@ -100,13 +100,29 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-600">{{ __('Allowed Vehicles') }}</label>
-                        <p class="text-gray-900 font-medium">
+                        <div class="text-gray-900 font-medium">
                             @php
                                 $vehicleOptions = \App\Models\License::getVehicleOptions();
-                                $vehicleType = $vehicleOptions[$license->allowed_vehicles] ?? $license->allowed_vehicles;
+                                $allowedVehicles = $license->allowed_vehicles;
+
+                                // Handle both array and string formats
+                                if (!is_array($allowedVehicles)) {
+                                    $allowedVehicles = [$allowedVehicles];
+                                }
                             @endphp
-                            {{ $vehicleType }}
-                        </p>
+
+                            @if(count($allowedVehicles) > 0)
+                                <div class="flex flex-wrap gap-2">
+                                    @foreach($allowedVehicles as $vehicle)
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                            {{ $vehicleOptions[$vehicle] ?? $vehicle }}
+                                        </span>
+                                    @endforeach
+                                </div>
+                            @else
+                                <span class="text-gray-500">No vehicles specified</span>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>
