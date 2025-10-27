@@ -79,36 +79,36 @@
             position: absolute;
         }
 
-        .student-id { top: 39%; left: 33%; }
-        .student-registration { top: 38.4%; left: 81.2%; }
-        .student-session { top: 42.2%; left: 81%;font-size: 18px }
-        .student-name { top: 46.2%; left: 44.5%; }
-        .fathers-name { top: 50.7%; left: 43.5%; text-transform: capitalize  ; }
-        .mothers-name { top: 55%; left: 41.5%; text-transform: capitalize  ; }
-        .center-name { top: 59.3%; left: 40%; }
-        .student-roll { top: 64%; left: 38.5%; }
-        .student-subject { top: 63.7%; left: 57.5%; }
-        .center-code { top: 66%; left: 87%; }
-        .exam-date { top: 68.2%; left: 48%; font-size: 16px}
-        .student-gpa { top: 68.5%; left: 75%; }
-        .student-result-published { top: 85%; left: 24%; }
-        .qr { top: 57%; left: 13.3%; }
+        .student-id { top: 15%; left: 15%; font-size: 16px; font-weight: bold; }
+        .student-registration { top: 15%; left: 75%; font-size: 16px; font-weight: bold; }
+        .student-session { top: 18%; left: 75%; font-size: 14px; }
+        .student-name { top: 35%; left: 45%; font-size: 24px; font-weight: bold; }
+        .fathers-name { top: 42%; left: 40%; font-size: 18px; text-transform: capitalize; }
+        .mothers-name { top: 47%; left: 40%; font-size: 18px; text-transform: capitalize; }
+        .center-name { top: 52%; left: 35%; font-size: 18px; }
+        .student-roll { top: 58%; left: 30%; font-size: 16px; }
+        .student-subject { top: 58%; left: 55%; font-size: 16px; }
+        .center-code { top: 62%; left: 80%; font-size: 14px; }
+        .exam-date { top: 65%; left: 45%; font-size: 14px; }
+        .student-gpa { top: 65%; left: 70%; font-size: 16px; font-weight: bold; }
+        .student-result-published { top: 80%; left: 20%; font-size: 14px; }
+        .qr { top: 50%; left: 10%; }
 
         @media screen and (min-width: 740px) {
-        .student-id { top: 39%; left: 33%; }
-        .student-registration { top: 37%; left: 81%; }
-        .student-session { top: 41.2%; left: 80.5%; font-size: 18px}
-        .student-name { top: 45.2%; left: 44.5%; }
-        .fathers-name { top: 50%; left: 43.5%; text-transform: capitalize !important; }
-        .mothers-name { top: 54%; left: 41.5%; text-transform: capitalize  ; }
-        .center-name { top: 58.3%; left: 40%; }
-        .student-roll { top: 63%; left: 38.5%; }
-        .student-subject { top: 62.7%; left: 57.5%; }
-        .center-code { top: 66%; left: 87%; }
-        .exam-date { top: 67.5%; left: 48%; font-size: 16px}
-        .student-gpa { top: 67%; left: 75%; }
-        .student-result-published { top: 85%; left: 24%; }
-       .qr { top: 55%; left: 13.3%; }
+        .student-id { top: 15%; left: 15%; font-size: 16px; font-weight: bold; }
+        .student-registration { top: 15%; left: 75%; font-size: 16px; font-weight: bold; }
+        .student-session { top: 18%; left: 75%; font-size: 14px; }
+        .student-name { top: 35%; left: 45%; font-size: 24px; font-weight: bold; }
+        .fathers-name { top: 42%; left: 40%; font-size: 18px; text-transform: capitalize; }
+        .mothers-name { top: 47%; left: 40%; font-size: 18px; text-transform: capitalize; }
+        .center-name { top: 52%; left: 35%; font-size: 18px; }
+        .student-roll { top: 58%; left: 30%; font-size: 16px; }
+        .student-subject { top: 58%; left: 55%; font-size: 16px; }
+        .center-code { top: 62%; left: 80%; font-size: 14px; }
+        .exam-date { top: 65%; left: 45%; font-size: 14px; }
+        .student-gpa { top: 65%; left: 70%; font-size: 16px; font-weight: bold; }
+        .student-result-published { top: 80%; left: 20%; font-size: 14px; }
+        .qr { top: 50%; left: 10%; }
         }
         .no-background {
             background-image: none !important;
@@ -132,32 +132,70 @@
     <div class="card-body min-h-screen" id="fullpage2">
         <div :class="{ 'no-background': !hasBackground }"
              class="back-img"
-             style="background-image:url({{ asset('images/student/certificate01.jpg') }}); position: relative; font-weight: bold;">
-            <div>
-                <div class="absolute student-id" style="  font-size:18px">
-                    {{ \App\Lib\Helper::certificateSerialNumber($student->id) ?? '' }}
-                </div>
-                <div class="absolute student-registration">{{ $student->registration ?? '' }}</div>
-                <div class="absolute student-session text"  >{{ $student->session->name ?? '' }}</div>
-                <div class="absolute student-name">{{ ucwords(strtolower($student->name)) ?? '' }}</div>
-                <div class="absolute fathers-name">{{ ucwords(strtolower($student->fathers_name ?? '')) }}</div>
-                <div class="absolute mothers-name">{{ ucwords(strtolower($student->mothers_name ?? '')) }}</div>
-                <div class="absolute center-name">{{ ucwords(strtolower($student->center->name ?? '')) }}</div>
-                <div class="absolute student-roll">{{ ucwords(strtolower($student->roll ?? '')) }}</div>
-                <div class="absolute student-subject">{{ $student->subject->name ?? '' }}</div>
-                    <div style="width: 75px; height: 75px"  class="absolute qr" id="qrcode_1"></div>
+             style="background-image:url({{ asset('images/student/certificate.jpg') }}); position: relative; font-weight: bold;">
+            <div class="w-[900px] border-[10px] border-[#b89b6a] p-6 bg-[#fffaf2] shadow-xl relative font-serif">
 
-                <div class="absolute exam-date capitalize">
-                    {{ \Carbon\Carbon::parse($student->exam_date)->format('j-F-Y') }}
+                <!-- Background Seal -->
+                <div class="absolute inset-0 flex items-center justify-center opacity-10 select-none">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/Seal_of_Bangladesh_%28monochrome%29.svg/2048px-Seal_of_Bangladesh_%28monochrome%29.svg.png"
+                         alt="Seal" class="w-[400px]" />
                 </div>
-                <div class="absolute student-gpa">
-                    {{ number_format($student->t_written_gpa(),2)?? '' }}
+
+                <!-- Header -->
+                <div class="text-center mb-2 relative z-10">
+                    <h1 class="text-2xl font-bold uppercase text-gray-800">Bangladesh National Skill Institute</h1>
+                    <p class="text-sm italic text-gray-600">Under the “Skill Program” Bangladesh National Skill Institute</p>
                 </div>
-                <div class="absolute student-result-published capitalize" style="font-size: 18px">
-                    @if($student->result_publised)
-                        {{ \Carbon\Carbon::make($student->result_publised)->format('j-F-Y') }}
-                    @endif
+
+                <div class="flex justify-between text-sm mb-6 relative z-10">
+                    <div>
+                        <p><strong>Serial No :</strong> 5865485448</p>
+                        <p><strong>Roll No :</strong> 568485</p>
+                    </div>
+                    <div class="text-right">
+                        <p><strong>Reg No :</strong> 8845584541</p>
+                        <p><strong>Session :</strong> Jan to Dec 2024</p>
+                    </div>
                 </div>
+
+                <!-- Body -->
+                <div class="text-justify leading-relaxed text-[15px] relative z-10">
+                    <p>
+                        This is to certify that
+                        <span class="font-semibold underline decoration-gray-500">Juwel Hossain Nayeem</span>,
+                        son/daughter of
+                        <span class="font-semibold underline decoration-gray-500">Md Forid Alam</span> and
+                        <span class="font-semibold underline decoration-gray-500">Tahamina Akhter</span>,
+                        Center
+                        <span class="font-semibold underline decoration-gray-500">Bangladesh National Skill Institute</span>,
+                        duly passed the National Skill Four Years
+                        <span class="font-semibold underline decoration-gray-500">Diploma in Mechanical Engineering</span>
+                        Course Examination held in the month of
+                        <span class="font-semibold underline decoration-gray-500">December 2024</span>,
+                        and he/she secured CGPA
+                        <span class="font-semibold underline decoration-gray-500">3.77</span>
+                        on the scale of 4.00.
+                    </p>
+                </div>
+
+                <!-- QR & Footer -->
+                <div class="flex justify-between items-end mt-10 relative z-10">
+                    <div class="flex flex-col items-center">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=Bangladesh%20National%20Skill%20Institute" alt="QR Code" class="w-24 h-24 border" />
+                        <p class="text-xs mt-2">Date of Publication Results: <strong>25 June 2025</strong></p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-40 border-t border-gray-600 mt-12"></div>
+                        <p class="text-sm mt-1 font-medium">Exam Controller</p>
+                    </div>
+
+                    <div class="flex flex-col items-center">
+                        <div class="w-40 border-t border-gray-600 mt-12"></div>
+                        <p class="text-sm mt-1 font-medium">Chairman</p>
+                    </div>
+                </div>
+
             </div>
         </div>
     </div>
