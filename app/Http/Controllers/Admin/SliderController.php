@@ -15,42 +15,70 @@ class SliderController extends Controller
     protected $permissionPrefix = 'slider';
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            return datatables(Slider::whereIn('type',[SliderType::Slider,SliderType::Gallery])->select(['id','title','photo','type']))->addIndexColumn()->toJson();
+        if ($request->ajax() && !$request->header('X-Inertia')) {
+            return datatables(Slider::whereIn('type',[SliderType::Slider,SliderType::Gallery])->select(['id','title','subtitle','photo','type','status','order_index']))->addIndexColumn()->toJson();
         }
 
-        return view('admin.slider.index');
-    }
-    public function create()
-    {
-        return view('admin.slider.create', [
-            'photo' => Slider::select(['id','title','photo'])->get(),
-        ]);
+        $sliders = Slider::whereIn('type', [\App\Enums\SliderType::Slider, \App\Enums\SliderType::Gallery])
+                    ->orderBy('order_index', 'asc')
+                    ->latest()
+                    ->paginate(25);
+                    
+        return \Inertia\Inertia::render('Admin/Slider/Index', compact('sliders'));
     }
 
     public function store(Request $request)
     {
-
         $validated = $request->validate([
             'title' => 'nullable|string',
+            'subtitle' => 'nullable|string',
+            'button_text' => 'nullable|string',
+            'button_link' => 'nullable|string',
+            'status' => 'nullable|boolean',
+            'order_index' => 'nullable|integer',
             'photo' => 'required|image',
             'type' => 'required',
         ]);
 
-          $validated['photo'] =Image::store('photo','upload/slider');
+        $validated['photo'] = Image::storeFile($request->file('photo'), 'slider');
+        $validated['status'] = $request->has('status') ? $request->status : 1;
+        $validated['order_index'] = $request->order_index ?? 0;
+        $validated['type'] = (int) $request->type;
 
-        $slider=Slider::create($validated);
+        $slider = Slider::create($validated);
 
-        return response()->report($slider, 'Slider Created successfully');
+        return redirect()->back()->with('success', 'Slider Created successfully');
+    }
 
+    public function update(Request $request, Slider $slider)
+    {
+        $validated = $request->validate([
+            'title' => 'nullable|string',
+            'subtitle' => 'nullable|string',
+            'button_text' => 'nullable|string',
+            'button_link' => 'nullable|string',
+            'status' => 'nullable|boolean',
+            'order_index' => 'nullable|integer',
+            'photo' => 'nullable|image',
+            'type' => 'required',
+        ]);
+
+        if ($request->hasFile('photo')) {
+            $validated['photo'] = Image::storeFile($request->file('photo'), 'slider');
+        }
+
+        $validated['status'] = $request->has('status') ? $request->status : 1;
+        $validated['order_index'] = $request->order_index ?? 0;
+        $validated['type'] = (int) $request->type;
+
+        $slider->update($validated);
+
+        return redirect()->back()->with('success', 'Slider Updated successfully');
     }
 
     public function destroy(Slider $slider)
     {
-
-
         $slider->delete();
-
-        return response()->report($slider, 'Slider Deleted successfully');
+        return redirect()->back()->with('success', 'Slider Deleted successfully');
     }
 }

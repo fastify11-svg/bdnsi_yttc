@@ -17,6 +17,13 @@ class Team extends Model
         'image',
         'description',
         'status',
+        
+        'email',
+        'phone',
+        'facebook_link',
+        'twitter_link',
+        'linkedin_link',
+        'order_index',
 
         'bn_name',
         'ar_name',

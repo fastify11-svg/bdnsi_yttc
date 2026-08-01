@@ -10,7 +10,7 @@ class CenterRequestController extends Controller
 {
     public function create()
     {
-        return view('center-request', [
+        return \Inertia\Inertia::render('CenterRequest/Create', [
             'divisions' => \App\Models\Division::get(),
             'districts' => District::get()->mapWithKeys(function ($district) {
                 return [

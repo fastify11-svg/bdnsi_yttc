@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Session;
+use App\Models\Student;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
 
@@ -13,11 +14,12 @@ class SessionController extends Controller
     protected $permissionPrefix = 'session';
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Session::query())->toJson();
         }
 
-        return view('admin.session.index');
+        $sessions = Session::latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/Session/Index', compact('sessions'));
     }
 
     public function create()
@@ -29,8 +31,8 @@ class SessionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'exam_date' => 'nullable|date',
+            'result_published_date' => 'nullable|date',
             'duration' => 'required|numeric',
         ]);
 
@@ -46,13 +48,23 @@ class SessionController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
+            'exam_date' => 'nullable|date',
+            'result_published_date' => 'nullable|date',
             'duration' => 'required|numeric',
             'status' => 'required',
         ]);
 
-        return response()->report($session->update($validated), 'Session Updated successfully');
+        $session->update($validated);
+
+        // Sync associated students
+        Student::where('session_id', $session->id)->update([
+            'course_type' => $session->course_type, // This resolves to the integer value
+            'course_duration' => $session->course_duration_string,
+            'exam_date' => $session->exam_date,
+            'result_publised' => $session->result_published_date,
+        ]);
+
+        return response()->report(true, 'Session Updated successfully');
     }
 
     public function destroy(Session $session)

@@ -20,7 +20,7 @@ class UpazilaStoreController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Upazila::with('district')->get())->addIndexColumn()->toJson();
         }
         return view('admin.upazilaStore.index');

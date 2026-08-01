@@ -1,27 +1,14 @@
 require('./bootstrap');
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
-import Alpine from 'alpinejs';
-import $ from 'jquery';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { createInertiaApp } from '@inertiajs/inertia-react';
 
-import 'select2';
-
-$(document).ready(function() {
-    $('.select2').select2();
+createInertiaApp({
+    title: title => title ? `${title} - BDNSI` : 'BDNSI',
+    resolve: name => require(`./Pages/${name}`),
+    setup({ el, App, props }) {
+        createRoot(el).render(<App {...props} />);
+    },
 });
-
-
-$(document).ready(function() {
-    $('.js-example-basic-multiple').select2();
-    window.addEventListener('trigger-select2', event => {
-        setTimeout(() => {
-            $('#select2-'+event.detail).select2();
-        }, 100)
-    })
-});
-
-
-
-window.Alpine = Alpine;
-
-Alpine.start();
-

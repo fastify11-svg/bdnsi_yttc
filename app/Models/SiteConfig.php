@@ -1,0 +1,25 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class SiteConfig extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'portal_name', 'tagline', 'rjsc_id', 'header_logo', 'main_logo', 'favicon',
+        'hotline_phone', 'official_email', 'headquarter_address',
+        'facebook_url', 'youtube_url', 'twitter_url', 'linkedin_url',
+        'marquee_notice', 'about_short', 'about_full', 'terms_conditions',
+        'privacy_policy', 'footer_copyright',
+        'toggle_center_apply', 'toggle_result_verify', 'toggle_success_students',
+        'toggle_video_gallery', 'toggle_photo_gallery', 'toggle_verified_centers',
+        'toggle_sponsors', 'toggle_notice_board', 'toggle_contact_form', 'toggle_whatsapp',
+        'primary_color', 'secondary_color', 'accent_color',
+        'footer_top_bg_image', 'footer_side_bg_image', 'footer_disclaimer_text', 
+        'footer_planning_text', 'footer_tech_support_text'
+    ];
+}

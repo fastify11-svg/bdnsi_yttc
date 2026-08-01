@@ -12,13 +12,16 @@ class DashboardController extends Controller
 {
     public function __invoke()
     {
-        $auth=Auth::user();
+        $auth = Auth::user();
+        $centerId = $auth->center_id;
+
         $cards = [
-            'Total Student'=>Student::where('center_id',$auth->center_id)->count(),
-            'Total Approved'=>Student::whereStatus(StudentStatus::Approved())->where('center_id',$auth->center_id)->count(),
-            'Total Pending'=>Student::whereStatus(StudentStatus::Pending())->where('center_id',$auth->center_id)->count()
+            'Total Student' => Student::hide()->where('center_id', $centerId)->count(),
+            'Total Approved' => Student::hide()->where('center_id', $centerId)->where('status', StudentStatus::Approved)->count(),
+            'Total Pending' => Student::hide()->where('center_id', $centerId)->whereIn('status', [StudentStatus::Pending, StudentStatus::Requested])->count()
         ];
-        return view('dashboard', compact('cards'));
+
+        return \Inertia\Inertia::render('Center/Dashboard', compact('cards'));
     }
 
 

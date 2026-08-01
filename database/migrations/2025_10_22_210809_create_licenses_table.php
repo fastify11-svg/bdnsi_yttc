@@ -22,9 +22,9 @@ class CreateLicensesTable extends Migration
             $table->string('state')->nullable();
             $table->string('image')->nullable();
             $table->string('license_number')->unique();
-            $table->timestamp('issue_date');
-            $table->timestamp('valid_from');
-            $table->timestamp('valid_to');
+            $table->timestamp('issue_date')->nullable();
+            $table->timestamp('valid_from')->nullable();
+            $table->timestamp('valid_to')->nullable();
             $table->json('allowed_vehicles')->nullable();
             $table->integer('status')->default(1);
             $table->timestamps();

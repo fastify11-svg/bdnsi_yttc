@@ -16,10 +16,11 @@ class SubadminController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Admin::query())->toJson();
         }
-        return view('admin.subAdmin.index');
+        $subAdmins = Admin::latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/Subadmin/Index', compact('subAdmins'));
     }
 
 

@@ -38,8 +38,11 @@ class DashboardController extends Controller
                 'url' => route('admin.student.index'),
             ],
         ]);
-        return view('admin.dashboard',[
-            'cards'=>$cards
+        $adminList = Admin::all();
+
+        return \Inertia\Inertia::render('Admin/Dashboard', [
+            'cards' => $cards,
+            'adminList' => $adminList,
         ]);
     }
 
@@ -58,18 +61,6 @@ class DashboardController extends Controller
         ]);
         return response()->success('Successfully Created');
 
-    }
-
-
-    public function contactUs(Request $request){
-
-
-
-        if ($request->ajax()){
-            return datatables(ContactUs::get())->toJson();
-        }
-        DB::table('contact_us')->where('is_seen',false)->update(['is_seen'=>true]);
-        return view('admin.contactUs');
     }
 
 

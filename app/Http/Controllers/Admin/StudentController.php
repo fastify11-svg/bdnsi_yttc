@@ -52,21 +52,21 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Student::with('center:id,code', 'subject:id,name', 'result'))
                 ->editColumn('registration', function ($registration) {
-                    return (
-                        '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white" target="_blank" href="' . route("admin.student.show", [$registration->id, 'registration' => 'registration']) . '">' . $registration->registration . '</a>'
-                        . '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white; margin-left:5px;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'transcript' => 'transcript']) . '">Transcript</a>'
-                        . '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white; margin-left:5px;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'certificate' => 'certificate']) . '">Certificate</a>'
-                        . '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white; margin-left:5px;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'original' => 'original']) . '">Original Certificate</a>'
-                        . '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white; margin-left:5px;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'orginalcpdf' => 'orginalcpdf']) . '">OrginalC-Pdf</a>'
-                        . '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white; margin-left:5px;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'cpdf' => 'cpdf']) . '">C-Pdf</a>'
-                        . '<a style="background-color:#01609F; padding:3px; border-radius:4px; color:white; margin-left:5px;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'idcard' => 'idcard']) . '">Id Card</a>'
-                    );
+                    $regBtn = '<a style="background-color:#0F5233; color:#ffffff; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'registration' => 'registration']) . '">' . ($registration->registration ?: 'N/A') . '</a>';
+                    $transcriptBtn = '<a style="background-color:#EBF8FF; color:#1D4ED8; border:1px solid #BFDBFE; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'transcript' => 'transcript']) . '">Transcript</a>';
+                    $certBtn = '<a style="background-color:#FAF5FF; color:#6D28D9; border:1px solid #E9D8FD; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'certificate' => 'certificate']) . '">Certificate</a>';
+                    $origCertBtn = '<a style="background-color:#F0FFF4; color:#15803D; border:1px solid #BBF7D0; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'original' => 'original']) . '">Original Certificate</a>';
+                    $origCpdfBtn = '<a style="background-color:#EEF2FF; color:#4338CA; border:1px solid #E0E7FF; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'orginalcpdf' => 'orginalcpdf']) . '">OrginalC-Pdf</a>';
+                    $cpdfBtn = '<a style="background-color:#ECFDF5; color:#047857; border:1px solid #D1FAE5; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'cpdf' => 'cpdf']) . '">C-Pdf</a>';
+                    $idcardBtn = '<a style="background-color:#FFFBEB; color:#B45309; border:1px solid #FEF3C7; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'idcard' => 'idcard']) . '">Id Card</a>';
+
+                    return '<div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; max-width:320px;">' . $regBtn . $transcriptBtn . $certBtn . $origCertBtn . $origCpdfBtn . $cpdfBtn . $idcardBtn . '</div>';
                 })
                 ->editColumn('roll', function ($roll) {
-                    return '<a   style="background-color:#01609F; padding:3px; border-redius:4px 4px 4px 4px; color:white"   target="_blank" href="' . route("admin.student.admit", [$roll->id, 'admit' => 'admit']) . '">' . $roll->roll . '</a>';
+                    return '<a style="background-color:#BE123C; color:#ffffff; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.admit", [$roll->id, 'admit' => 'admit']) . '">' . ($roll->roll ?: 'N/A') . '</a>';
                 })
                 ->addColumn('student_result', function ($student_result) {
                     return '<a target="_blank" href="' . route("admin.result.show", $student_result->id ?? '') . '">' . ($student_result->result()->count() == 1 ? 'Result' : 'N/A') . '</a>';
@@ -76,40 +76,273 @@ class StudentController extends Controller
                 ->toJson();
         }
 
-        return view('admin.student.index');
+        $query = Student::with(['center:id,code,name', 'subject:id,name', 'result', 'session:id,name']);
+
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('roll', 'LIKE', '%' . $search . '%')
+                  ->orWhere('registration', 'LIKE', '%' . $search . '%')
+                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        if ($request->center_id) {
+            $query->where('center_id', $request->center_id);
+        }
+
+        if ($request->subject_id) {
+            $query->where('subject_id', $request->subject_id);
+        }
+
+        if ($request->session_id) {
+            $query->where('session_id', $request->session_id);
+        }
+
+        if ($request->has('status') && $request->status !== null && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('course_type') && $request->course_type !== null && $request->course_type !== '') {
+            $query->where('course_type', $request->course_type);
+        }
+
+        $students = $query->latest()->paginate(25)->withQueryString();
+
+        $centers = Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get();
+        if ($centers->isEmpty()) {
+            $centers = Center::select(['id', 'code', 'name'])->get();
+        }
+        $subjects = Subject::select(['id', 'name'])->orderBy('name', 'asc')->get();
+        $sessions = Session::select(['id', 'name'])->get();
+
+        // Analytics Logic
+        $totalStudents = Student::count();
+        $activeStudents = Student::where('status', StudentStatus::Approved)->count();
+        
+        $maleCount = Student::where('gender', Gender::Male)->count();
+        $femaleCount = Student::where('gender', Gender::Female)->count();
+        
+        $regularCount = Student::where('course_type', CourseType::Regular)->count();
+        $shortCount = Student::where('course_type', CourseType::Short_Course)->count();
+        $diplomaCount = Student::where('course_type', CourseType::Diploma)->count();
+        
+        $totalDue = Student::sum('due_amount');
+        $totalPaid = Student::sum('paid_amount');
+        
+        $analytics = [
+            'total' => $totalStudents,
+            'active' => $activeStudents,
+            'male' => $maleCount,
+            'female' => $femaleCount,
+            'regular' => $regularCount,
+            'short' => $shortCount,
+            'diploma' => $diplomaCount,
+            'due' => $totalDue,
+            'paid' => $totalPaid,
+        ];
+
+        return \Inertia\Inertia::render('Admin/Student/Index', [
+            'students' => $students,
+            'centers' => $centers,
+            'subjects' => $subjects,
+            'sessions' => $sessions,
+            'filters' => $request->only(['search', 'center_id', 'subject_id', 'session_id', 'status', 'course_type']),
+            'analytics' => $analytics
+        ]);
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $query = Student::with(['center', 'subject', 'session']);
+        
+        // Apply filters exactly like index
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('roll', 'LIKE', '%' . $search . '%')
+                  ->orWhere('registration', 'LIKE', '%' . $search . '%')
+                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+            });
+        }
+        if ($request->center_id) $query->where('center_id', $request->center_id);
+        if ($request->subject_id) $query->where('subject_id', $request->subject_id);
+        if ($request->session_id) $query->where('session_id', $request->session_id);
+        if ($request->has('status') && $request->status !== null && $request->status !== '') $query->where('status', $request->status);
+        if ($request->has('course_type') && $request->course_type !== null && $request->course_type !== '') $query->where('course_type', $request->course_type);
+
+        $students = $query->get();
+
+        $filename = "students_" . date('Y_m_d_His') . ".csv";
+        $headers = [
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $columns = [
+            'ID', 'Name', 'Roll', 'Registration', 'Center', 'Session', 'Course', 
+            'Phone', 'Gender', 'Status', 'Due Amount', 'Paid Amount'
+        ];
+
+        $callback = function() use($students, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            foreach ($students as $student) {
+                $gender = $student->gender ? $student->gender->key : '';
+                $status = $student->status ? $student->status->key : '';
+                $center = $student->center->name ?? '';
+                $session = $student->session->name ?? '';
+                $subject = $student->subject->name ?? '';
+                
+                $row = [
+                    $student->id,
+                    $student->name,
+                    $student->roll,
+                    $student->registration,
+                    $center,
+                    $session,
+                    $subject,
+                    $student->phone,
+                    $gender,
+                    $status,
+                    $student->due_amount ?? 0,
+                    $student->paid_amount ?? 0
+                ];
+                fputcsv($file, $row);
+            }
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    public function importCsv(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt|max:5120',
+            'center_id' => 'required|exists:centers,id',
+            'session_id' => 'required|exists:sessions,id',
+            'subject_id' => 'required|exists:subjects,id',
+        ]);
+
+        $file = $request->file('file');
+        
+        $centerId = $request->center_id;
+        $sessionId = $request->session_id;
+        $subjectId = $request->subject_id;
+        
+        $session = \App\Models\Session::find($sessionId);
+        $courseType = $session ? $session->course_type : CourseType::Regular;
+        $courseDuration = $session ? $session->course_duration_string : '6 Months';
+        $examDate = $session ? $session->exam_date : null;
+        $resultPublished = $session ? $session->result_published_date : null;
+
+        $handle = fopen($file->path(), 'r');
+        $header = fgetcsv($handle); // skip header
+        
+        $successCount = 0;
+        
+        DB::beginTransaction();
+        try {
+            while (($row = fgetcsv($handle)) !== false) {
+                // Expected CSV format:
+                // [0] Name, [1] Father's Name, [2] Mother's Name, [3] Phone, [4] Gender (Male/Female), [5] Date of Birth, [6] Roll (optional), [7] Registration (optional)
+                
+                if (empty($row[0])) continue; // Name is required
+                
+                $name = trim($row[0]);
+                $fathers_name = isset($row[1]) ? trim($row[1]) : '';
+                $mothers_name = isset($row[2]) ? trim($row[2]) : '';
+                $phone = isset($row[3]) ? trim($row[3]) : '';
+                
+                $genderStr = isset($row[4]) ? strtolower(trim($row[4])) : '';
+                $gender = Gender::Male;
+                if ($genderStr == 'female' || $genderStr == 'f') $gender = Gender::Female;
+                
+                $dob = isset($row[5]) ? trim($row[5]) : null;
+                
+                $roll = isset($row[6]) && !empty(trim($row[6])) ? trim($row[6]) : Student::getLastFreeRoll();
+                $registration = isset($row[7]) && !empty(trim($row[7])) ? trim($row[7]) : Student::getLastFreeRegistration();
+
+                Student::create([
+                    'center_id' => $centerId,
+                    'session_id' => $sessionId,
+                    'subject_id' => $subjectId,
+                    'course_type' => $courseType,
+                    'course_duration' => $courseDuration,
+                    'name' => $name,
+                    'fathers_name' => $fathers_name,
+                    'mothers_name' => $mothers_name,
+                    'phone' => $phone,
+                    'gender' => $gender,
+                    'date_of_birth' => $dob,
+                    'roll' => $roll,
+                    'registration' => $registration,
+                    'status' => StudentStatus::Approved,
+                    'exam_date' => $examDate,
+                    'result_publised' => $resultPublished,
+                    'due_amount' => 0,
+                    'paid_amount' => 0,
+                    'religion' => Religion::Islam,
+                    'blood_group' => \App\Enums\BloodGroup::APositive,
+                    'present_address' => 'N/A',
+                    'permanent_address' => 'N/A',
+                    'qualification' => 'SSC'
+                ]);
+                
+                $successCount++;
+            }
+            DB::commit();
+            fclose($handle);
+            return redirect()->back()->with('success', "$successCount students imported successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            fclose($handle);
+            return redirect()->back()->withErrors(['error' => 'Error importing CSV: ' . $e->getMessage()]);
+        }
     }
 
 
-    public function create()
+    public function create(Request $request)
     {
-        return view('admin.student.create', [
-            'centers' => Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get(),
-            'sessions' => Session::select(['id', 'name'])->where('status', SessionStatus::Active)->get(),
-            'subjects' => Subject::select(['id', 'name'])->get(),
-            'divisions' => \App\Models\Division::get(),
-            'districts_keys' => District::get()->mapWithKeys(function ($district) {
-                return [
-                    $district->id => [
-                        'id' => $district->id,
-                        'division_id' => $district->division_id,
-                        'name' => $district->name,
-                    ]
-                ];
-            }),
-            'districts' => District::get(),
-            'upazilas' => Upazila::get()->mapWithKeys(function ($upazila) {
-                return [
-                    $upazila->id => [
-                        'id' => $upazila->id,
-                        'district_id' => $upazila->district_id,
-                        'name' => $upazila->name,
-                    ]
-                ];
-            })->toArray(),
-            'registration' => Student::getLastFreeRegistration(),
-            'roll' => Student::getLastFreeRoll()
+        $centers = Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get();
+        if ($centers->isEmpty()) {
+            $centers = Center::select(['id', 'code', 'name'])->get();
+        }
+        $sessions = Session::where('status', \App\Enums\SessionStatus::Active)->get()->append('course_type');
+        if ($sessions->isEmpty()) {
+            $sessions = Session::get()->append('course_type');
+        }
+        $subjects = Subject::select(['id', 'name'])->get();
+        $divisions = \App\Models\Division::get();
+        $districts = District::get(['id', 'division_id', 'name']);
+        $upazilas = Upazila::get(['id', 'district_id', 'name']);
+        $registration = Student::getLastFreeRegistration();
+        $roll = Student::getLastFreeRoll();
 
-        ]);
+        if ($request->header('X-Inertia') || !$request->ajax()) {
+            return \Inertia\Inertia::render('Admin/Student/Create', [
+                'centers' => $centers,
+                'sessions' => $sessions,
+                'subjects' => $subjects,
+                'divisions' => $divisions,
+                'districts' => $districts,
+                'upazilas' => $upazilas,
+                'registration' => $registration,
+                'roll' => $roll,
+                'genders' => \App\Enums\Gender::getInstances(),
+                'religions' => \App\Enums\Religion::getInstances(),
+                'courseTypes' => \App\Enums\CourseType::getInstances(),
+            ]);
+        }
+
+        return view('admin.student.create', compact('centers', 'sessions', 'subjects', 'divisions', 'districts', 'upazilas', 'registration', 'roll'));
     }
 
     public function store(Request $request)
@@ -119,6 +352,7 @@ class StudentController extends Controller
             'name' => 'required|string',
             'roll' => 'nullable|string|unique:students,roll',
             'passport' => 'nullable|string|unique:students,passport',
+            'nid_or_birth' => 'nullable|string',
             'registration' => 'nullable|string|unique:students,registration',
             'fathers_name' => 'required|string',
             'mothers_name' => 'required|string',
@@ -134,6 +368,7 @@ class StudentController extends Controller
             'qualification' => 'required',
             'status' => 'required|numeric|enum_value:' . StudentStatus::class . ',false',
             'picture' => 'required|image',
+            'payment_status' => 'nullable|numeric|in:0,1',
             'course_type' => ['required',Rule::in(CourseType::asArray())],
         ]);
 
@@ -143,22 +378,39 @@ class StudentController extends Controller
 
             $validated['roll'] = $validated['roll'] ?? Student::getLastFreeRoll();
             $validated['registration'] = $validated['registration'] ?? Student::getLastFreeRegistration();
-            $student=Student::create($validated);
+            
+            $session = \App\Models\Session::find($validated['session_id']);
+            $validated['exam_date'] = $request->exam_date ?: ($session ? $session->exam_date : null);
+            $validated['result_publised'] = $request->result_publised ?: ($session ? $session->result_published_date : null);
+            
+            if ($session && $session->duration) {
+                $validated['course_type'] = $session->course_type;
+                $validated['course_duration'] = $session->course_duration_string;
+            }
+
+            $student = Student::create($validated);
+            $student->load(['center', 'subject']);
+            $centerName = $student->center->name ?? (Auth::user()->center->name ?? '');
+            $subjectName = $student->subject->name ?? '';
             $message = 'Congratulations!! ' . $student->name . ', You have successfully filled the application form for  '
-                . (Auth::user()->center->name ?? '') . ' Technician '
-                . ($student->subject->name ?? '') . ' under  '.config('site.setting.name').' Your Roll No: '
+                . $centerName . ' Technician '
+                . $subjectName . ' under  '.config('site.setting.name').' Your Roll No: '
                 . $student->roll . ' and Registration No: ' . $student->registration . '. Thanks for staying with '.config('site.setting.name');
-            Helper::sendSms($student->phone,$message);
+            Helper::sendSms($student->phone, $message);
             DB::commit();
+            
+            if ($request->header('X-Inertia')) {
+                return redirect()->route('admin.student.index')->with('success', 'Student Created successfully');
+            }
             return response()->report($student, 'Student Created successfully');
         }catch (\Exception $exception){
             DB::rollBack();
 
+            if ($request->header('X-Inertia')) {
+                return redirect()->back()->withErrors(['error' => 'Something went wrong while saving student.']);
+            }
             return response()->error('something went wrong');
         }
-
-
-
     }
 
     public function show(Request $request, Student $student)
@@ -182,42 +434,55 @@ class StudentController extends Controller
             return view('admin.student.originalCpdf', compact('student'));
         }
         else {
+            $student->load(['center', 'subject', 'session', 'result']);
+            if ($request->header('X-Inertia') || !$request->ajax()) {
+                return \Inertia\Inertia::render('Admin/Student/Show', [
+                    'student' => $student
+                ]);
+            }
             return view('admin.student.show', [
                 'student' => $student
             ]);
         }
-
-
     }
 
-    public function edit(Student $student)
+    public function edit(Request $request, Student $student)
     {
+        $student->load(['center', 'subject', 'session', 'result']);
+        $centers = Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get();
+        if ($centers->isEmpty()) {
+            $centers = Center::select(['id', 'code', 'name'])->get();
+        }
+        $sessions = Session::select(['id', 'name'])->get();
+        $subjects = Subject::select(['id', 'name'])->get();
+        $divisions = \App\Models\Division::get();
+        $districts = District::get(['id', 'division_id', 'name']);
+        $upazilas = Upazila::get(['id', 'district_id', 'name']);
+
+        if ($request->header('X-Inertia') || !$request->ajax()) {
+            return \Inertia\Inertia::render('Admin/Student/Edit', [
+                'student' => $student,
+                'centers' => $centers,
+                'sessions' => $sessions,
+                'subjects' => $subjects,
+                'divisions' => $divisions,
+                'districts' => $districts,
+                'upazilas' => $upazilas,
+                'genders' => \App\Enums\Gender::getInstances(),
+                'religions' => \App\Enums\Religion::getInstances(),
+                'courseTypes' => \App\Enums\CourseType::getInstances(),
+                'statuses' => \App\Enums\StudentStatus::getStatus(),
+            ]);
+        }
+
         return view('admin.student.edit', [
             'student' => $student,
-            'centers' => Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get(),
-            'sessions' => Session::select(['id', 'name'])->where('status', SessionStatus::Active)->get(),
-            'subjects' => Subject::select(['id', 'name'])->get(),
-            'divisions' => \App\Models\Division::get(),
-            'districts_keys' => District::get()->mapWithKeys(function ($district) {
-                return [
-                    $district->id => [
-                        'id' => $district->id,
-                        'division_id' => $district->division_id,
-                        'name' => $district->name,
-                    ]
-                ];
-            }),
-
-            'districts' => District::get(),
-            'upazilas' => Upazila::get()->mapWithKeys(function ($upazila) {
-                return [
-                    $upazila->id => [
-                        'id' => $upazila->id,
-                        'district_id' => $upazila->district_id,
-                        'name' => $upazila->name,
-                    ]
-                ];
-            })->toArray(),
+            'centers' => $centers,
+            'sessions' => $sessions,
+            'subjects' => $subjects,
+            'divisions' => $divisions,
+            'districts' => $districts,
+            'upazilas' => $upazilas,
             'registration' => Student::getLastFreeRegistration(),
             'roll' => Student::getLastFreeRoll()
         ]);
@@ -249,10 +514,11 @@ class StudentController extends Controller
                 'qualification' => 'required',
                 'status' => 'required|numeric',
                 'picture' => 'nullable|image',
-                'exam_date' => 'required',
+                'exam_date' => 'nullable',
                 'result_publised' => 'nullable',
                 'due_amount' => 'required|numeric',
                 'paid_amount' => 'required|numeric',
+                'payment_status' => 'nullable|numeric|in:0,1',
                 'course_type' => ['required',Rule::in(CourseType::asArray())],
             ]);
 
@@ -261,8 +527,25 @@ class StudentController extends Controller
             $validated['registration'] = $validated['registration']
                 ?? ($student->registration ?: Student::getLastFreeRegistration());
 
+            $session = \App\Models\Session::find($validated['session_id']);
+            if (empty($validated['exam_date']) && $session) {
+                $validated['exam_date'] = $session->exam_date;
+            }
+            if (empty($validated['result_publised']) && $session) {
+                $validated['result_publised'] = $session->result_published_date;
+            }
+            
+            if ($session && $session->duration) {
+                // Update course_type and duration based on session if the session has a duration
+                $validated['course_type'] = $session->course_type;
+                $validated['course_duration'] = $session->course_duration_string;
+            }
 
-            return response()->report($student->update($validated), 'Student Updated successfully');
+            $student->update($validated);
+            if ($request->header('X-Inertia')) {
+                return redirect()->route('admin.student.index')->with('success', 'Student Updated successfully');
+            }
+            return response()->report(true, 'Student Updated successfully');
         } else {
             $validated = $request->validate([
                 'status' => 'required'
@@ -271,7 +554,11 @@ class StudentController extends Controller
                 ?? ($student->roll ?: Student::getLastFreeRoll());
             $validated['registration'] = $validated['registration']
                 ?? ($student->registration ?: Student::getLastFreeRegistration());
-            return response()->report($student->update($validated), 'Student Updated successfully');
+            $student->update($validated);
+            if ($request->header('X-Inertia')) {
+                return redirect()->route('admin.student.index')->with('success', 'Student Updated successfully');
+            }
+            return response()->report(true, 'Student Updated successfully');
         }
 
     }

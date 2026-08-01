@@ -21,6 +21,7 @@ class Result extends Model
         'written',
         'practical',
         'viva',
+        'certificate',
     ];
 
     protected $casts = [

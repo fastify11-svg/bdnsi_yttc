@@ -11,6 +11,14 @@
     </x-slot>
 
     <div class="w-full bg-white flex flex-wrap p-4">
+        @if(is_null($student->result_publised) && $student->created_at->diffInDays(now()) >= 30)
+        <div class="w-full mb-4">
+            <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                <strong class="font-bold">Result Overdue Warning!</strong>
+                <span class="block sm:inline">Registration is {{ $student->created_at->diffInDays(now()) }} days old but result is not published yet. If it exceeds 45 days, this student record will be auto-deleted by the system.</span>
+            </div>
+        </div>
+        @endif
         <div class="w-full md:w-1/2 lg:w-1/3 flex justify-center p-2">
             <img class="h-64 w-64" src="{{ $student->picture??'' }}" alt="Avatar of {{ $student->picture }}"/>
         </div>

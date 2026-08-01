@@ -18,7 +18,8 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        //
+        $questions = Quation::with('exam')->latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/Question/Index', compact('questions'));
     }
 
     /**

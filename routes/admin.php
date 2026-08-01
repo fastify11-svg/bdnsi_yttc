@@ -94,9 +94,12 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('profile-update', \App\Http\Controllers\Admin\ProfileUpdateController::class)
             ->only(['create','store']);
         Route::resource('user', \App\Http\Controllers\Admin\UserController::class);
+        Route::post('subject/ai-suggest', [\App\Http\Controllers\Admin\SubjectController::class, 'aiSuggest'])->name('subject.aiSuggest');
         Route::resource('subject', \App\Http\Controllers\Admin\SubjectController::class)->except(['show']);
         Route::resource('session', \App\Http\Controllers\Admin\SessionController::class)->except(['show']);
 
+        Route::get('student/export', [\App\Http\Controllers\Admin\StudentController::class, 'exportCsv'])->name('student.export');
+        Route::post('student/import', [\App\Http\Controllers\Admin\StudentController::class, 'importCsv'])->name('student.import');
         Route::resource('student', \App\Http\Controllers\Admin\StudentController::class);
         Route::resource('exam', \App\Http\Controllers\Admin\ExamController::class);
         Route::resource('question', \App\Http\Controllers\Admin\QuestionController::class);
@@ -111,6 +114,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('user/portal/{user}', [\App\Http\Controllers\Admin\UserController::class, 'portal'])->name('user.portal');
 
         Route::resource('center', \App\Http\Controllers\Admin\CenterController::class);
+        Route::patch('center/{center}/status', [\App\Http\Controllers\Admin\CenterController::class, 'updateStatus'])->name('center.updateStatus');
         Route::resource('notice', \App\Http\Controllers\Admin\NoticeController::class);
         Route::resource('adminList', \App\Http\Controllers\Admin\AdminListController::class)->only(['edit','update']);
         Route::resource('configDictionary', \App\Http\Controllers\Admin\ConfigDictionaryController::class)->only(['create','store']);
@@ -118,13 +122,18 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('sub-admin', \App\Http\Controllers\Admin\SubadminController::class);
         Route::resource('upazila-store', \App\Http\Controllers\Admin\UpazilaStoreController::class);
 
-        Route::get('contactUs',[DashboardController::class,'contactUs'])->name('contactUs');
+        Route::get('contactUs', [\App\Http\Controllers\Admin\ContactUsController::class, 'index'])->name('contactUs');
+        Route::patch('contactUs/{id}/mark-read', [\App\Http\Controllers\Admin\ContactUsController::class, 'markAsRead'])->name('contactUs.markAsRead');
+        Route::post('contactUs/{id}/ai-analyze', [\App\Http\Controllers\Admin\ContactUsController::class, 'aiAnalyze'])->name('contactUs.aiAnalyze');
+        Route::delete('contactUs/{id}', [\App\Http\Controllers\Admin\ContactUsController::class, 'destroy'])->name('contactUs.destroy');
         Route::resource('translation', \App\Http\Controllers\Admin\TranslationController::class);
         Route::resource('sponsor', \App\Http\Controllers\Admin\SponsorController::class);
         Route::resource('backup', \App\Http\Controllers\Admin\BackupController::class)->only(['index','update']);
         Route::resource('whatapp-link', \App\Http\Controllers\Admin\WhatappLinkController::class);
         Route::resource('youtube-video', \App\Http\Controllers\Admin\YoutubeVideoController::class);
         Route::resource('license', \App\Http\Controllers\Admin\LicenseController::class);
-
+        Route::resource('api-settings', \App\Http\Controllers\Admin\ApiSettingController::class)->only(['index', 'store']);
+        Route::resource('footer-link', \App\Http\Controllers\Admin\FooterLinkController::class);
+        Route::resource('footer-logo', \App\Http\Controllers\Admin\FooterPartnerLogoController::class);
     });
 });

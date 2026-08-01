@@ -29,28 +29,42 @@ class LoginRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['nullable', 'string'],
+            'username' => ['nullable', 'string'],
             'password' => ['required', 'string'],
         ];
     }
 
-    /**
-     * Attempt to authenticate the request's credentials.
-     *
-     * @return void
-     *
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function authenticate()
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        $loginInput = $this->input('email') ?: $this->input('username');
 
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
+        $fieldType = filter_var($loginInput, FILTER_VALIDATE_EMAIL) ? 'email' : 'username';
+
+        if (! Auth::attempt([$fieldType => $loginInput, 'password' => $this->input('password')], $this->boolean('remember'))) {
+            $altField = $fieldType === 'email' ? 'username' : 'email';
+            if (! Auth::attempt([$altField => $loginInput, 'password' => $this->input('password')], $this->boolean('remember'))) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'email' => trans('auth.failed'),
+                ]);
+            }
+        }
+
+        $user = Auth::user();
+        if ($user && $user->center_id) {
+            $center = \App\Models\Center::find($user->center_id);
+            $status = $center ? (is_object($center->status) ? $center->status->value : $center->status) : null;
+            if (!$center || ($status != 1 && $status !== \App\Enums\CenterStatus::Approved && strtolower((string)$status) !== 'approved')) {
+                Auth::logout();
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'email' => 'Your center is not yet verified or approved.',
+                ]);
+            }
         }
 
         RateLimiter::clear($this->throttleKey());

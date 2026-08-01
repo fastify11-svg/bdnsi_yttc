@@ -73,6 +73,7 @@ class Student extends Authenticatable
         'result_publised',
         'due_amount',
         'paid_amount',
+        'payment_status',
         'qualification',
         'course_type',
     ];
@@ -703,15 +704,15 @@ class Student extends Authenticatable
         if ($this->course_type->is(CourseType::Regular())) {
             switch (true) {
                 case $marks >= 80:
-                    return 4 +'.00';
+                    return '4.00';
                 case $marks >= 70:
-                    return 4 +'.70';
+                    return '3.75';
                 case $marks >= 60:
-                    return 4+'.50';
+                    return '3.50';
                 case $marks >= 50:
-                    return 3+'.50';
+                    return '3.00';
                 case $marks >= 40:
-                    return 3+'.00';
+                    return '2.00';
                 case $marks >= 0:
                     return '0.00';
                 default:
@@ -784,13 +785,13 @@ class Student extends Authenticatable
             if ($marks >= 80) {
                 return '4.00';
             } elseif ($marks >= 70) {
-                return '4.70';
+                return '3.75';
             } elseif ($marks >= 60) {
-                return '4.50';
-            } elseif ($marks >= 50) {
                 return '3.50';
-            } elseif ($marks >= 40) {
+            } elseif ($marks >= 50) {
                 return '3.00';
+            } elseif ($marks >= 40) {
+                return '2.00';
             } elseif ($marks >= 0) {
                 return '0.00';
             } else {

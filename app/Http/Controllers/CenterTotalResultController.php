@@ -21,16 +21,16 @@ class CenterTotalResultController extends Controller
     {
 
           if ($request->has(['session_id','subject_id'])){
-               $students=   Student::with('result','subject:id,name','session:id,name')->where('center_id',auth()->user()->center_id)->where(['session_id'=> $request->session_id, 'subject_id'=>$request->subject_id])->get();
+               $students = Student::with('result','subject:id,name','session:id,name')->where('center_id',auth()->user()->center_id)->where(['session_id'=> $request->session_id, 'subject_id'=>$request->subject_id])->get();
 
-              return view('center.studentResult.index', [
+              return \Inertia\Inertia::render('Center/Student/Result', [
                   'students'=>$students,
                   'sessions' => Session::select(['id', 'name'])->where('status',SessionStatus::Active)->get(),
                   'subjects' => Subject::select(['id', 'name'])->get(),
               ]);
           }
 
-        return view('center.studentResult.index', [
+        return \Inertia\Inertia::render('Center/Student/Result', [
             'students'=> [],
             'sessions' => Session::select(['id', 'name'])->where('status',SessionStatus::Active)->get(),
             'subjects' => Subject::select(['id', 'name'])->get(),

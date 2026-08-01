@@ -31,6 +31,10 @@ class Center extends Model
         'upazilla',
         'post_office',
         'address',
+        'center_location',
+        'center_logo',
+        'director_photo',
+        'director_signature',
         'mobile',
         'email',
         'photo',
@@ -46,13 +50,20 @@ class Center extends Model
         'status' => CenterStatus::class,
         'photo' => ImageField::class.':center/photo',
         'director_image' => ImageField::class.':center/photo',
+        'director_photo' => ImageField::class.':center/photo',
+        'center_logo' => ImageField::class.':center/logo',
         'authority_signature' => ImageField::class.':center/authority_signature',
+        'director_signature' => ImageField::class.':center/authority_signature',
         'nid_photo' => ImageField::class.':center/nid_photo',
         'nid_back_photo' => ImageField::class.':center/nid_photo',
     ];
 
     public function students(){
         return $this->hasMany(Student::class,'center_id')->where('status',StudentStatus::Approved);
+    }
+
+    public function allStudents(){
+        return $this->hasMany(Student::class,'center_id');
     }
 
     public function getPhotoAttribute($photo){
@@ -66,10 +77,11 @@ class Center extends Model
 
     public function getCodeAttribute()
     {
-        return str_pad($this->attributes['id'], 6, '178', STR_PAD_LEFT); // Pads with '0' to make the code 6 characters long.
+        if (isset($this->attributes['code']) && !empty($this->attributes['code'])) {
+            return $this->attributes['code'];
+        }
+        return isset($this->attributes['id']) ? str_pad($this->attributes['id'], 6, '178', STR_PAD_LEFT) : null;
     }
-
-
 
     public function users()
     {

@@ -11,11 +11,14 @@ class Slider extends Model
 
 
     protected $fillable = [
-        'id',
         'title',
+        'subtitle',
         'photo',
         'type',
-
+        'button_text',
+        'button_link',
+        'status',
+        'order_index',
     ];
 
     public function getPhotoAttribute($value){

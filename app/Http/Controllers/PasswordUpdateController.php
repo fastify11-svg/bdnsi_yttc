@@ -11,7 +11,7 @@ class PasswordUpdateController extends Controller
 {
     public function create()
     {
-        return view('password-update.create');
+        return \Inertia\Inertia::render('Center/Password/Update');
     }
 
     public function store(Request $request)

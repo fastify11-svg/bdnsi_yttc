@@ -1,7 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 @import 'select2/dist/css/select2.min.css';
+
+.font-mono {
+    font-family: 'JetBrains Mono', monospace !important;
+}
 
 [x-cloak] { display: none !important; }
 
@@ -85,4 +90,10 @@
 .card-back {
     background-color: white;
     transform: rotateY(180deg);
+}
+
+@keyframes scan {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(12rem); }
+  100% { transform: translateY(0); }
 }

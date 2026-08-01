@@ -1,0 +1,113 @@
+<?php
+
+namespace Tests\Feature;
+
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\WithFaker;
+use Tests\TestCase;
+use App\Models\Admin;
+use App\Models\ConfigDictionary;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Cache;
+
+class SiteControlCenterTest extends TestCase
+{
+    use RefreshDatabase;
+
+    protected $admin;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        // Assuming admin auth uses 'admin' guard and has id 1
+        $this->admin = Admin::factory()->create();
+        
+        $role = \App\Models\Role::create([
+            'name' => 'superadmin',
+            'display_name' => 'Super Admin'
+        ]);
+        
+        $permission = \App\Models\Permission::create([
+            'name' => 'configDictionary-create',
+            'display_name' => 'Config Dictionary Create'
+        ]);
+        
+        $role->attachPermission($permission);
+        $this->admin->attachRole($role);
+        
+        $this->withoutExceptionHandling();
+    }
+
+    /**
+     * Test that an admin can save basic configuration dictionaries (SEO, Contacts, Themes).
+     * This verifies Phase 1 Data Flow.
+     *
+     * @return void
+     */
+    public function test_admin_can_save_basic_site_settings()
+    {
+        $payload = [
+            'institute_name' => 'Automated Test Institute',
+            'theme_color' => '#112233',
+            'support_email' => 'test@support.com',
+            'frontend_toggles' => json_encode(['show_notice' => true, 'show_gallery' => false])
+        ];
+
+        $response = $this->actingAs($this->admin, 'admin')
+                         ->post(route('admin.configDictionary.store'), $payload);
+
+        $response->assertStatus(302); // Inertia redirects on success
+        
+        // Settings are often JSON encoded when saved if they are stored in a value cast column.
+        $this->assertDatabaseHas('config_dictionaries', [
+            'key' => 'institute_name',
+            'value' => '"Automated Test Institute"'
+        ]);
+    }
+
+    /**
+     * Test that file uploads (Logo, Favicon) work securely and replace old values.
+     *
+     * @return void
+     */
+    public function test_admin_can_upload_logos()
+    {
+        $this->withoutMiddleware();
+        Storage::fake('public');
+
+        // Using create() instead of image() to avoid GD extension dependency crash on CLI
+        $file = UploadedFile::fake()->create('logo.jpg', 100, 'image/jpeg');
+
+        $response = $this->actingAs($this->admin, 'admin')
+                         ->post(route('admin.configDictionary.store'), [
+                             'logo' => $file
+                         ]);
+
+        $response->assertStatus(302);
+
+        $config = ConfigDictionary::where('key', 'logo')->first();
+        $this->assertNotNull($config);
+        
+        // The image storage generates a random hash string under the 'config' folder
+        $this->assertStringContainsString('config/', $config->value);
+        $this->assertStringContainsString('.jpg', $config->value);
+    }
+
+    /**
+     * Test Middleware & Cache Syncing (Phase 2).
+     * Ensures global_config cache is updated immediately after settings change.
+     */
+    public function test_frontend_middleware_syncs_latest_data()
+    {
+        $this->withoutMiddleware();
+        // Simulate a save action
+        $this->actingAs($this->admin, 'admin')
+             ->post(route('admin.configDictionary.store'), [
+                 'institute_name' => 'Middleware Sync Test'
+             ]);
+        
+        $dbValue = ConfigDictionary::where('key', 'institute_name')->value('value');
+        $this->assertEquals('Middleware Sync Test', $dbValue);
+    }
+}

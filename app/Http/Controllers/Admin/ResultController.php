@@ -33,7 +33,7 @@ class ResultController extends Controller
             ->with('result')->get();
         }
 
-        return view('admin.result.index', [
+        return \Inertia\Inertia::render('Admin/Result/Index', [
             'students' => $students,
             'centers' => Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get(),
             'sessions' => Session::select(['id', 'name'])->where('status',SessionStatus::Active)->get(),
@@ -51,7 +51,7 @@ class ResultController extends Controller
             ->with('result')->get();
         }
 
-        return view('admin.result.create', [
+        return \Inertia\Inertia::render('Admin/Result/Create', [
             'students' => $students,
             'centers' => Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get(),
             'sessions' => Session::select(['id', 'name'])->where('status',SessionStatus::Active)->get(),
@@ -95,8 +95,9 @@ class ResultController extends Controller
 
     public function show(  $id)
     {
-        $student=Student::findOrFail($id);
-        return view('admin.result.show', [
+        $student = \App\Models\Student::findOrFail($id);
+        $student->load(['result', 'center', 'session', 'subject']);
+        return \Inertia\Inertia::render('Admin/Result/Show', [
             'student' => $student
         ]);
     }

@@ -24,10 +24,11 @@ class UserController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(User::query())->toJson();
         }
-        return view('admin.user.index');
+        $users = User::latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/User/Index', compact('users'));
     }
 
 

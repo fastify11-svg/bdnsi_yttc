@@ -11,7 +11,7 @@ const mix = require('laravel-mix');
  |
  */
 
-mix.js('resources/js/app.js', 'public/js').postCss('resources/css/app.css', 'public/css', [
+mix.js('resources/js/app.js', 'public/js').react().postCss('resources/css/app.css', 'public/css', [
     require('postcss-import'),
     require('tailwindcss'),
     require('autoprefixer'),
@@ -19,6 +19,7 @@ mix.js('resources/js/app.js', 'public/js').postCss('resources/css/app.css', 'pub
 
 mix.js('resources/js/datatable.js', 'public/js');
 
-mix.version()
+mix.version();
 
-mix.disableSuccessNotifications()
+mix.disableSuccessNotifications();
+

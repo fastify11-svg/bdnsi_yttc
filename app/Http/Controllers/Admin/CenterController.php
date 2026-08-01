@@ -16,6 +16,7 @@ use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class CenterController extends Controller
 {
@@ -24,86 +25,192 @@ class CenterController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Center::orderBy('id','desc')->get())->addIndexColumn()->toJson();
         }
-        if ($request->active=='active'){
-            $centers=Center::where('status',CenterStatus::Approved)->orderBy('id','desc')->get();
-            return view('admin.center.activeList',compact('centers'));
-        }
-        if ($request->pending=='pending'){
-            $centers=Center::where('status',CenterStatus::Pending)->orderBy('id','desc')->get();
-            return view('admin.center.pendingList',compact('centers'));
+
+        $query = Center::withCount('allStudents')->latest();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('code', 'like', "%{$search}%")
+                  ->orWhere('owner_name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('mobile', 'like', "%{$search}%");
+            });
         }
 
-        return view('admin.center.index');
+        if ($request->filled('status') && $request->input('status') !== 'all') {
+            $statusVal = strtolower($request->input('status'));
+            if ($statusVal === 'pending' || $statusVal === '0') {
+                $query->where('status', CenterStatus::Pending);
+            } elseif ($statusVal === 'approved' || $statusVal === '1') {
+                $query->where('status', CenterStatus::Approved);
+            } elseif ($statusVal === 'suspended' || $statusVal === '2') {
+                $query->where('status', CenterStatus::Suspended);
+            }
+        }
+
+        $centers = $query->paginate(20)->withQueryString();
+
+        $filters = [
+            'search' => $request->input('search', ''),
+            'status' => $request->input('status', 'all'),
+        ];
+
+        return \Inertia\Inertia::render('Admin/Center/Index', [
+            'centers' => $centers,
+            'filters' => $filters,
+        ]);
     }
 
-    public function create()
+    public function updateStatus(Request $request, Center $center)
     {
-        return view('admin.center.create',[
-            'divisions' => \App\Models\Division::get(),
-            'districts' => District::get()->mapWithKeys(function ($district) {
-                return [
-                    $district->id => [
-                        'division_id' => $district->division_id,
-                        'name' => $district->name,
-                    ]
-                ];
-            }),
-            'upazilas' => Upazila::get()->mapWithKeys(function ($upazila) {
-                return [
-                    $upazila->id => [
-                        'district_id' => $upazila->district_id,
-                        'name' => $upazila->name,
-                    ]
-                ];
-            })->toArray()
+        $validated = $request->validate([
+            'status' => 'required|integer|in:0,1,2',
         ]);
+
+        $statusVal = (int)$validated['status'];
+
+        if ($statusVal === 1 || $statusVal === CenterStatus::Approved->value) {
+            $rawCode = $center->getRawOriginal('code');
+            if (empty($rawCode)) {
+                $maxCode = DB::table('centers')
+                    ->whereNotNull('code')
+                    ->whereRaw("code REGEXP '^[0-9]+$'")
+                    ->max(DB::raw('CAST(code AS UNSIGNED)'));
+
+                $newCode = ($maxCode && $maxCode >= 100000) ? ($maxCode + 1) : 178173;
+
+                while (DB::table('centers')->where('code', (string)$newCode)->exists()) {
+                    $newCode++;
+                }
+
+                $center->code = (string)$newCode;
+            }
+
+            $center->status = CenterStatus::Approved;
+            $center->save();
+
+            $user = User::where('center_id', $center->id)->first();
+            if (!$user) {
+                $defaultPassword = 'password123';
+                User::create([
+                    'username' => $center->code,
+                    'name' => $center->name,
+                    'email' => $center->email,
+                    'phone' => $center->mobile ?? '01711000000',
+                    'center_id' => $center->id,
+                    'password' => Hash::make($defaultPassword),
+                    'text_password' => $defaultPassword,
+                ]);
+            }
+        } else {
+            $center->status = $statusVal;
+            $center->save();
+        }
+
+        return redirect()->back()->with('success', 'Center status updated successfully!');
+    }
+
+    public function create(Request $request)
+    {
+        $divisions = \App\Models\Division::get();
+        $districts = District::get()->mapWithKeys(function ($district) {
+            return [
+                $district->id => [
+                    'division_id' => $district->division_id,
+                    'name' => $district->name,
+                ]
+            ];
+        });
+        $upazilas = Upazila::get()->mapWithKeys(function ($upazila) {
+            return [
+                $upazila->id => [
+                    'district_id' => $upazila->district_id,
+                    'name' => $upazila->name,
+                ]
+            ];
+        })->toArray();
+
+        if ($request->header('X-Inertia') || !$request->ajax()) {
+            return \Inertia\Inertia::render('Admin/Center/Create', [
+                'divisions' => $divisions,
+                'districts' => $districts,
+                'upazilas' => $upazilas,
+            ]);
+        }
+
+        return view('admin.center.create', compact('divisions', 'districts', 'upazilas'));
     }
 
     public function store(CenterStoreRequest $request)
     {
-        return response()->report($request->store(CenterStatus::Approved), 'Center Created successfully');
+        $center = $request->store(CenterStatus::Approved);
+        if ($request->header('X-Inertia')) {
+            return redirect()->route('admin.center.index')->with('success', 'Center Created successfully');
+        }
+        return response()->report($center, 'Center Created successfully');
     }
 
-    public function show(Center $center)
+    public function show(Request $request, Center $center)
     {
+        $user = User::where('center_id', $center->id)->first();
+        if ($request->header('X-Inertia') || !$request->ajax()) {
+            return \Inertia\Inertia::render('Admin/Center/Show', [
+                'center' => $center,
+                'user' => $user,
+            ]);
+        }
         return view('admin.center.show', [
-            'center' => $center
+            'center' => $center,
+            'user' => $user,
         ]);
     }
 
-    public function edit(Center $center)
+    public function edit(Request $request, Center $center)
     {
-        return view('admin.center.edit', [
-            'center' => $center,
-            'divisions' => \App\Models\Division::get(),
-            'districts' => District::get()->mapWithKeys(function ($district) {
-                return [
-                    $district->id => [
-                        'division_id' => $district->division_id,
-                        'name' => $district->name,
-                    ]
-                ];
-            }),
-            'upazilas' => Upazila::get()->mapWithKeys(function ($upazila) {
-                return [
-                    $upazila->id => [
-                        'district_id' => $upazila->district_id,
-                        'name' => $upazila->name,
-                    ]
-                ];
-            })->toArray()
-        ]);
+        $divisions = \App\Models\Division::get();
+        $districts = District::get()->mapWithKeys(function ($district) {
+            return [
+                $district->id => [
+                    'division_id' => $district->division_id,
+                    'name' => $district->name,
+                ]
+            ];
+        });
+        $upazilas = Upazila::get()->mapWithKeys(function ($upazila) {
+            return [
+                $upazila->id => [
+                    'district_id' => $upazila->district_id,
+                    'name' => $upazila->name,
+                ]
+            ];
+        })->toArray();
+
+        if ($request->header('X-Inertia') || !$request->ajax()) {
+            return \Inertia\Inertia::render('Admin/Center/Edit', [
+                'center' => $center,
+                'divisions' => $divisions,
+                'districts' => $districts,
+                'upazilas' => $upazilas,
+            ]);
+        }
+
+        return view('admin.center.edit', compact('center', 'divisions', 'districts', 'upazilas'));
     }
 
     public function update(CenterUpdateRequest $request, Center $center)
     {
-         DB::transaction(function () use ($request, $center){
-             $request->update($center);
+        DB::transaction(function () use ($request, $center){
+            $request->update($center);
+        });
 
-         });
+        if ($request->header('X-Inertia')) {
+            return redirect()->route('admin.center.index')->with('success', 'Center updated successfully');
+        }
         return response()->report($center, 'Center updated successfully');
     }
 
@@ -112,18 +219,15 @@ class CenterController extends Controller
         try {
             DB::beginTransaction();
             User::where('center_id',$center->id)->delete();
-            $student= Student::where('center_id',$center->id)->pluck('id');
+            $student = Student::where('center_id',$center->id)->pluck('id');
             Result::whereIn('student_id',$student)->delete();
-            Student::where('center_id',$center->id)->whereNotIn('id',$student)->delete();
+            Student::where('center_id',$center->id)->delete();
             $center->delete();
             DB::commit();
-            return response()->report($center, 'Center deleted successfully');
-
-        }catch (\Exception $exception){
+            return redirect()->back()->with('success', 'Center deleted successfully!');
+        } catch (\Exception $exception) {
             DB::rollBack();
-            return response()->error('Some thing went wrong!');
+            return redirect()->back()->with('error', 'Failed to delete center: ' . $exception->getMessage());
         }
-
-
     }
 }

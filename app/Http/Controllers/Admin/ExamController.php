@@ -14,7 +14,7 @@ class ExamController extends Controller
     protected $permissionPrefix = 'exam';
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Exam::with('subject'))
                 ->addIndexColumn()
                 ->addColumn('edit_exam', function ($data) {
@@ -23,7 +23,8 @@ class ExamController extends Controller
                 ->rawColumns(['edit_exam'])
                 ->toJson();
         }
-        return view('admin.exam.index');
+        $exams = Exam::with('subject')->latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/Exam/Index', compact('exams'));
     }
 
     /**

@@ -5,29 +5,36 @@ namespace App\Http\Controllers;
 use App\Enums\StudentStatus;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class ResultController extends Controller
 {
     public function __invoke(Request $request)
     {
         $student = null;
-        if ($request->has(['roll']) && strlen($request->get('roll')) ) {
-            $student = Student::where([
-                'roll' => $request->get('roll')
-            ])->orWhere('passport',$request->get('roll'))->first();
+        $error = null;
 
+        if ($request->has('roll') && strlen(trim($request->get('roll')))) {
+            $search = trim($request->get('roll'));
 
-            if ($student === null || $student->status->is(StudentStatus::Hide())) {
-                return response()->error('Result not found');
+            $student = Student::with(['subject', 'center', 'session', 'result'])
+                ->where('roll', $search)
+                ->orWhere('registration', $search)
+                ->orWhere('passport', $search)
+                ->first();
+
+            if ($student === null || (isset($student->status) && method_exists($student->status, 'is') && $student->status->is(StudentStatus::Hide()))) {
+                $student = null;
+                $error = 'Result not found for the entered Roll, Registration, or Passport number.';
+            } elseif ($student->result === null) {
+                $student = null;
+                $error = 'Result has not been published yet for this student.';
             }
-
-
         }
 
-
-
-        return view('result', [
-            'student' => $student
+        return Inertia::render('Result', [
+            'student' => $student,
+            'error' => $error,
         ]);
     }
 }

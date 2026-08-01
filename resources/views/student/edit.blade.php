@@ -61,27 +61,7 @@
                     @endforeach
                 </x-select2>
 
-                <div class="w-full p-1 md:w-1/2 lg:w-1/3">
-                    <label for="course_duration" class="block font-medium text-sm text-gray-700 font-semibold py-2">Course Duration</label>
-                    <input list="course_duration_options"
-                           class="rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full p-2 border-2 border-gray-400"
-                           name="course_duration"
-                           id="course_duration"
-                           value="{{ old('course_duration', $student->course_duration ?? '') }}"
-                           required
-                           placeholder="Select or enter a duration">
 
-                    <datalist id="course_duration_options">
-                        <option value="Two Month">
-                        <option value="Three Month">
-                        <option value="Six Month">
-                        <option value="One Years">
-                        <option value="Two Years">
-                        <option value="Three Years">
-                        <option value="Four Years">
-                        <option value="Others">
-                    </datalist>
-                </div>
 
                 <x-labeled-select name="qualification" label="Qualification" required class="w-full p-1 md:w-1/2 lg:w-1/3">
                     <option  value=" ">--Select-- </option>

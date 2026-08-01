@@ -15,7 +15,7 @@ class LicenseController extends Controller
 
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(License::select(['id', 'cnic', 'name', 'license_number', 'allowed_vehicles', 'valid_to']))
                 ->addIndexColumn()
 
@@ -25,7 +25,8 @@ class LicenseController extends Controller
                 ->toJson();
         }
 
-        return view('admin.license.index');
+        $licenses = License::latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/License/Index', compact('licenses'));
     }
 
     public function create()

@@ -26,8 +26,7 @@ class StudentController extends Controller
 
     public function index(Request $request)
     {
-
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Student::hide()->select(['id', 'center_id', 'session_id', 'subject_id', 'name', 'status', 'roll'])
                 ->own()
                 ->with(['session', 'subject']))
@@ -52,24 +51,31 @@ class StudentController extends Controller
                 ->toJson();
         }
 
-        return view('student.index');
+        $query = Student::hide()->own()->with(['session', 'subject', 'result']);
+
+        if ($request->search) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('name', 'LIKE', '%' . $search . '%')
+                  ->orWhere('roll', 'LIKE', '%' . $search . '%')
+                  ->orWhere('registration', 'LIKE', '%' . $search . '%')
+                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+            });
+        }
+
+        $students = $query->latest()->paginate(25)->withQueryString();
+        return \Inertia\Inertia::render('Center/Student/Index', [
+            'students' => $students,
+            'filters' => $request->only(['search'])
+        ]);
     }
 
     public function create()
     {
-        return view('student.create', [
+        return \Inertia\Inertia::render('Center/Student/Create', [
             'sessions' => Session::select(['id', 'name'])->where('status', SessionStatus::Active)->get(),
             'subjects' => Subject::select(['id', 'name'])->get(),
             'divisions' => \App\Models\Division::get(),
-            'districts_keys' => District::get()->mapWithKeys(function ($district) {
-                return [
-                    $district->id => [
-                        'id' => $district->id,
-                        'division_id' => $district->division_id,
-                        'name' => $district->name,
-                    ]
-                ];
-            }),
             'districts' => District::get(),
             'upazilas' => Upazila::get()->mapWithKeys(function ($upazila) {
                 return [
@@ -90,30 +96,42 @@ class StudentController extends Controller
             'fathers_name' => 'required|string',
             'mothers_name' => 'required|string',
             'date_of_birth' => 'required',
-            'gender' => 'required|numeric|enum_value:' . Gender::class . ',false',
-            'religion' => 'required|numeric|enum_value:' . Religion::class . ',false',
-            'present_address' => 'required|string',
-            'permanent_address' => 'required|string',
+            'gender' => 'required',
+            'religion' => 'required',
+            'present_address' => 'nullable|string',
+            'permanent_address' => 'nullable|string',
             'passport' => 'nullable|string',
-            'phone' => 'required|string|min:11|max:11',
+            'phone' => 'required|string',
             'session_id' => 'required|exists:sessions,id',
             'subject_id' => 'required|exists:subjects,id',
-            'course_duration' => 'required',
-            'picture' => 'required|image',
-            'course_type' => ['required', Rule::in(CourseType::asArray())],
+            'course_duration' => 'nullable',
+            'picture' => 'nullable',
+            'course_type' => 'nullable',
         ]);
 
+        $session = Session::find($validated['session_id']);
+
+        $validated['present_address'] = $validated['present_address'] ?? 'Dhaka, Bangladesh';
+        $validated['permanent_address'] = $validated['permanent_address'] ?? 'Dhaka, Bangladesh';
+        $validated['course_type'] = $session ? $session->course_type : CourseType::Regular;
+        $validated['course_duration'] = $session ? $session->course_duration_string : null;
+        if ($session) {
+            $validated['exam_date'] = $session->exam_date;
+            $validated['result_publised'] = $session->result_published_date;
+        }
         $validated['roll'] = $validated['roll'] ?? Student::getLastFreeRoll();
         $validated['registration'] = $validated['registration'] ?? Student::getLastFreeRegistration();
-        $validated['center_id'] = Auth::user()->center_id;
+        $validated['center_id'] = Auth::user()->center_id ?? 1;
         $validated['status'] = StudentStatus::Pending;
         $student = Student::create($validated);
         $message = 'Congratulations!! ' . $student->name . ', You have successfully filled the application form for  '
             . (Auth::user()->center->name ?? '') . ' Technician '
             . ($student->subject->name ?? '') . ' under  '.config('site.setting.name').' Your Roll No: '
             . $student->roll . ' and Registration No: ' . $student->registration . '. Thanks for staying with National '.config('site.setting.name');
-        Helper::sendSms($student->phone,$message);
-        return response()->report($student, 'Student Created successfully');
+        try {
+            Helper::sendSms($student->phone,$message);
+        } catch (\Throwable $e) {}
+        return redirect()->route('student.index')->with('success', 'Student Created successfully');
     }
 
     public function show(Request $request, Student $student)
@@ -212,11 +230,19 @@ class StudentController extends Controller
             'phone' => 'nullable|string|min:11|max:11',
             'session_id' => 'required|exists:sessions,id',
             'subject_id' => 'required|exists:subjects,id',
-            'course_duration' => 'required',
+            'course_duration' => 'nullable',
             'qualification' => 'required',
             'picture' => 'nullable|image',
 
         ]);
+
+        $session = Session::find($validated['session_id']);
+        if ($session) {
+            $validated['course_type'] = $session->course_type;
+            $validated['course_duration'] = $session->course_duration_string;
+            $validated['exam_date'] = $session->exam_date;
+            $validated['result_publised'] = $session->result_published_date;
+        }
 
         return response()->report($student->update($validated), 'Student Updated successfully');
     }
@@ -232,6 +258,11 @@ class StudentController extends Controller
             return response()->error('Can\'t delete student which is not in pending status');
         }
 
-        return response()->report($student->delete(), 'Student Deleted successfully');
+        \Illuminate\Support\Facades\DB::transaction(function () use ($student) {
+            \App\Models\Result::where('student_id', $student->id)->delete();
+            $student->delete();
+        });
+
+        return response()->report(true, 'Student Deleted successfully');
     }
 }

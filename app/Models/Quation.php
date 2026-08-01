@@ -15,7 +15,11 @@ class Quation extends Model
         'option_2',
         'option_3',
         'option_4',
-        'answer' ,
+        'answer'
     ];
 
+    public function exam()
+    {
+        return $this->belongsTo(Exam::class, 'exam_id');
+    }
 }

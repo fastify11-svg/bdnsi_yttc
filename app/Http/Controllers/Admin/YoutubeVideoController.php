@@ -4,121 +4,131 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\YoutubeVideo;
+use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
 
 class YoutubeVideoController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+    use ChecksPermission;
+    protected $permissionPrefix = 'youtube-video';
+
     public function index(Request $request)
     {
-        if ($request->ajax()) {
-            return datatables(YoutubeVideo::get())->addIndexColumn()->toJson();
+        if ($request->ajax() && !$request->header('X-Inertia')) {
+            return datatables(YoutubeVideo::latest()->get())->addIndexColumn()->toJson();
         }
-        return view('admin.youtube.index');
+
+        $query = YoutubeVideo::latest();
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('description', 'like', "%{$search}%")
+                  ->orWhere('video_id', 'like', "%{$search}%");
+            });
+        }
+
+        $videos = $query->paginate(20)->withQueryString();
+
+        $filters = [
+            'search' => $request->input('search', ''),
+        ];
+
+        return \Inertia\Inertia::render('Admin/YoutubeVideo/Index', [
+            'videos' => $videos,
+            'filters' => $filters,
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        //
+        return \Inertia\Inertia::render('Admin/YoutubeVideo/Create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'link' => 'required',
+            'title' => 'required|string|max:255',
+            'link' => 'required|string',
+            'description' => 'nullable|string',
+            'status' => 'nullable|integer',
         ]);
 
-        $videoId = $this->extractYoutubeVideoId($request->link);
+        $videoId = $this->extractYoutubeVideoId($validated['link']);
 
         if (!$videoId) {
-            return response()->error('Invalid YouTube URL.');
+            return redirect()->back()->withErrors(['link' => 'Invalid YouTube URL or Video ID. Please paste a valid YouTube video link.']);
         }
 
         YoutubeVideo::create([
-            'title' => $request->title,
-            'link' => $request->link,
+            'title' => $validated['title'],
+            'link' => $validated['link'],
             'video_id' => $videoId,
-            'description' => $request->description,
+            'description' => $validated['description'] ?? '',
+            'status' => $validated['status'] ?? 1,
+            'image' => "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg",
         ]);
 
-        return response()->success('Successfully Created');
+        return redirect()->route('youtube-video.index')->with('success', 'YouTube Video added successfully!');
+    }
 
+    public function edit(YoutubeVideo $youtubeVideo)
+    {
+        return \Inertia\Inertia::render('Admin/YoutubeVideo/Edit', [
+            'video' => $youtubeVideo,
+        ]);
+    }
+
+    public function update(Request $request, YoutubeVideo $youtubeVideo)
+    {
+        $validated = $request->validate([
+            'title' => 'required|string|max:255',
+            'link' => 'required|string',
+            'description' => 'nullable|string',
+            'status' => 'nullable|integer',
+        ]);
+
+        $videoId = $this->extractYoutubeVideoId($validated['link']);
+
+        if (!$videoId) {
+            return redirect()->back()->withErrors(['link' => 'Invalid YouTube URL or Video ID.']);
+        }
+
+        $youtubeVideo->update([
+            'title' => $validated['title'],
+            'link' => $validated['link'],
+            'video_id' => $videoId,
+            'description' => $validated['description'] ?? '',
+            'status' => $validated['status'] ?? $youtubeVideo->status ?? 1,
+            'image' => "https://img.youtube.com/vi/{$videoId}/hqdefault.jpg",
+        ]);
+
+        return redirect()->route('youtube-video.index')->with('success', 'YouTube Video updated successfully!');
+    }
+
+    public function destroy(YoutubeVideo $youtubeVideo)
+    {
+        $youtubeVideo->delete();
+        return redirect()->back()->with('success', 'YouTube Video deleted successfully!');
     }
 
     public function extractYoutubeVideoId($url)
     {
+        if (empty($url)) return null;
+
+        $url = trim($url);
+
+        if (preg_match('/^[a-zA-Z0-9_-]{11}$/', $url)) {
+            return $url;
+        }
+
         preg_match(
-            '%(?:youtube\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%',
+            '/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/i',
             $url,
             $matches
         );
 
         return $matches[1] ?? null;
-    }
-
-
-
-    /**
-     * Display the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
-    {
-         $video=YoutubeVideo::findOrFail($id);
-         $video->delete();
-         return response()->success("Successfully Deleted");
     }
 }

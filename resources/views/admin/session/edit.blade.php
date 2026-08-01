@@ -15,9 +15,9 @@
         @method('PUT')
         <div class="flex flex-wrap justify-center w-full bg-white p-4">
             <x-labeled-input name="name" required value="{{ old('name', $session->name) }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
-            <x-labeled-input name="start_date" type="date" required value="{{ old('start_date', $session->start_date) }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
-            <x-labeled-input name="end_date" type="date" required value="{{ old('end_date', $session->end_date) }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
             <x-labeled-input name="duration" type="number" min="1" required value="{{ old('duration', $session->duration) }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
+            <x-labeled-input name="exam_date" type="date" value="{{ old('exam_date', $session->exam_date ? \Carbon\Carbon::parse($session->exam_date)->format('Y-m-d') : '') }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
+            <x-labeled-input name="result_published_date" type="date" value="{{ old('result_published_date', $session->result_published_date ? \Carbon\Carbon::parse($session->result_published_date)->format('Y-m-d') : '') }}" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
 
             <x-labeled-select name="status"   required   class="w-full p-1 md:w-1/2 lg:w-1/3">
                   @foreach(\App\Enums\SessionStatus::asArray() as $key=> $value)

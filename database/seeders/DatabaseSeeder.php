@@ -29,14 +29,15 @@ class DatabaseSeeder extends Seeder
 //            ])
 //        )->markEmailAsVerified()->markPhoneAsVerified();
 
-        $admin = Admin::create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('12345678')
-        ]);
+        $admin = Admin::updateOrCreate(
+            ['email' => 'admin@gmail.com'],
+            ['name' => 'Admin', 'password' => Hash::make('12345678')]
+        );
 
         $this->call(LaratrustSeeder::class);
+        $this->call(ConfigSeeder::class);
+        $this->call(DemoDataSeeder::class);
 
-        $admin->attachRole(Role::whereName('admin')->first());
+        $admin->syncRoles([Role::whereName('admin')->first()]);
     }
 }

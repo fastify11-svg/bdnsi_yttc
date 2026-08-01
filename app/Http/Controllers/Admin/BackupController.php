@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
+use Inertia\Inertia;
 
 class BackupController extends Controller
 {
@@ -14,9 +15,13 @@ class BackupController extends Controller
      */
     public function index()
     {
-       $backupDir = storage_path('app/backups');
+        $backupDir = storage_path('app/backups');
 
-         $files = collect(File::files($backupDir))
+        if (!File::exists($backupDir)) {
+            File::makeDirectory($backupDir, 0755, true);
+        }
+
+        $files = collect(File::files($backupDir))
             ->filter(fn ($file) => $file->getExtension() === 'sql')
             ->map(function ($file) {
                 return [
@@ -28,9 +33,9 @@ class BackupController extends Controller
             ->sortByDesc('date')
             ->values();
 
-         return view('admin.backup.index',[
-             'files'=>$files
-         ]);
+        return Inertia::render('Admin/Backup/Index', [
+            'files' => $files
+        ]);
     }
 
     /**
@@ -68,8 +73,9 @@ class BackupController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request,   $filename)
+    public function update(Request $request, $filename)
     {
+        $filename = basename($filename);
         $path = 'backups/' . $filename;
 
         if (!Storage::disk('local')->exists($path)) {

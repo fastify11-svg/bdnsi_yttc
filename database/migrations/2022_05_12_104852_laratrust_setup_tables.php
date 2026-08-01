@@ -13,7 +13,9 @@ class LaratrustSetupTables extends Migration
      */
     public function up()
     {
-        define('DEFAULE_KEY_LEN', config('database.connections.mysql.default_key_len'));
+        if(!defined('DEFAULE_KEY_LEN')) {
+            define('DEFAULE_KEY_LEN', config('database.connections.mysql.default_key_len'));
+        }
         // Create table for storing roles
         Schema::create('roles', function (Blueprint $table) {
             $table->bigIncrements('id');

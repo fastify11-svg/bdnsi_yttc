@@ -78,14 +78,29 @@ class ConfigDictionary extends Model
 
     public static function storeCache()
     {
-        Cache::rememberForever(static::CACHE_KEY, function (){
-            return self::all()->map->getAttributes()->keyBy('key')->map(function ($item) {
-                return json_decode($item['value']);
-            })->all();
+        Cache::remember(static::CACHE_KEY, 3600, function (){
+            return self::pluck('value', 'key')->all();
         });
     }
 
 
 
 
+    protected static $cachedConfig = null;
+
+    public static function allCached()
+    {
+        if (self::$cachedConfig !== null) {
+            return self::$cachedConfig;
+        }
+
+        if (Cache::has(self::CACHE_KEY)) {
+            self::$cachedConfig = Cache::get(self::CACHE_KEY);
+            return self::$cachedConfig;
+        }
+
+        static::storeCache();
+        self::$cachedConfig = Cache::get(self::CACHE_KEY, []);
+        return self::$cachedConfig;
+    }
 }

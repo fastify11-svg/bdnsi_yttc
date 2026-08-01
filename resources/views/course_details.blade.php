@@ -33,7 +33,7 @@
                         <li class="list-group-item bg-c text-white rounded d-flex align-items-center">
                             <div class="fw-bold w-50">{{__t('Course Details')}}</div>
                             <div class="text-center w-10 pr-2">: </div>
-                            <div class="w-50 p-2">{{$data->course_details ?? 'N/A'}}</div>
+                            <div class="w-50 p-2">{!! $data->course_details ?? 'N/A' !!}</div>
                         </li>
                     </ul>
                 </div>

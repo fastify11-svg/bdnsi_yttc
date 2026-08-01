@@ -51,31 +51,14 @@
                 @endforeach
             </x-select2>
 
-            <x-select2 name="course_type" label="Course Type" required class="w-full p-1 md:w-1/2 lg:w-1/3">
-                @foreach(\App\Enums\CourseType::getInstances() as $type)
-                    <option value="{{ $type->value }}"  >{{ $type->description }}</option>
-                @endforeach
-            </x-select2>
+
 
             <x-select2 name="subject_id" label="Course Name" required class="w-full p-1 md:w-1/2 lg:w-1/3">
                 @foreach($subjects as $subject)
                     <option value="{{ $subject->id }}" @selected(old('subject_id') == $subject->id)>{{ $subject->name }}</option>
                 @endforeach
             </x-select2>
-            <div class="w-full p-1 md:w-1/2 lg:w-1/3">
-                <label for="course_duration" class="block font-medium text-sm text-gray-700 font-semibold py-2">Course Duration</label>
-                <input list="course_duration_options" class="rounded-md shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 w-full p-2 border-2 border-gray-400" name="course_duration" id="course_duration" required placeholder="Select or enter a duration">
-                <datalist id="course_duration_options">
-                    <option value="Two Month">
-                    <option value="Three Month">
-                    <option value="Six Month">
-                    <option value="One Years">
-                    <option value="Two Years">
-                    <option value="Three Years">
-                    <option value="Four Years">
-                    <option value="Others">
-                </datalist>
-            </div>
+
             <x-labeled-input name="picture" required type="file" accept="image/*" class="w-full p-1 md:w-1/2 lg:w-1/3"/>
             <div class="w-full py-8 flex justify-center">
                 <x-button>{{ __('Create') }}</x-button>

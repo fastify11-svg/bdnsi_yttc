@@ -20,10 +20,11 @@ class SponsorController extends Controller
      */
     public function index(Request $request)
     {
-          if ($request->ajax()) {
+          if ($request->ajax() && !$request->header('X-Inertia')) {
                return  datatables(Slider::where('type',SliderType::Sponsor))->addIndexColumn()->toJson();
           }
-        return  view('admin.sponsor.index');
+        $sponsors = Slider::where('type', \App\Enums\SliderType::Sponsor)->latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/Sponsor/Index', compact('sponsors'));
     }
 
     /**
@@ -44,51 +45,39 @@ class SponsorController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'title' => 'nullable|string',
+            'photo' => 'required|image',
+        ]);
+
+        $validated['type'] = \App\Enums\SliderType::Sponsor;
+        $validated['photo'] = \App\Lib\Image::store('photo','upload/slider');
+
+        $sponsor = Slider::create($validated);
+
+        return response()->report($sponsor, 'Sponsor Created successfully');
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function edit($id)
     {
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
         //
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $sponsor = Slider::findOrFail($id);
+        $sponsor->delete();
+        
+        return response()->report($sponsor, 'Sponsor Deleted successfully');
     }
 }

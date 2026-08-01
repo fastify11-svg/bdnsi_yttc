@@ -15,10 +15,11 @@ class WhatappLinkController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(WhatappLink::get())->addIndexColumn()->toJson();
         }
-        return view('admin.whatappLink.index');
+        $whatsappLinks = WhatappLink::latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/WhatappLink/Index', compact('whatsappLinks'));
     }
 
     /**

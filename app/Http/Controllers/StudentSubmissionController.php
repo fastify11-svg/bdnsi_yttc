@@ -24,7 +24,7 @@ class StudentSubmissionController extends Controller
                 ->get();
         }
 
-        return view('result.index', [
+        return \Inertia\Inertia::render('Center/Student/Submission', [
             'students' => $students,
             'sessions' => Session::select(['id', 'name'])->where('status',SessionStatus::Active)->get(),
             'subjects' => Subject::select(['id', 'name'])->get(),
