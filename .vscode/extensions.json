@@ -1,0 +1,13 @@
+{
+    "recommendations": [
+        "esbenp.prettier-vscode",
+        "bmewburn.vscode-intelephense-client",
+        "bradlc.vscode-tailwindcss",
+        "amiralizadeh9480.laravel-extra-intellisense",
+        "onecentlin.laravel-blade",
+        "dbaeumer.vscode-eslint",
+        "dsznajder.es7-react-js-snippets",
+        "ms-playwright.playwright",
+        "GitHub.copilot"
+    ]
+}

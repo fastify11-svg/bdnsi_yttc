@@ -1,5 +1,56 @@
 {
     "files.readonlyInclude": {
         "{**/.c4z/.extsrcs/*.PROTSYM.cbl,**/.c4z/.extsrcs/*.PROTSYM.listing}": true
+    },
+    
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.tabSize": 4,
+    "editor.linkedEditing": true,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.guides.bracketPairs": true,
+    "files.trimTrailingWhitespace": true,
+    "files.insertFinalNewline": true,
+    "files.autoSave": "onFocusChange",
+
+    "php.suggest.basic": false,
+    "php.validate.executablePath": "C:\\xampp\\php\\php.exe",
+    "LaravelExtraIntellisense.phpCommand": "C:\\xampp\\php\\php.exe -r \"{code}\"",
+    "[php]": {
+        "editor.defaultFormatter": "bmewburn.vscode-intelephense-client",
+        "editor.tabSize": 4
+    },
+    "[blade]": {
+        "editor.formatOnSave": true
+    },
+    
+    "[javascript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 4
+    },
+    "[javascriptreact]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.tabSize": 4
+    },
+    "emmet.includeLanguages": {
+        "javascript": "javascriptreact",
+        "blade": "html"
+    },
+
+    "tailwindCSS.emmetCompletions": true,
+    "tailwindCSS.includeLanguages": {
+        "blade": "html"
+    },
+
+    "files.exclude": {
+        "**/.git": true,
+        "**/.DS_Store": true,
+        "**/node_modules": true
+    },
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/vendor": true,
+        "**/public/build": true
     }
 }
