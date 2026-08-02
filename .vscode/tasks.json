@@ -19,7 +19,7 @@
         {
             "label": "GitHub Auto-Sync (Add, Commit, Push)",
             "type": "shell",
-            "command": "git add . && git commit -m \"Automated Sync and Permanent Workflow Setup\" && git push",
+            "command": "git add . ; git commit -m \"Automated Sync and Permanent Workflow Setup\" ; git push",
             "problemMatcher": [],
             "group": "none"
         }
