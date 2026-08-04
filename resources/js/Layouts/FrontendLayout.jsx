@@ -208,15 +208,19 @@ export default function FrontendLayout({ children }) {
 
                 {/* Footer (BTEB / NPI Style) */}
                 <footer 
-                    className="print:hidden print-hide-global w-full text-[13px] text-gray-700 font-['Noto_Sans_Bengali',sans-serif] mt-8 bg-[#e9e9e9] bg-cover bg-center border-t border-gray-300 relative"
-                    style={{
-                        backgroundImage: site_config.footer_top_bg_image ? `url(${getUrl(site_config.footer_top_bg_image)})` : 'none'
-                    }}
+                    className="print:hidden print-hide-global w-full text-[13px] text-gray-700 font-['Noto_Sans_Bengali',sans-serif] mt-8 bg-[#e9e9e9] border-t border-gray-300 relative"
                 >
-                    {/* Background Overlay if image exists to ensure text readability */}
-                    {site_config.footer_top_bg_image && (
-                        <div className="absolute inset-0 bg-white/80 z-0"></div>
-                    )}
+                    {/* Shaheed Minar Scenery Image Strip */}
+                    <div 
+                        style={{
+                            backgroundImage: site_config.footer_top_bg_image ? `url(${getUrl(site_config.footer_top_bg_image)})` : `url(${getUrl('/images/footer_top_bg.png')})`,
+                            backgroundPosition: 'center bottom',
+                            backgroundRepeat: 'no-repeat',
+                            backgroundSize: 'cover',
+                            height: '180px',
+                            width: '100%'
+                        }}
+                    ></div>
                     
                     <div className="w-full pt-4 pb-8 relative z-10">
                         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
