@@ -672,6 +672,12 @@ select{
 .right-4{
   right: 1rem;
 }
+.-top-2{
+  top: -0.5rem;
+}
+.-right-2{
+  right: -0.5rem;
+}
 .left-1{
   left: 0.25rem;
 }
@@ -683,12 +689,6 @@ select{
 }
 .-top-6{
   top: -1.5rem;
-}
-.-top-2{
-  top: -0.5rem;
-}
-.-right-2{
-  right: -0.5rem;
 }
 .z-0{
   z-index: 0;
@@ -705,6 +705,9 @@ select{
 .z-30{
   z-index: 30;
 }
+.-z-10{
+  z-index: -10;
+}
 .z-20{
   z-index: 20;
 }
@@ -716,9 +719,6 @@ select{
 }
 .z-\[99999\]{
   z-index: 99999;
-}
-.-z-10{
-  z-index: -10;
 }
 .order-1{
   order: 1;
@@ -1027,9 +1027,6 @@ select{
 }
 .h-9{
   height: 2.25rem;
-}
-.h-\[85px\]{
-  height: 85px;
 }
 .h-44{
   height: 11rem;
@@ -2006,6 +2003,9 @@ select{
 .border-rose-200\/80{
   border-color: rgb(254 205 211 / 0.8);
 }
+.border-white\/50{
+  border-color: rgb(255 255 255 / 0.5);
+}
 .border-emerald-100{
   --tw-border-opacity: 1;
   border-color: rgb(209 250 229 / var(--tw-border-opacity));
@@ -2159,9 +2159,6 @@ select{
 }
 .border-slate-200\/60{
   border-color: rgb(226 232 240 / 0.6);
-}
-.border-white\/50{
-  border-color: rgb(255 255 255 / 0.5);
 }
 .bg-white{
   --tw-bg-opacity: 1;
@@ -2465,8 +2462,14 @@ select{
   --tw-bg-opacity: 1;
   background-color: rgb(233 233 233 / var(--tw-bg-opacity));
 }
-.bg-white\/50{
-  background-color: rgb(255 255 255 / 0.5);
+.bg-white\/80{
+  background-color: rgb(255 255 255 / 0.8);
+}
+.bg-white\/70{
+  background-color: rgb(255 255 255 / 0.7);
+}
+.bg-white\/60{
+  background-color: rgb(255 255 255 / 0.6);
 }
 .bg-\[\#25D366\]{
   --tw-bg-opacity: 1;
@@ -2551,6 +2554,9 @@ select{
 }
 .bg-black\/50{
   background-color: rgb(0 0 0 / 0.5);
+}
+.bg-white\/50{
+  background-color: rgb(255 255 255 / 0.5);
 }
 .bg-purple-900\/0{
   background-color: rgb(88 28 135 / 0);
@@ -2685,15 +2691,6 @@ select{
 .bg-\[\#0F5233\]{
   --tw-bg-opacity: 1;
   background-color: rgb(15 82 51 / var(--tw-bg-opacity));
-}
-.bg-white\/80{
-  background-color: rgb(255 255 255 / 0.8);
-}
-.bg-white\/70{
-  background-color: rgb(255 255 255 / 0.7);
-}
-.bg-white\/60{
-  background-color: rgb(255 255 255 / 0.6);
 }
 .bg-gradient-to-r{
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
@@ -3642,6 +3639,9 @@ select{
 .opacity-75{
   opacity: 0.75;
 }
+.opacity-20{
+  opacity: 0.2;
+}
 .opacity-80{
   opacity: 0.8;
 }
@@ -3650,9 +3650,6 @@ select{
 }
 .opacity-30{
   opacity: 0.3;
-}
-.opacity-20{
-  opacity: 0.2;
 }
 .shadow-sm{
   --tw-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);

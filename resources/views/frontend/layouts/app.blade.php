@@ -394,6 +394,7 @@
 
 <!-- Footer Area -->
 <footer class="footer-area">
+    <div style="background-image:url('{{ asset('images/footer_top_bg.png') }}'); background-position:bottom; background-repeat:no-repeat; background-size:contain; width:100%; height:85px; max-height:85px; margin-bottom: -15px;"></div>
     <div class="footer-top">
         <div class="container">
             <div class="row">
