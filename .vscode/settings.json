@@ -1,11 +1,36 @@
 {
+  // Force VS Code to treat these files as JSON with Comments
+  "files.associations": {
+    "extensions.json": "jsonc",
+    "settings.json": "jsonc",
+    "tasks.json": "jsonc"
+  },
+  // Allocate more memory (2GB) for PHP Intelephense to prevent crashes
   "intelephense.maxMemory": 2048,
+  // Set PHP version to match your environment
   "intelephense.environment.phpVersion": "8.1.0",
+  // Automatically format code when saving files
   "editor.formatOnSave": true,
+  // Use Intelephense as default formatter for PHP files
   "[php]": {
     "editor.defaultFormatter": "bmewburn.vscode-intelephense-client"
   },
+  // Use Prettier as default formatter for JavaScript files
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "gitlens.ai.model": "vscode",
+  "gitlens.ai.vscode.model": "copilot:gpt-4o-mini",
+  "git.enableSmartCommit": true,
+  "git.allowForcePush": true,
+  "git.allowNoVerifyCommit": true,
+  "git.alwaysShowStagedChangesResourceGroup": true,
+  "git.alwaysSignOff": true,
+  "git.autofetch": "all",
+  "[jsonc]": {
+    "editor.quickSuggestions": {
+      "strings": true
+    },
+    "editor.suggest.insertMode": "replace"
   }
 }

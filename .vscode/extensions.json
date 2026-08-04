@@ -1,11 +1,12 @@
 {
+  // List of recommended extensions for this Laravel + React project
   "recommendations": [
-    "bmewburn.vscode-intelephense-client",
-    "ms-playwright.playwright",
-    "GitHub.copilot",
-    "bradlc.vscode-tailwindcss",
-    "amiralizadeh94.laravel-extra-intellisense",
-    "onecentlin.laravel5-snippets",
-    "xdebug.php-debug"
+    "bmewburn.vscode-intelephense-client", // PHP Intelephense for autocomplete and analysis
+    "ms-playwright.playwright", // For E2E testing
+    "GitHub.copilot", // AI coding assistant
+    "bradlc.vscode-tailwindcss", // Tailwind CSS autocomplete
+    "amiralizadeh94.laravel-extra-intellisense", // Laravel specific autocomplete
+    "onecentlin.laravel5-snippets", // Laravel snippets
+    "xdebug.php-debug" // For PHP debugging
   ]
 }
