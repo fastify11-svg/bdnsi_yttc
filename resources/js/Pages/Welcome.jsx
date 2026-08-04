@@ -94,7 +94,7 @@ export default function Welcome({
     site_config = {}
 }) {
     const { app_url, site_config: pageConfig = {} } = usePage().props;
-    const config = { ...pageConfig, ...site_config };
+    const config = { ...pageConfig, ...site_config }; // page-level props override shared defaults
     const [aboutExpanded, setAboutExpanded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(0);

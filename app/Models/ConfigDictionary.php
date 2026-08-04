@@ -82,7 +82,7 @@ class ConfigDictionary extends Model
     public static function storeCache()
     {
         Cache::remember(static::CACHE_KEY, 3600, function (){
-            return self::pluck('value', 'key')->all();
+            return self::all()->pluck('value', 'key')->all();
         });
     }
 

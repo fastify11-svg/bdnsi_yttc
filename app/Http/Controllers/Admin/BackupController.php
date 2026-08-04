@@ -76,6 +76,12 @@ class BackupController extends Controller
     public function update(Request $request, $filename)
     {
         $filename = basename($filename);
+
+        // Security: Only allow .sql files to be downloaded
+        if (!str_ends_with($filename, '.sql')) {
+            abort(403, 'Only SQL backup files can be downloaded.');
+        }
+
         $path = 'backups/' . $filename;
 
         if (!Storage::disk('local')->exists($path)) {

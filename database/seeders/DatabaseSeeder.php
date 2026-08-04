@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call(LaratrustSeeder::class);
         $this->call(ConfigSeeder::class);
+        $this->call(SiteConfigSeeder::class);
         $this->call(DemoDataSeeder::class);
 
         $admin->syncRoles([Role::whereName('admin')->first()]);

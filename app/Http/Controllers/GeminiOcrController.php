@@ -19,7 +19,7 @@ class GeminiOcrController extends Controller
         $mimeType = $file->getClientMimeType();
 
         $apiSettings = \App\Models\ConfigDictionary::get('api_settings', []);
-        $apiKey = $apiSettings['gemini_api_key'] ?? env('GEMINI_API_KEY');
+        $apiKey = $apiSettings['gemini_api_key'] ?? config('services.gemini.key');
         if (empty($apiKey)) {
             return response()->json(['error' => 'Invalid or missing Gemini API Key'], 500);
         }
@@ -67,7 +67,7 @@ class GeminiOcrController extends Controller
                     return response()->json($data);
                 } else {
                     Log::error("Gemini OCR JSON Parse Error", ['content' => $content]);
-                    return response()->json(['message' => 'Failed to parse JSON response from Gemini.', 'raw' => $content], 500);
+                    return response()->json(['message' => 'Failed to parse structured data from the document.'], 500);
                 }
             } else {
                 Log::error("Gemini OCR API Error", ['response' => $response->body()]);

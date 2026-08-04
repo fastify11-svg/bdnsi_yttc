@@ -158,7 +158,7 @@ class HomeController extends Controller
         return Inertia::render('ContactUs');
     }
 
-    public function dymamicPage(Request $request, $type = null)
+    public function dynamicPage(Request $request, $type = null)
     {
         $content = '';
         $title = '';

@@ -96,7 +96,7 @@ class SubjectController extends Controller
         }
 
         $apiSettings = \App\Models\ConfigDictionary::get('api_settings', []);
-        $apiKey = $apiSettings['gemini_api_key'] ?? env('GEMINI_API_KEY') ?: config('services.gemini.key');
+        $apiKey = $apiSettings['gemini_api_key'] ?? config('services.gemini.key');
 
         if (!empty($apiKey)) {
             try {

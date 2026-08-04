@@ -33,6 +33,17 @@ class ConfigDictionaryController extends Controller
 
     public function store(Request $request)
     {
+        $validated = $request->validate([
+            'portal_name' => 'nullable|string|max:255',
+            'hotline_phone' => 'nullable|string|max:50',
+            'official_email' => 'nullable|email|max:255',
+            'main_logo' => 'nullable|image|max:2048',
+            'favicon' => 'nullable|image|max:1024',
+            'header_logo' => 'nullable|image|max:2048',
+            'footer_top_bg_image' => 'nullable|image|max:3072',
+            'footer_side_bg_image' => 'nullable|image|max:3072',
+        ]);
+
         $config = SiteConfig::first() ?? new SiteConfig();
 
         $data = $request->except(['_token', '_method', 'created_at', 'main_logo', 'favicon', 'header_logo', 'footer_top_bg_image', 'footer_side_bg_image']);

@@ -28,7 +28,7 @@ Route::get('/license-view/{number?}', [HomeController::class,'license'])->name('
 Route::get('/all-course', [HomeController::class,'all_course'])->name('all_course');
 Route::get('/course-details/{id}', [HomeController::class,'courseDetails'])->name('course.details');
 Route::get('/institute-details/{id}', [HomeController::class,'instituteDetails'])->name('institute.details');
-Route::get('/page/{type}', [HomeController::class,'dymamicPage'])->name('dynamicPage');
+Route::get('/page/{type}', [HomeController::class,'dynamicPage'])->name('dynamicPage');
 Route::get('/all-notice-list', [HomeController::class,'frontendNoticeList'])
     ->middleware('module:toggle_notice_board')
     ->name('frontendNoticeList');
@@ -58,8 +58,8 @@ Route::resource('center-request', \App\Http\Controllers\CenterRequestController:
 
 Route::get('/dashboard', \App\Http\Controllers\DashboardController::class)->middleware(['auth'])->name('dashboard');
 
-Route::get('success-student-details/{id}', [\App\Http\Controllers\FrontendController::class,'successStudentDetails'])->name('successStudentDetails');
-Route::get('student-info/{id}', [\App\Http\Controllers\FrontendController::class,'studentInfo'])->name('studentInfo');
+Route::get('success-student-details/{id}', [\App\Http\Controllers\FrontendController::class,'successStudentDetails'])->middleware('throttle:30,1')->name('successStudentDetails');
+Route::get('student-info/{id}', [\App\Http\Controllers\FrontendController::class,'studentInfo'])->middleware(['auth', 'throttle:30,1'])->name('studentInfo');
 
 Route::middleware(['auth'])->group(function(){
     Route::resource('student', \App\Http\Controllers\StudentController::class)->middleware('throttle:20,1');
@@ -90,5 +90,6 @@ Route::get('/lang-change', function (Request $request) {
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
+require __DIR__.'/student.php';
  
 Route::post('/gemini/extract-ocr', [\App\Http\Controllers\GeminiOcrController::class, 'extractData'])->middleware(['throttle:10,1', 'auth:admin'])->name('gemini.ocr');
