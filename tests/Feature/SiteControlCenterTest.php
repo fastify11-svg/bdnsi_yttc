@@ -48,10 +48,10 @@ class SiteControlCenterTest extends TestCase
     public function test_admin_can_save_basic_site_settings()
     {
         $payload = [
-            'institute_name' => 'Automated Test Institute',
-            'theme_color' => '#112233',
-            'support_email' => 'test@support.com',
-            'frontend_toggles' => json_encode(['show_notice' => true, 'show_gallery' => false])
+            'portal_name' => 'Automated Test Institute',
+            'primary_color' => '#112233',
+            'official_email' => 'test@support.com',
+            'toggle_notice_board' => '1'
         ];
 
         $response = $this->actingAs($this->admin, 'admin')
@@ -61,7 +61,7 @@ class SiteControlCenterTest extends TestCase
         
         // Settings are often JSON encoded when saved if they are stored in a value cast column.
         $this->assertDatabaseHas('config_dictionaries', [
-            'key' => 'institute_name',
+            'key' => 'site_name',
             'value' => '"Automated Test Institute"'
         ]);
     }
@@ -81,12 +81,12 @@ class SiteControlCenterTest extends TestCase
 
         $response = $this->actingAs($this->admin, 'admin')
                          ->post(route('admin.configDictionary.store'), [
-                             'logo' => $file
+                             'main_logo' => $file
                          ]);
 
         $response->assertStatus(302);
 
-        $config = ConfigDictionary::where('key', 'logo')->first();
+        $config = ConfigDictionary::where('key', 'main_logo')->first();
         $this->assertNotNull($config);
         
         // The image storage generates a random hash string under the 'config' folder
@@ -104,10 +104,10 @@ class SiteControlCenterTest extends TestCase
         // Simulate a save action
         $this->actingAs($this->admin, 'admin')
              ->post(route('admin.configDictionary.store'), [
-                 'institute_name' => 'Middleware Sync Test'
+                 'portal_name' => 'Middleware Sync Test'
              ]);
         
-        $dbValue = ConfigDictionary::where('key', 'institute_name')->value('value');
+        $dbValue = ConfigDictionary::where('key', 'site_name')->first()->value;
         $this->assertEquals('Middleware Sync Test', $dbValue);
     }
 }

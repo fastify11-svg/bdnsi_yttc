@@ -15,6 +15,8 @@ class ConfigDictionary extends Model
     public $timestamps = false;
 
     protected $primaryKey = 'key';
+    protected $keyType = 'string';
+    public $incrementing = false;
 
     protected $fillable = [
         'key',
@@ -74,6 +76,7 @@ class ConfigDictionary extends Model
     public static function bustCache()
     {
         Cache::forget(self::CACHE_KEY);
+        self::$cachedConfig = null;
     }
 
     public static function storeCache()

@@ -18,13 +18,13 @@ class FrontendE2ETest extends TestCase
         
         // Ensure default configuration toggles are set to true (1) so pages are accessible.
         $toggles = [
-            'module_student_result' => '1',
-            'module_success_students' => '1',
-            'module_notice_ticker' => '1',
-            'module_verified_centers' => '1',
-            'module_center_apply' => '1',
-            'module_contact_us' => '1',
-            'module_video_gallery' => '1'
+            'toggle_result_verify' => '1',
+            'toggle_success_students' => '1',
+            'toggle_notice_board' => '1',
+            'toggle_verified_centers' => '1',
+            'toggle_center_apply' => '1',
+            'toggle_contact_form' => '1',
+            'toggle_video_gallery' => '1'
         ];
         
         ConfigDictionary::setMany($toggles);
@@ -50,11 +50,11 @@ class FrontendE2ETest extends TestCase
 
     public function test_student_result_redirects_when_module_is_inactive()
     {
-        ConfigDictionary::set('module_student_result', '0');
+        ConfigDictionary::set('toggle_result_verify', '0');
 
         $response = $this->get(route('result'));
-        // Middleware uses abort(404) when module is disabled
-        $response->assertStatus(404);
+        // Middleware uses abort(403) when module is disabled
+        $response->assertStatus(403);
     }
 
     public function test_success_students_loads_successfully()

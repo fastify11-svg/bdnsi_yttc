@@ -11,6 +11,7 @@
         "test": "npx playwright test"
     },
     "devDependencies": {
+        "@playwright/test": "^1.40.0",
         "@babel/core": "^7.22.0",
         "@babel/preset-react": "^7.22.0",
         "@tailwindcss/forms": "^0.4.0",
