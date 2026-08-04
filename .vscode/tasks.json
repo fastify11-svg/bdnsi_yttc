@@ -1,27 +1,27 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "label": "Run Development Server (npm run dev)",
-            "type": "npm",
-            "script": "dev",
-            "problemMatcher": [],
-            "isBackground": true,
-            "group": "build"
-        },
-        {
-            "label": "Run Playwright Tests (npm run test)",
-            "type": "npm",
-            "script": "test",
-            "problemMatcher": [],
-            "group": "test"
-        },
-        {
-            "label": "GitHub Auto-Sync (Add, Commit, Push)",
-            "type": "shell",
-            "command": "git add . ; git commit -m \"Automated Sync and Permanent Workflow Setup\" ; git push",
-            "problemMatcher": [],
-            "group": "none"
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Laravel Server (Artisan)",
+      "type": "shell",
+      "command": "php artisan serve",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    },
+    {
+      "label": "Watch Frontend Assets (NPM)",
+      "type": "shell",
+      "command": "npm run watch",
+      "problemMatcher": [],
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "new"
+      }
+    }
+  ]
 }
