@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+﻿@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 @import 'select2/dist/css/select2.min.css';
+@import './animations.css';
 
 .font-mono {
     font-family: 'JetBrains Mono', monospace !important;
@@ -16,7 +17,7 @@
 
 .datatable .sortable:before {
     position: absolute;
-    content: '▲';
+    content: 'â–²';
     top: 0;
     right: 0;
     padding: 2px 5px;
@@ -26,7 +27,7 @@
 
 .datatable .sortable:after {
     position: absolute;
-    content: '▼';
+    content: 'â–¼';
     bottom: 0;
     right: 0;
     padding: 2px 5px;
@@ -99,93 +100,4 @@
 }
 
 
-@keyframes notice-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-notice-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: notice-marquee 25s linear infinite;
-                }
-                .animate-notice-marquee:hover {
-                    animation-play-state: paused;
-                }
 
-                @keyframes photo-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-photo-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: photo-marquee 30s linear infinite;
-                }
-                .animate-photo-marquee:hover {
-                    animation-play-state: paused;
-                }
-
-                @keyframes center-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-center-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: center-marquee 35s linear infinite;
-                }
-                .animate-center-marquee:hover {
-                    animation-play-state: paused;
-                }
-
-                @keyframes student-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-student-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: student-marquee 25s linear infinite;
-                }
-                .animate-student-marquee:hover {
-                    animation-play-state: paused;
-                }
-
-                @keyframes sponsor-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-sponsor-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: sponsor-marquee 20s linear infinite;
-                }
-                .animate-sponsor-marquee:hover {
-                    animation-play-state: paused;
-                }
-
-                @keyframes course-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-course-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: course-marquee 30s linear infinite;
-                }
-                .animate-course-marquee:hover {
-                    animation-play-state: paused;
-                }
-
-                @keyframes video-marquee {
-                    0% { transform: translateX(0%); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-video-marquee {
-                    display: flex;
-                    width: max-content;
-                    animation: video-marquee 35s linear infinite;
-                }
-                .animate-video-marquee:hover {
-                    animation-play-state: paused;
-                }

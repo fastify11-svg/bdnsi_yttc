@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/inertia-react';
 import { getUrl } from '../utils/urlHelper';
+import { isEnabled } from '../utils/moduleHelper';
 
 export default function FrontendLayout({ children }) {
     const { site, app_url, site_config = {}, footer_links = [], footer_logos = [] } = usePage().props;
@@ -16,7 +17,7 @@ export default function FrontendLayout({ children }) {
         }
     }, []);
 
-    const isEnabled = (val) => val === undefined || val === null || val === true || val === 1 || val === '1';
+
 
     // Filter Navigation Links based on Module Toggles
     const navLinks = [

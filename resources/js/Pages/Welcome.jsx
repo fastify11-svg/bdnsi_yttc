@@ -2,68 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/inertia-react';
 import FrontendLayout from '../Layouts/FrontendLayout';
 import { getUrl } from '../utils/urlHelper';
+import { isEnabled } from '../utils/moduleHelper';
 import HeroSlider from '../Components/Welcome/HeroSlider';
 import NoticeBoard from '../Components/Welcome/NoticeBoard';
 import CourseList from '../Components/Welcome/CourseList';
 import VideoGallery from '../Components/Welcome/VideoGallery';
+import { 
+    FALLBACK_SLIDERS, 
+    FALLBACK_CENTERS, 
+    FALLBACK_STUDENTS, 
+    FALLBACK_GALLERY, 
+    FALLBACK_SPONSORS 
+} from '../data/fallbacks';
 
-const FALLBACK_SLIDERS = [
-    { id: 1, photo: '/images/about.jpg', title: 'Technical Education Training Banner 1' }
-];
-
-
-
-
-
-
-
-const FALLBACK_CENTERS = [
-    { id: 1, name: 'Hotel Management & Tourism Training Institute' },
-    { id: 2, name: 'Shyamoli Ideal Polytechnic Institute' },
-    { id: 3, name: 'Chef Training Institute Bangladesh' },
-    { id: 4, name: 'Central Technical Training Institute' },
-    { id: 5, name: 'Trust Technical Training Institute' },
-    { id: 6, name: 'Agriculture Training Institute Bangladesh' },
-    { id: 7, name: 'Institute Of Health Technology Sylhet' },
-    { id: 8, name: 'Medhabikash Technical institute of Technology' },
-];
-
-const FALLBACK_STUDENTS = [
-    { id: 1, name: 'Sabina Yesmin' },
-    { id: 2, name: 'Aleya Begum' },
-    { id: 3, name: 'Johirul Islam' },
-    { id: 4, name: 'Md Emon Hossain' },
-    { id: 5, name: 'Md Emon Hossain' },
-    { id: 6, name: 'Sakhawet Hosssain' },
-    { id: 7, name: 'Md. Annisul Haque' },
-    { id: 8, name: 'Bayjit Miah' },
-    { id: 9, name: 'Md Shahin Alam' },
-    { id: 10, name: 'Mohammad Nayem Ahm...' },
-    { id: 11, name: 'Sohel Mia' },
-    { id: 12, name: 'Mohammad Jual Hossain' },
-];
-
-const FALLBACK_GALLERY = [
-    '/images/about.jpg',
-    '/images/driving.png',
-    '/images/blueverify.png',
-    '/images/govt.png',
-    '/images/about.jpg',
-    '/images/driving.png',
-    '/images/blueverify.png',
-    '/images/govt.png',
-    '/images/about.jpg',
-    '/images/driving.png',
-];
-
-const FALLBACK_SPONSORS = [
-    '/images/govt.png',
-    '/images/blueverify.png',
-    '/images/driving.png',
-    '/images/govt.png',
-    '/images/blueverify.png',
-    '/images/driving.png'
-];
 
 export default function Welcome({
     sliders = [],
@@ -82,7 +33,7 @@ export default function Welcome({
 }) {
     const { app_url, site_config: pageConfig = {} } = usePage().props;
     const config = { ...pageConfig, ...site_config };
-    const isEnabled = (val) => val === undefined || val === null || val === true || val === 1 || val === '1'; // page-level props override shared defaults
+
     const [aboutExpanded, setAboutExpanded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(0);
