@@ -86,19 +86,11 @@ class HandleInertiaRequests extends Middleware
             'locale' => app()->getLocale(),
             'site' => [
                 'name' => config('site.setting.name', 'BDNSI'),
-                'notice' => \App\Models\ConfigDictionary::get('notice', 'Welcome to BDNSI Portal'),
+                'notice' => \App\Models\SiteConfig::firstCached()->marquee_notice ?? 'Welcome to BDNSI Portal',
             ],
             'site_config' => function () {
-                $configs = \App\Models\ConfigDictionary::allCached();
-                $processed = [];
-                foreach ($configs as $key => $value) {
-                    if (str_starts_with($key, 'toggle_') && ($value === "1" || $value === "0")) {
-                        $processed[$key] = $value === "1";
-                    } else {
-                        $processed[$key] = $value;
-                    }
-                }
-                return $processed;
+                $config = \App\Models\SiteConfig::firstCached();
+                return $config ? $config->toArray() : [];
             },
             'footer_links' => function () {
                 return \App\Models\FooterLink::where('is_active', 1)->orderBy('sort_order', 'asc')->get();

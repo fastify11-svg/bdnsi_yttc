@@ -59,26 +59,6 @@ class ConfigDictionaryController extends Controller
         $config->fill($data);
         $config->save();
         
-        // BUG FIX: Sync all data to ConfigDictionary so the Frontend gets the updates instantly
-        $allConfigData = $config->toArray();
-        unset($allConfigData['id'], $allConfigData['created_at'], $allConfigData['updated_at']);
-        
-        $keyMap = [
-            'portal_name' => 'site_name',
-            'hotline_phone' => 'site_phone',
-            'official_email' => 'site_email',
-            'headquarter_address' => 'site_address',
-            'marquee_notice' => 'notice',
-            'about_short' => 'main_about_us',
-        ];
-        
-        $mappedConfigData = [];
-        foreach ($allConfigData as $key => $value) {
-            $mappedKey = $keyMap[$key] ?? $key;
-            $mappedConfigData[$mappedKey] = $value;
-        }
-
-        \App\Models\ConfigDictionary::setMany($mappedConfigData);
         
         return response()->report($config, 'Successfully Updated System Configuration');
     }

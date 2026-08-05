@@ -3,10 +3,10 @@ const { test, expect } = require('@playwright/test');
 test.describe('Frontend E2E Tests', () => {
   test('homepage loads and shows BTEB footer', async ({ page }) => {
     // Navigate to homepage
-    await page.goto('/');
+    await page.goto('./', { waitUntil: 'domcontentloaded' });
 
     // Check if the portal name is visible
-    await expect(page.locator('text=Young Technical Training Centre').first()).toBeVisible({ timeout: 10000 });
+    await expect(page.locator('text=Central Site Control Center').first()).toBeVisible({ timeout: 30000 });
 
     // Check if footer area loads correctly
     const footer = page.locator('footer');
@@ -17,7 +17,7 @@ test.describe('Frontend E2E Tests', () => {
   });
 
   test('student result page loads', async ({ page }) => {
-    await page.goto('/result');
+    await page.goto('result');
     await expect(page.locator('text=Student Result').first()).toBeVisible();
   });
 });

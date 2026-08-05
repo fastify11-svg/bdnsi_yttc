@@ -22,4 +22,28 @@ class SiteConfig extends Model
         'footer_top_bg_image', 'footer_side_bg_image', 'footer_disclaimer_text', 
         'footer_planning_text', 'footer_tech_support_text'
     ];
+
+    public const CACHE_KEY = 'site_config_cache';
+    protected static $cachedConfig = null;
+
+    protected static function booted()
+    {
+        static::saved(function ($config) {
+            \Illuminate\Support\Facades\Cache::forget(self::CACHE_KEY);
+            self::$cachedConfig = null;
+        });
+    }
+
+    public static function firstCached()
+    {
+        if (self::$cachedConfig !== null) {
+            return self::$cachedConfig;
+        }
+
+        self::$cachedConfig = \Illuminate\Support\Facades\Cache::rememberForever(self::CACHE_KEY, function () {
+            return self::first();
+        });
+
+        return self::$cachedConfig;
+    }
 }

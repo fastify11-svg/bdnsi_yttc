@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\Admin;
-use App\Models\ConfigDictionary;
+use App\Models\SiteConfig;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
@@ -59,10 +59,8 @@ class SiteControlCenterTest extends TestCase
 
         $response->assertStatus(302); // Inertia redirects on success
         
-        // Settings are often JSON encoded when saved if they are stored in a value cast column.
-        $this->assertDatabaseHas('config_dictionaries', [
-            'key' => 'site_name',
-            'value' => '"Automated Test Institute"'
+        $this->assertDatabaseHas('site_configs', [
+            'portal_name' => 'Automated Test Institute'
         ]);
     }
 
@@ -86,12 +84,12 @@ class SiteControlCenterTest extends TestCase
 
         $response->assertStatus(302);
 
-        $config = ConfigDictionary::where('key', 'main_logo')->first();
+        $config = SiteConfig::first();
         $this->assertNotNull($config);
         
         // The image storage generates a random hash string under the 'config' folder
-        $this->assertStringContainsString('config/', $config->value);
-        $this->assertStringContainsString('.jpg', $config->value);
+        $this->assertStringContainsString('config/', $config->main_logo);
+        $this->assertStringContainsString('.jpg', $config->main_logo);
     }
 
     /**
@@ -107,7 +105,7 @@ class SiteControlCenterTest extends TestCase
                  'portal_name' => 'Middleware Sync Test'
              ]);
         
-        $dbValue = ConfigDictionary::where('key', 'site_name')->first()->value;
+        $dbValue = SiteConfig::first()->portal_name;
         $this->assertEquals('Middleware Sync Test', $dbValue);
     }
 }

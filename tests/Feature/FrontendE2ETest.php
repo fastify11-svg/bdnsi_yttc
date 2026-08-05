@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\ConfigDictionary;
+use App\Models\SiteConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Artisan;
@@ -26,8 +26,9 @@ class FrontendE2ETest extends TestCase
             'toggle_contact_form' => '1',
             'toggle_video_gallery' => '1'
         ];
-        
-        ConfigDictionary::setMany($toggles);
+        $config = SiteConfig::first() ?? new SiteConfig();
+        $config->fill($toggles);
+        $config->save();
     }
 
     public function test_homepage_loads_successfully()
@@ -50,7 +51,9 @@ class FrontendE2ETest extends TestCase
 
     public function test_student_result_redirects_when_module_is_inactive()
     {
-        ConfigDictionary::set('toggle_result_verify', '0');
+        $config = SiteConfig::first() ?? new SiteConfig();
+        $config->toggle_result_verify = 0;
+        $config->save();
 
         $response = $this->get(route('result'));
         // Middleware uses abort(403) when module is disabled

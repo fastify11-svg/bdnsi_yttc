@@ -6,9 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     @php
-        $siteConfig = \App\Models\ConfigDictionary::allCached();
-        $siteName = $siteConfig['portal_name'] ?? $siteConfig['site_name'] ?? 'BDNSI';
-        $favIcon = isset($siteConfig['favicon']) ? asset($siteConfig['favicon']) : (isset($siteConfig['site_favicon']) ? asset($siteConfig['site_favicon']) : asset('favicon.ico'));
+        $siteConfig = \App\Models\SiteConfig::firstCached();
+        $siteName = $siteConfig->portal_name ?? 'BDNSI';
+        $favIcon = $siteConfig->favicon ? asset($siteConfig->favicon) : asset('favicon.ico');
     @endphp
     <title>{{ $siteName }}</title>
     <link rel="icon" type="image/x-icon" href="{{ $favIcon }}">

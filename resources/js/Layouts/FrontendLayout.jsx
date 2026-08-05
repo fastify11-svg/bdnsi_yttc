@@ -16,16 +16,18 @@ export default function FrontendLayout({ children }) {
         }
     }, []);
 
+    const isEnabled = (val) => val === undefined || val === null || val === true || val === 1 || val === '1';
+
     // Filter Navigation Links based on Module Toggles
     const navLinks = [
         { label: 'Home', href: '/', icon: 'fa-house', show: true },
         { label: 'Courses', href: '/all-course', show: true },
-        { label: 'Student Result', href: '/result', show: site_config.toggle_result_verify ?? true },
-        { label: 'Success Students', href: '/success-student', show: site_config.toggle_success_students ?? true },
-        { label: 'Notices', href: '/all-notice-list', show: site_config.toggle_notice_board ?? true },
-        { label: 'Verified Center', href: '/verified-center', show: site_config.toggle_verified_centers ?? true },
-        { label: 'Center Apply', href: '/center-request/create', show: site_config.toggle_center_apply ?? true },
-        { label: 'Contact Us', href: '/contact-us', show: site_config.toggle_contact_form ?? true },
+        { label: 'Student Result', href: '/result', show: isEnabled(site_config.toggle_result_verify) },
+        { label: 'Success Students', href: '/success-student', show: isEnabled(site_config.toggle_success_students) },
+        { label: 'Notices', href: '/all-notice-list', show: isEnabled(site_config.toggle_notice_board) },
+        { label: 'Verified Center', href: '/verified-center', show: isEnabled(site_config.toggle_verified_centers) },
+        { label: 'Center Apply', href: '/center-request/create', show: isEnabled(site_config.toggle_center_apply) },
+        { label: 'Contact Us', href: '/contact-us', show: isEnabled(site_config.toggle_contact_form) },
     ].filter(link => link.show);
 
     const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
@@ -133,7 +135,7 @@ export default function FrontendLayout({ children }) {
 
                         {/* Mobile Header Menu */}
                         <div className="flex items-center justify-between w-full lg:hidden py-1">
-                            {site_config.toggle_result_verify !== 0 && site_config.toggle_result_verify !== false ? (
+                            {isEnabled(site_config.toggle_result_verify) ? (
                                 <Link
                                     href={getUrl('/result')}
                                     className="text-slate-950 font-extrabold text-xs px-3 py-1.5 rounded-md shadow-sm flex items-center gap-1.5 uppercase tracking-wider"
@@ -308,7 +310,7 @@ export default function FrontendLayout({ children }) {
                 </footer>
 
                 {/* Floating WhatsApp Chat Widget (if enabled) */}
-                {site_config.toggle_whatsapp !== 0 && site_config.toggle_whatsapp !== false && site_config.site_phone && (
+                {isEnabled(site_config.toggle_whatsapp) && site_config.site_phone && (
                     <a
                         href={`https://api.whatsapp.com/send?phone=${site_config.site_phone.replace(/[^0-9]/g, '')}`}
                         target="_blank"

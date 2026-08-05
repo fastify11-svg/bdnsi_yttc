@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use App\Models\ConfigDictionary;
+
 
 class CheckModuleEnabled
 {
@@ -18,8 +18,9 @@ class CheckModuleEnabled
      */
     public function handle(Request $request, Closure $next, $moduleName)
     {
-        $settings = ConfigDictionary::allCached();
-        $isEnabled = ($settings[$moduleName] ?? '1') !== '0';
+        $settings = \App\Models\SiteConfig::firstCached();
+        $val = $settings ? ($settings->{$moduleName} ?? true) : true;
+        $isEnabled = filter_var($val, FILTER_VALIDATE_BOOLEAN);
 
         if (!$isEnabled) {
             abort(403, 'This module is currently disabled by the administrator.');

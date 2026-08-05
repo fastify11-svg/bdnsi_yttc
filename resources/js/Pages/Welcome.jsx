@@ -2,33 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { Link, usePage } from '@inertiajs/inertia-react';
 import FrontendLayout from '../Layouts/FrontendLayout';
 import { getUrl } from '../utils/urlHelper';
+import HeroSlider from '../Components/Welcome/HeroSlider';
+import NoticeBoard from '../Components/Welcome/NoticeBoard';
+import CourseList from '../Components/Welcome/CourseList';
+import VideoGallery from '../Components/Welcome/VideoGallery';
 
 const FALLBACK_SLIDERS = [
     { id: 1, photo: '/images/about.jpg', title: 'Technical Education Training Banner 1' }
 ];
 
-const FALLBACK_NOTICES = [
-    { id: 1, displayTitle: 'এমন শিক্ষার্থীদের জন্য যারা [পরীক্ষার নাম] পরীক্ষায় অংশগ্রহণ করেছেন, জানানো যাচ্ছে যে পরীক্ষা...', displayDate: '11 Aug 2025' },
-    { id: 2, displayTitle: 'এমন শিক্ষার্থীদের জন্য যারা [কোর্সের নাম] কোর্সে অংশগ্রহণ করতে চান, জানানো যাচ্ছে যে কোর্স...', displayDate: '11 Aug 2025' },
-    { id: 3, displayTitle: 'শিক্ষার্থীদের জানানো যাচ্ছে যে, আমাদের প্রতিষ্ঠানে ইলেকট্রিশিয়ান কোর্স আগামী [তারিখ] থেকে...', displayDate: '11 Aug 2025' },
-];
 
-const FALLBACK_COURSES = [
-    { id: 1, name: '3g 4g 6g Arc Welder', duration: '3-Month, 6-Month, 1-Year, 2-Year', image: '/images/driving.png' },
-    { id: 2, name: '3g 4g Mig Welder', duration: '3-Month, 6-Month, 1-Year, 2-Year', image: '/images/blueverify.png' },
-    { id: 3, name: '3g 4g Mig Welder & Gas Cutting', duration: '2 Years', image: '/images/driving.png' },
-    { id: 4, name: '3G,4G Welder', duration: '2 Years', image: '/images/blueverify.png' },
-    { id: 5, name: '4G, 6G, TIG, and MIG Welding', duration: '3-Month, 6-Month, 1-Year, 2-Year', image: '/images/driving.png' },
-    { id: 6, name: '4G,6G, TIG, MIG Welding', duration: '6-Month, 1-Year, 2-Year', image: '/images/blueverify.png' },
-    { id: 7, name: '6g Tig Welder', duration: '3-Month, 6-Month, 1-Year, 2-Year', image: '/images/driving.png' },
-];
 
-const FALLBACK_VIDEOS = [
-    { video_id: 'dQw4w9WgXcQ', title: 'BDNSI Technical Orientation Video 1' },
-    { video_id: 'dQw4w9WgXcQ', title: 'BDNSI Technical Orientation Video 2' },
-    { video_id: 'dQw4w9WgXcQ', title: 'BDNSI Technical Orientation Video 3' },
-    { video_id: 'dQw4w9WgXcQ', title: 'BDNSI Technical Orientation Video 4' }
-];
+
+
+
 
 const FALLBACK_CENTERS = [
     { id: 1, name: 'Hotel Management & Tourism Training Institute' },
@@ -94,53 +81,20 @@ export default function Welcome({
     site_config = {}
 }) {
     const { app_url, site_config: pageConfig = {} } = usePage().props;
-    const config = { ...pageConfig, ...site_config }; // page-level props override shared defaults
+    const config = { ...pageConfig, ...site_config };
+    const isEnabled = (val) => val === undefined || val === null || val === true || val === 1 || val === '1'; // page-level props override shared defaults
     const [aboutExpanded, setAboutExpanded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [currentSlide, setCurrentSlide] = useState(0);
     const [clickedSponsors, setClickedSponsors] = useState({});
 
-    const activeSliders = sliders.length > 0 ? sliders : FALLBACK_SLIDERS;
 
-    useEffect(() => {
-        if (activeSliders.length <= 1) return;
-        const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % activeSliders.length);
-        }, 5000);
-        return () => clearInterval(timer);
-    }, [activeSliders.length]);
 
     const cleanNotice = notice ? notice.replace(/<[^>]*>?/gm, '').trim() : '';
 
-    const formatDate = (dateStr) => {
-        if (!dateStr) return '11 Aug 2025';
-        try {
-            const date = new Date(dateStr);
-            return isNaN(date.getTime()) ? '11 Aug 2025' : date.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
-        } catch {
-            return '11 Aug 2025';
-        }
-    };
 
-    const formattedNotices = notices.length > 0 ? notices.map(n => ({
-        ...n,
-        displayTitle: n.title || (n.details ? n.details.replace(/<[^>]*>?/gm, '').trim() : '') || 'গুরুত্বপূর্ণ বিজ্ঞপ্তি প্রকাশ করা হয়েছে',
-        displayDate: formatDate(n.created_at)
-    })) : FALLBACK_NOTICES;
 
-    const courseList = courses.length > 0 ? courses : FALLBACK_COURSES;
-    const videoList = youtube_videos && youtube_videos.length > 0 ? youtube_videos : FALLBACK_VIDEOS;
 
-    const groupInPairs = (arr) => {
-        const pairs = [];
-        for (let i = 0; i < arr.length; i += 2) {
-            pairs.push(arr.slice(i, i + 2));
-        }
-        return pairs;
-    };
-
-    const coursePairs = groupInPairs(courseList);
-    const videoPairs = groupInPairs(videoList);
 
     const verifiedInstitutes = centers.length > 0 ? centers : FALLBACK_CENTERS;
     const successStudentList = success_students.length > 0 ? success_students : FALLBACK_STUDENTS;
@@ -248,7 +202,7 @@ export default function Welcome({
             `}</style>
 
             {/* 1. Scrolling Notice Ticker (Right to Left Continuous News Ticker) */}
-            {(config.toggle_notice_board ?? true) && (
+            {isEnabled(config.toggle_notice_board) && (
                 <div className="bg-white border border-rose-200 rounded-md overflow-hidden flex items-center shadow-sm relative z-20">
                     <span className="bg-[#BE123C] text-white font-black px-3 sm:px-4 py-2 text-[11px] sm:text-xs uppercase tracking-wider shrink-0 z-30 shadow-sm relative">
                         NOTICE
@@ -273,69 +227,7 @@ export default function Welcome({
             {/* 2. Hero Section (Grid: Left 8 cols Slider, Right 4 cols Leadership & E-Services) */}
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 items-start">
                 {/* Left 8 Cols: Banner Carousel */}
-                <div className="lg:col-span-8 bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm flex flex-col">
-                    <div className="relative w-full h-56 sm:h-[340px] lg:h-[388px] bg-slate-950 flex items-center justify-center overflow-hidden rounded-md group">
-                        <img
-                            src={activeSliders[currentSlide]?.photo || activeSliders[currentSlide]?.image ? getUrl(activeSliders[currentSlide].photo || activeSliders[currentSlide].image) : getUrl('/images/about.jpg')}
-                            alt={activeSliders[currentSlide]?.title || "Technical Education Training Banner"}
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            onError={(e) => {
-                                e.target.onerror = null;
-                                e.target.src = getUrl('/images/govt.png');
-                            }}
-                        />
-                        {/* Overlay text */}
-                        <div className="absolute inset-0 bg-black/40 z-0"></div>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4 z-10">
-                            {activeSliders[currentSlide]?.title && (
-                                <h2 className="text-xl sm:text-3xl lg:text-4xl font-black text-white drop-shadow-lg mb-2">{activeSliders[currentSlide].title}</h2>
-                            )}
-                            {activeSliders[currentSlide]?.subtitle && (
-                                <p className="text-sm sm:text-lg text-white/90 drop-shadow-md mb-6 max-w-2xl">{activeSliders[currentSlide].subtitle}</p>
-                            )}
-                            {activeSliders[currentSlide]?.button_text && (
-                                <Link 
-                                    href={activeSliders[currentSlide].button_link || '#'} 
-                                    className="px-6 py-2.5 bg-[#7024A8] hover:bg-[#581C87] text-white font-bold rounded-lg shadow-lg transition-transform transform hover:scale-105"
-                                >
-                                    {activeSliders[currentSlide].button_text}
-                                </Link>
-                            )}
-                        </div>
-                        {/* Navigation Arrows */}
-                        {activeSliders.length > 1 && (
-                            <>
-                                <button
-                                    onClick={() => setCurrentSlide((prev) => (prev - 1 + activeSliders.length) % activeSliders.length)}
-                                    className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
-                                    aria-label="Previous Banner"
-                                >
-                                    <i className="fa-solid fa-chevron-left text-sm"></i>
-                                </button>
-                                <button
-                                    onClick={() => setCurrentSlide((prev) => (prev + 1) % activeSliders.length)}
-                                    className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
-                                    aria-label="Next Banner"
-                                >
-                                    <i className="fa-solid fa-chevron-right text-sm"></i>
-                                </button>
-                            </>
-                        )}
-                        {/* Indicator Dots */}
-                        {activeSliders.length > 1 && (
-                            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-black/50 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/20 z-10 max-w-[90%] overflow-x-auto no-scrollbar">
-                                {activeSliders.map((_, idx) => (
-                                    <button
-                                        key={`dot-${idx}`}
-                                        onClick={() => setCurrentSlide(idx)}
-                                        className={`w-2.5 h-2.5 rounded-full transition-all duration-300 shrink-0 ${currentSlide === idx ? 'bg-amber-400 scale-125 shadow-sm' : 'bg-white/50 hover:bg-white'}`}
-                                        aria-label={`Go to slide ${idx + 1}`}
-                                    />
-                                ))}
-                            </div>
-                        )}
-                    </div>
-                </div>
+                <HeroSlider sliders={sliders} />
 
                 {/* Right 4 Cols: Leadership Card & Internal E-Services */}
                 <div className="lg:col-span-4 space-y-4 sm:space-y-6">
@@ -378,13 +270,13 @@ export default function Welcome({
                             INTERNAL E-SERVICES
                         </div>
                         <div className="divide-y divide-slate-100 text-[13px] font-semibold">
-                            {(config.toggle_result_verify ?? true) && (
+                            {isEnabled(config.toggle_result_verify) && (
                                 <Link href={getUrl('/result')} className="px-4 py-2.5 flex justify-between items-center text-slate-700 hover:bg-purple-50 hover:text-[#7024A8] transition">
                                     <span className="flex items-center gap-2"><i className="fa-solid fa-graduation-cap text-[#7024A8] w-4 text-center"></i>Student Result</span>
                                     <i className="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                                 </Link>
                             )}
-                            {(config.toggle_center_apply ?? true) && (
+                            {isEnabled(config.toggle_center_apply) && (
                                 <Link href={getUrl('/center-request/create')} className="px-4 py-2.5 flex justify-between items-center text-slate-700 hover:bg-purple-50 hover:text-[#7024A8] transition">
                                     <span className="flex items-center gap-2"><i className="fa-solid fa-building text-[#7024A8] w-4 text-center"></i>Center Apply</span>
                                     <i className="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
@@ -394,7 +286,7 @@ export default function Welcome({
                                 <span className="flex items-center gap-2"><i className="fa-solid fa-lock text-[#7024A8] w-4 text-center"></i>Center Login</span>
                                 <i className="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
                             </Link>
-                            {(config.toggle_notice_board ?? true) && (
+                            {isEnabled(config.toggle_notice_board) && (
                                 <Link href={getUrl('/all-notice-list')} className="px-4 py-2.5 flex justify-between items-center text-slate-700 hover:bg-purple-50 hover:text-[#7024A8] transition">
                                     <span className="flex items-center gap-2"><i className="fa-solid fa-bell text-[#7024A8] w-4 text-center"></i>Notice Board</span>
                                     <i className="fa-solid fa-chevron-right text-[10px] text-slate-400"></i>
@@ -410,29 +302,7 @@ export default function Welcome({
                 {/* Left 8 Cols Container */}
                 <div className="lg:col-span-8 space-y-4 sm:space-y-6">
                     {/* NOTICE BOARD Card */}
-                    <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
-                        <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex justify-between items-center">
-                            <div className="flex items-center gap-2 text-white">
-                                <i className="fa-solid fa-bell text-white"></i>
-                                <span className="uppercase tracking-wider font-extrabold text-white">NOTICE BOARD</span>
-                            </div>
-                            <Link href={getUrl('/all-notice-list')} className="bg-[#581C87] hover:bg-purple-900 text-white px-3 py-1 rounded text-[10px] uppercase font-black tracking-wider shadow-sm transition">
-                                SHOW ALL
-                            </Link>
-                        </div>
-                        <div className="divide-y divide-slate-100 p-2">
-                            {formattedNotices.map((n, idx) => (
-                                <Link key={`notice-${n.id || idx}`} href={getUrl(`/all-notice-list/${n.id}`)} className="p-3 flex items-center gap-3 hover:bg-purple-50/50 transition group">
-                                    <span className="bg-amber-100 text-amber-900 font-extrabold px-2.5 py-1 rounded text-[10px] shrink-0 font-mono">
-                                        {n.displayDate}
-                                    </span>
-                                    <p className="text-[13px] font-medium text-slate-800 group-hover:text-[#7024A8] transition truncate">
-                                        {n.displayTitle}
-                                    </p>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
+                    <NoticeBoard notices={notices} />
 
                     {/* ABOUT US Card */}
                     <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
@@ -494,7 +364,7 @@ export default function Welcome({
                     </div>
 
                     {/* PHOTO GALLERY Card (Clickable Lightbox Trigger) */}
-                    {(config.toggle_photo_gallery ?? true) && (
+                    {isEnabled(config.toggle_photo_gallery) && (
                         <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
                             <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-white">
@@ -566,13 +436,13 @@ export default function Welcome({
                         </div>
                         <div className="p-3 space-y-2 text-[13px] font-semibold text-slate-700">
                             <Link href={getUrl('/all-course')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; All Courses</Link>
-                            {(config.toggle_verified_centers ?? true) && (
+                            {isEnabled(config.toggle_verified_centers) && (
                                 <Link href={getUrl('/verified-center')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Verified Center</Link>
                             )}
-                            {(config.toggle_success_students ?? true) && (
+                            {isEnabled(config.toggle_success_students) && (
                                 <Link href={getUrl('/success-student')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Success Students</Link>
                             )}
-                            {(config.toggle_contact_form ?? true) && (
+                            {isEnabled(config.toggle_contact_form) && (
                                 <Link href={getUrl('/contact-us')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Contact Us</Link>
                             )}
                         </div>
@@ -594,10 +464,10 @@ export default function Welcome({
                             </div>
                             <div className="p-3 space-y-2 text-[13px] font-semibold text-slate-700">
                                 <Link href={getUrl('/all-course')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; All Courses</Link>
-                                {(config.toggle_result_verify ?? true) && (
+                                {isEnabled(config.toggle_result_verify) && (
                                     <Link href={getUrl('/result')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Student Result</Link>
                                 )}
-                                {(config.toggle_success_students ?? true) && (
+                                {isEnabled(config.toggle_success_students) && (
                                     <Link href={getUrl('/success-student')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Success Students</Link>
                                 )}
                             </div>
@@ -610,10 +480,10 @@ export default function Welcome({
                                 <span className="uppercase tracking-wider text-white">CENTER SERVICES</span>
                             </div>
                             <div className="p-3 space-y-2 text-[13px] font-semibold text-slate-700">
-                                {(config.toggle_verified_centers ?? true) && (
+                                {isEnabled(config.toggle_verified_centers) && (
                                     <Link href={getUrl('/verified-center')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Verified Centers</Link>
                                 )}
-                                {(config.toggle_center_apply ?? true) && (
+                                {isEnabled(config.toggle_center_apply) && (
                                     <Link href={getUrl('/center-request/create')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Center Apply</Link>
                                 )}
                                 <Link href={getUrl('/login')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Center Login</Link>
@@ -627,11 +497,11 @@ export default function Welcome({
                                 <span className="uppercase tracking-wider text-white">INFORMATION</span>
                             </div>
                             <div className="p-3 space-y-2 text-[13px] font-semibold text-slate-700">
-                                {(config.toggle_notice_board ?? true) && (
+                                {isEnabled(config.toggle_notice_board) && (
                                     <Link href={getUrl('/all-notice-list')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Notice Board</Link>
                                 )}
                                 <Link href={getUrl('/')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; About Us</Link>
-                                {(config.toggle_contact_form ?? true) && (
+                                {isEnabled(config.toggle_contact_form) && (
                                     <Link href={getUrl('/contact-us')} className="block hover:text-[#7024A8] transition hover:translate-x-1">&rsaquo; Contact Us</Link>
                                 )}
                             </div>
@@ -653,99 +523,10 @@ export default function Welcome({
             </div>
 
             {/* 4. OUR COURSES Card (Desktop Grid & Mobile 2-Row Horizontal Auto-Slider) */}
-            <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
-                <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex justify-between items-center">
-                    <div className="flex items-center gap-2 text-white">
-                        <i className="fa-solid fa-graduation-cap text-white"></i>
-                        <span className="uppercase tracking-wider font-extrabold text-white">OUR COURSES</span>
-                    </div>
-                    <Link href={getUrl('/all-course')} className="bg-[#581C87] text-white hover:bg-purple-900 px-3 py-1 rounded text-[10px] uppercase font-black tracking-wider shadow-sm transition">
-                        VIEW ALL
-                    </Link>
-                </div>
 
-                {/* Desktop View: Grid */}
-                <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                    {courseList.map((course) => (
-                        <Link key={`course-desk-${course.id}`} href={getUrl(`/course-details/${course.id}`)} className="border border-slate-200 rounded-md overflow-hidden bg-white shadow-sm group hover:shadow-md transition block">
-                            <div className="h-40 bg-slate-900 overflow-hidden">
-                                <img
-                                    src={course.photo || course.image ? getUrl(course.photo || course.image) : getUrl('/images/about.jpg')}
-                                    alt={course.name}
-                                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                    onError={(e) => {
-                                        e.target.onerror = null;
-                                        e.target.src = getUrl('/images/govt.png');
-                                    }}
-                                />
-                            </div>
-                            <div className="p-3.5 space-y-1">
-                                <h4 className="font-extrabold text-slate-900 text-sm group-hover:text-[#7024A8] transition-colors">{course.name}</h4>
-                                <p className="text-xs text-slate-500">{course.duration || '3-Month, 6-Month, 1-Year, 2-Year'}</p>
-                            </div>
-                        </Link>
-                    ))}
-                </div>
-
-                {/* Mobile View: 2-Row Horizontal Continuous Auto-Slider */}
-                <div className="block sm:hidden p-4 overflow-hidden relative">
-                    <div className="animate-course-marquee">
-                        <div className="flex gap-4 pr-4 shrink-0">
-                            {coursePairs.map((pair, pIdx) => (
-                                <div key={`course-pair-a-${pIdx}`} className="w-[280px] shrink-0 space-y-4">
-                                    {pair.map((course) => (
-                                        <Link key={`course-mob-a-${course.id}-${pIdx}`} href={getUrl(`/course-details/${course.id}`)} className="border border-slate-200 rounded-md overflow-hidden bg-white shadow-sm block">
-                                            <div className="h-32 bg-slate-900 overflow-hidden">
-                                                <img
-                                                    src={course.photo || course.image ? getUrl(course.photo || course.image) : getUrl('/images/about.jpg')}
-                                                    alt={course.name}
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => {
-                                                        e.target.onerror = null;
-                                                        e.target.src = getUrl('/images/govt.png');
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="p-3 space-y-1 text-center">
-                                                <h4 className="font-extrabold text-slate-900 text-[13px] truncate">{course.name}</h4>
-                                                <p className="text-[11px] text-slate-500">{course.duration || '3-Month, 6-Month, 1-Year'}</p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                        <div className="flex gap-4 pr-4 shrink-0" aria-hidden="true">
-                            {coursePairs.map((pair, pIdx) => (
-                                <div key={`course-pair-b-${pIdx}`} className="w-[280px] shrink-0 space-y-4">
-                                    {pair.map((course) => (
-                                        <Link key={`course-mob-b-${course.id}-${pIdx}`} href={getUrl(`/course-details/${course.id}`)} className="border border-slate-200 rounded-md overflow-hidden bg-white shadow-sm block">
-                                            <div className="h-32 bg-slate-900 overflow-hidden">
-                                                <img
-                                                    src={course.photo || course.image ? getUrl(course.photo || course.image) : getUrl('/images/about.jpg')}
-                                                    alt={course.name}
-                                                    className="w-full h-full object-cover"
-                                                    onError={(e) => {
-                                                        e.target.onerror = null;
-                                                        e.target.src = getUrl('/images/govt.png');
-                                                    }}
-                                                />
-                                            </div>
-                                            <div className="p-3 space-y-1 text-center">
-                                                <h4 className="font-extrabold text-slate-900 text-[13px] truncate">{course.name}</h4>
-                                                <p className="text-[11px] text-slate-500">{course.duration || '3-Month, 6-Month, 1-Year'}</p>
-                                            </div>
-                                        </Link>
-                                    ))}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             {/* 5. VERIFIED CENTERS Card (Continuous Auto-Slider) */}
-            {(config.toggle_verified_centers ?? true) && (
+            {isEnabled(config.toggle_verified_centers) && (
                 <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
                     <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex justify-between items-center">
                         <div className="flex items-center gap-2 text-white">
@@ -811,7 +592,7 @@ export default function Welcome({
             )}
 
             {/* 6. SUCCESS STUDENTS Card (Continuous Auto-Slider) */}
-            {(config.toggle_success_students ?? true) && (
+            {isEnabled(config.toggle_success_students) && (
                 <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
                     <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex justify-between items-center">
                         <div className="flex items-center gap-2 text-white">
@@ -871,134 +652,12 @@ export default function Welcome({
             )}
 
             {/* 7. VIDEO GALLERY Card (Clickable Link Redirection to Video Gallery Page) */}
-            {(config.toggle_video_gallery ?? true) && (
-                <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
-                    <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex justify-between items-center">
-                        <div className="flex items-center gap-2 text-white">
-                            <i className="fa-brands fa-youtube text-red-500 bg-white rounded p-[3px] text-[11px]"></i>
-                            <span className="uppercase tracking-wider font-extrabold text-white">VIDEO GALLERY</span>
-                        </div>
-                        <Link href={getUrl('/video-gallery')} className="bg-[#581C87] text-white hover:bg-purple-900 px-3 py-1 rounded text-[10px] uppercase font-black tracking-wider shadow-sm transition">
-                            VIEW ALL
-                        </Link>
-                    </div>
-
-                    {/* Desktop View: Grid (Clickable Thumbnails Redirecting to Video Gallery) */}
-                    <div className="hidden sm:grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6">
-                        {videoList.map((video, idx) => (
-                            <Link
-                                key={`video-desk-${video.video_id || idx}-${idx}`}
-                                href={getUrl('/video-gallery')}
-                                className="bg-white rounded border border-slate-200 overflow-hidden shadow-sm flex flex-col group cursor-pointer hover:shadow-md transition"
-                            >
-                                <div className="aspect-video w-full bg-slate-950 relative overflow-hidden">
-                                    <img
-                                        src={`https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
-                                        alt={video.title || `Video ${idx}`}
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                                        onError={(e) => {
-                                            e.target.onerror = null;
-                                            e.target.src = getUrl('/images/about.jpg');
-                                        }}
-                                    />
-                                    <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors flex items-center justify-center">
-                                        <div className="w-14 h-14 rounded-full bg-rose-600 group-hover:bg-rose-500 text-white flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform">
-                                            <i className="fa-solid fa-play ml-1 text-xl"></i>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="p-3.5 bg-white border-t border-slate-100 flex items-center justify-between">
-                                    <h4 className="font-extrabold text-slate-900 text-[13px] group-hover:text-[#7024A8] transition-colors truncate">
-                                        {video.title}
-                                    </h4>
-                                    <i className="fa-solid fa-arrow-right text-[11px] text-slate-400 group-hover:text-[#7024A8] transition-colors ml-2 shrink-0"></i>
-                                </div>
-                            </Link>
-                        ))}
-                    </div>
-
-                    {/* Mobile View: 2-Row Horizontal Continuous Auto-Slider (Clickable Thumbnails Redirecting) */}
-                    <div className="block sm:hidden p-4 overflow-hidden relative">
-                        <div className="animate-video-marquee">
-                            <div className="flex gap-4 pr-4 shrink-0">
-                                {videoPairs.map((pair, pIdx) => (
-                                    <div key={`video-pair-a-${pIdx}`} className="w-[280px] shrink-0 space-y-4">
-                                        {pair.map((video, idx) => (
-                                            <Link
-                                                key={`video-mob-a-${video.video_id || idx}-${idx}`}
-                                                href={getUrl('/video-gallery')}
-                                                className="bg-white rounded border border-slate-200 overflow-hidden shadow-sm flex flex-col group cursor-pointer"
-                                            >
-                                                <div className="aspect-video w-full bg-slate-950 relative overflow-hidden">
-                                                    <img
-                                                        src={`https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
-                                                        alt={video.title || `Video ${idx}`}
-                                                        className="w-full h-full object-cover"
-                                                        onError={(e) => {
-                                                            e.target.onerror = null;
-                                                            e.target.src = getUrl('/images/about.jpg');
-                                                        }}
-                                                    />
-                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                                        <div className="w-12 h-12 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-lg">
-                                                            <i className="fa-solid fa-play ml-1 text-lg"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="p-3 bg-white border-t border-slate-100 flex items-center justify-between">
-                                                    <h4 className="font-extrabold text-slate-900 text-[13px] truncate">
-                                                        {video.title}
-                                                    </h4>
-                                                    <i className="fa-solid fa-arrow-right text-[11px] text-slate-400 ml-2 shrink-0"></i>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                            <div className="flex gap-4 pr-4 shrink-0" aria-hidden="true">
-                                {videoPairs.map((pair, pIdx) => (
-                                    <div key={`video-pair-b-${pIdx}`} className="w-[280px] shrink-0 space-y-4">
-                                        {pair.map((video, idx) => (
-                                            <Link
-                                                key={`video-mob-b-${video.video_id || idx}-${idx}`}
-                                                href={getUrl('/video-gallery')}
-                                                className="bg-white rounded border border-slate-200 overflow-hidden shadow-sm flex flex-col group cursor-pointer"
-                                            >
-                                                <div className="aspect-video w-full bg-slate-950 relative overflow-hidden">
-                                                    <img
-                                                        src={`https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
-                                                        alt={video.title || `Video ${idx}`}
-                                                        className="w-full h-full object-cover"
-                                                        onError={(e) => {
-                                                            e.target.onerror = null;
-                                                            e.target.src = getUrl('/images/about.jpg');
-                                                        }}
-                                                    />
-                                                    <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                                                        <div className="w-12 h-12 rounded-full bg-rose-600 text-white flex items-center justify-center shadow-lg">
-                                                            <i className="fa-solid fa-play ml-1 text-lg"></i>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="p-3 bg-white border-t border-slate-100 flex items-center justify-between">
-                                                    <h4 className="font-extrabold text-slate-900 text-[13px] truncate">
-                                                        {video.title}
-                                                    </h4>
-                                                    <i className="fa-solid fa-arrow-right text-[11px] text-slate-400 ml-2 shrink-0"></i>
-                                                </div>
-                                            </Link>
-                                        ))}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {isEnabled(config.toggle_video_gallery) && (
+                <VideoGallery youtube_videos={youtube_videos} />
             )}
 
             {/* 8. CERTIFIED Card (Continuous Auto-Slider) */}
-            {(config.toggle_sponsors ?? true) && (
+            {isEnabled(config.toggle_sponsors) && (
                 <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
                     <div className="bg-[#7024A8] text-white px-4 py-2.5 text-xs font-bold flex items-center justify-between">
                         <div className="flex items-center gap-2 text-white">

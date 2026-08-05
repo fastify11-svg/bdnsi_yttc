@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\CenterStatus;
 use App\Enums\StudentStatus;
 use App\Models\Center;
-use App\Models\ConfigDictionary;
+use App\Models\SiteConfig;
 use App\Models\ContactUs;
 use App\Models\Exam;
 use App\Models\License;
@@ -22,7 +22,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $config = ConfigDictionary::allCached();
+        $config = SiteConfig::firstCached();
 
         $sliders = Slider::where('type', \App\Enums\SliderType::Slider)
             ->where('status', 1)
@@ -52,8 +52,8 @@ class HomeController extends Controller
             $success_students = Student::take(12)->get();
         }
 
-        $notice = ConfigDictionary::get('notice', 'মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন।');
-        $about_us = ConfigDictionary::get('main_about_us', 'মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন। আমাদের অনেক ছাত্র-ছাত্রী দেশে এবং বিদেশে দক্ষতার সাথে কাজ করছেন। Computer Operator প্রশিক্ষণ নিয়েছেন। অনেক ছাত্র পণ্য উৎপাদনের প্রশিক্ষণ গ্রহণ করে কারখানা স্থাপন করেছেন।');
+        $notice = $config->marquee_notice ?? 'মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন।';
+        $about_us = $config->about_short ?? 'মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন। আমাদের অনেক ছাত্র-ছাত্রী দেশে এবং বিদেশে দক্ষতার সাথে কাজ করছেন। Computer Operator প্রশিক্ষণ নিয়েছেন। অনেক ছাত্র পণ্য উৎপাদনের প্রশিক্ষণ গ্রহণ করে কারখানা স্থাপন করেছেন।';
 
         $counts = [
             'total_centers' => Center::count() ?: 216,
@@ -165,13 +165,13 @@ class HomeController extends Controller
         
         if ($type === 'terms') {
             $title = 'Terms & Conditions';
-            $content = \App\Models\ConfigDictionary::get('terms_conditions', '');
+            $content = \App\Models\SiteConfig::firstCached()->terms_conditions ?? '';
         } elseif ($type === 'privacy') {
             $title = 'Privacy Policy';
-            $content = \App\Models\ConfigDictionary::get('privacy_policy', '');
+            $content = \App\Models\SiteConfig::firstCached()->privacy_policy ?? '';
         } elseif ($type === 'about') {
             $title = 'About Us';
-            $content = \App\Models\ConfigDictionary::get('about_full', '');
+            $content = \App\Models\SiteConfig::firstCached()->about_full ?? '';
         } else {
             abort(404);
         }
