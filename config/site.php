@@ -1,24 +1,10 @@
-<?php
+﻿<?php
+
 return [
-    'setting' => [
-        'address' => 'Bi G49,145 Shantinagar, Dhaka 1217 Rd',
-        'phone' => '0199999999',
-        'email' => 'bdnsi.institute@gmail.com',
-         'rj_no'=>'C-198227',
-         'name'=>'Bangladesh National Skill Institute',
+    "defaults" => [
+        "notice" => "মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন।",
+        "about_us" => "মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন। আমাদের অনেক ছাত্র-ছাত্রী দেশে এবং বিদেশে দক্ষতার সাথে কাজ করছেন। Computer Operator প্রশিক্ষণ নিয়েছেন। অনেক ছাত্র পণ্য উৎপাদনের প্রশিক্ষণ গ্রহণ করে কারখানা স্থাপন করেছেন।",
+        "total_centers" => 216,
+        "total_courses" => 532,
     ],
-    'bluck_api_key' => env('BLUCK_API_KEY', ''),
-    'bluck_secret_key' => env('BLUCK_SECRET_KEY', ''),
-
-
-    'course_type' => [
-        \App\Enums\CourseType::Regular=>100,
-        \App\Enums\CourseType::Short_Course=>1200,
-        \App\Enums\CourseType::Diploma=>4800,
-    ],
-
-
-
-
-
 ];

@@ -46,4 +46,16 @@ class SiteConfig extends Model
 
         return self::$cachedConfig;
     }
+
+    public static function isEnabled($feature)
+    {
+        $config = self::firstCached();
+        if (!$config) {
+            return true;
+        }
+
+        // Feature flags are stored as 'on' / 'off' or 1 / 0
+        $value = $config->{$feature} ?? 1;
+        return $value === 'on' || $value === 1 || $value === '1';
+    }
 }

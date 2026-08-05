@@ -34,32 +34,32 @@ class HomeController extends Controller
             $sliders = Slider::where('status', 1)->orderBy('order_index', 'asc')->take(5)->get();
         }
         
-        $sponsors = ($config['toggle_sponsors'] ?? '1') !== '0' ? Slider::where('type', \App\Enums\SliderType::Sponsor)->where('status', 1)->orderBy('order_index', 'asc')->take(30)->get() : collect([]);
-        $photo_gallery = ($config['toggle_photo_gallery'] ?? '1') !== '0' ? Slider::where('type', \App\Enums\SliderType::Gallery)->where('status', 1)->orderBy('order_index', 'asc')->take(20)->get() : collect([]);
+        $sponsors = \App\Models\SiteConfig::isEnabled('toggle_sponsors') ? Slider::where('type', \App\Enums\SliderType::Sponsor)->where('status', 1)->orderBy('order_index', 'asc')->take(30)->get() : collect([]);
+        $photo_gallery = \App\Models\SiteConfig::isEnabled('toggle_photo_gallery') ? Slider::where('type', \App\Enums\SliderType::Gallery)->where('status', 1)->orderBy('order_index', 'asc')->take(20)->get() : collect([]);
 
         $courses = Subject::orderBy('name', 'asc')->limit(7)->get();
         $teams = Team::where('status', 1)->orderBy('order_index', 'asc')->get();
-        $youtube_videos = ($config['toggle_video_gallery'] ?? '1') !== '0' ? YoutubeVideo::where('status', 1)->take(6)->get() : collect([]);
-        $notices = ($config['toggle_notice_board'] ?? '1') !== '0' ? Notice::latest()->take(5)->get() : collect([]);
+        $youtube_videos = \App\Models\SiteConfig::isEnabled('toggle_video_gallery') ? YoutubeVideo::where('status', 1)->take(6)->get() : collect([]);
+        $notices = \App\Models\SiteConfig::isEnabled('toggle_notice_board') ? Notice::latest()->take(5)->get() : collect([]);
 
-        $centers = ($config['toggle_verified_centers'] ?? '1') !== '0' ? Center::where('status', CenterStatus::Approved)->take(8)->get() : collect([]);
-        if ($centers->isEmpty() && ($config['toggle_verified_centers'] ?? '1') !== '0') {
+        $centers = \App\Models\SiteConfig::isEnabled('toggle_verified_centers') ? Center::where('status', CenterStatus::Approved)->take(8)->get() : collect([]);
+        if ($centers->isEmpty() && \App\Models\SiteConfig::isEnabled('toggle_verified_centers')) {
             $centers = Center::take(8)->get();
         }
 
-        $success_students = ($config['toggle_success_students'] ?? '1') !== '0' ? Student::where('status', StudentStatus::Approved)->take(12)->get() : collect([]);
-        if ($success_students->isEmpty() && ($config['toggle_success_students'] ?? '1') !== '0') {
+        $success_students = \App\Models\SiteConfig::isEnabled('toggle_success_students') ? Student::where('status', StudentStatus::Approved)->take(12)->get() : collect([]);
+        if ($success_students->isEmpty() && \App\Models\SiteConfig::isEnabled('toggle_success_students')) {
             $success_students = Student::take(12)->get();
         }
 
-        $notice = $config->marquee_notice ?? 'মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন।';
-        $about_us = $config->about_short ?? 'মানসম্মত প্রশিক্ষণ গ্রহণ করে অনেক শিক্ষিত কিংবা অশিক্ষিত বেকার কর্মসংস্থান করতে পেরেছে। দেশের প্রায় সকল পাবলিক ও প্রাইভেট বিশ্ববিদ্যালয়ের সংশ্লিষ্ট ডিপার্টমেন্টের ছাত্র-ছাত্রী প্রশিক্ষণ গ্রহণ করছেন। আমাদের অনেক ছাত্র-ছাত্রী দেশে এবং বিদেশে দক্ষতার সাথে কাজ করছেন। Computer Operator প্রশিক্ষণ নিয়েছেন। অনেক ছাত্র পণ্য উৎপাদনের প্রশিক্ষণ গ্রহণ করে কারখানা স্থাপন করেছেন।';
+        $notice = $config->marquee_notice ?? config('site.defaults.notice');
+        $about_us = $config->about_short ?? config('site.defaults.about_us');
 
         $counts = [
-            'total_centers' => Center::count() ?: 216,
-            'total_courses' => Subject::count() ?: 532,
-            'total_exams' => Exam::count() ?: 176,
-            'total_students' => Student::count() ?: 54512,
+            'total_centers' => Center::count() ?: config('site.defaults.total_centers'),
+            'total_courses' => Subject::count() ?: config('site.defaults.total_courses'),
+            'total_exams' => Exam::count() ?: config('site.defaults.total_exams', 176),
+            'total_students' => Student::count() ?: config('site.defaults.total_students', 54512),
         ];
 
         return Inertia::render('Welcome', [

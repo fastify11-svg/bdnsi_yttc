@@ -18,11 +18,7 @@ class CheckModuleEnabled
      */
     public function handle(Request $request, Closure $next, $moduleName)
     {
-        $settings = \App\Models\SiteConfig::firstCached();
-        $val = $settings ? ($settings->{$moduleName} ?? true) : true;
-        $isEnabled = filter_var($val, FILTER_VALIDATE_BOOLEAN);
-
-        if (!$isEnabled) {
+        if (!\App\Models\SiteConfig::isEnabled($moduleName)) {
             abort(403, 'This module is currently disabled by the administrator.');
         }
 

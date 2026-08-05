@@ -55,7 +55,7 @@ class StudentController extends Controller
         if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Student::with('center:id,code', 'subject:id,name', 'result'))
                 ->editColumn('registration', function ($registration) {
-                    $regBtn = '<a style="background-color:#0F5233; color:#ffffff; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'registration' => 'registration']) . '">' . ($registration->registration ?: 'N/A') . '</a>';
+                    $regBtn = '<a style="background-color:#0F5233; color:#ffffff; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'registration' => 'registration']) . '">' . e($registration->registration ?: 'N/A') . '</a>';
                     $transcriptBtn = '<a style="background-color:#EBF8FF; color:#1D4ED8; border:1px solid #BFDBFE; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'transcript' => 'transcript']) . '">Transcript</a>';
                     $certBtn = '<a style="background-color:#FAF5FF; color:#6D28D9; border:1px solid #E9D8FD; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'certificate' => 'certificate']) . '">Certificate</a>';
                     $origCertBtn = '<a style="background-color:#F0FFF4; color:#15803D; border:1px solid #BBF7D0; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'original' => 'original']) . '">Original Certificate</a>';
@@ -66,7 +66,7 @@ class StudentController extends Controller
                     return '<div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; max-width:320px;">' . $regBtn . $transcriptBtn . $certBtn . $origCertBtn . $origCpdfBtn . $cpdfBtn . $idcardBtn . '</div>';
                 })
                 ->editColumn('roll', function ($roll) {
-                    return '<a style="background-color:#BE123C; color:#ffffff; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.admit", [$roll->id, 'admit' => 'admit']) . '">' . ($roll->roll ?: 'N/A') . '</a>';
+                    return '<a style="background-color:#BE123C; color:#ffffff; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.admit", [$roll->id, 'admit' => 'admit']) . '">' . e($roll->roll ?: 'N/A') . '</a>';
                 })
                 ->addColumn('student_result', function ($student_result) {
                     return '<a target="_blank" href="' . route("admin.result.show", $student_result->id ?? '') . '">' . ($student_result->result()->count() == 1 ? 'Result' : 'N/A') . '</a>';
