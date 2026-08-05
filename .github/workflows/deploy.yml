@@ -1,0 +1,24 @@
+﻿name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Trigger Webhook
+        env:
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+        run: |
+          echo "Triggering deployment..."
+          if [ -n "$DEPLOY_WEBHOOK_URL" ]; then
+            curl -X POST $DEPLOY_WEBHOOK_URL
+          else
+            echo "No deployment webhook configured. Please set DEPLOY_WEBHOOK_URL in GitHub Secrets."
+          fi

@@ -1,4 +1,4 @@
-require('./bootstrap');
+import './bootstrap';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 import React from 'react';
@@ -7,7 +7,10 @@ import { createInertiaApp } from '@inertiajs/inertia-react';
 
 createInertiaApp({
     title: title => title ? `${title} - BDNSI` : 'BDNSI',
-    resolve: name => require(`./Pages/${name}`),
+    resolve: (name) => {
+        const pages = import.meta.glob('./Pages/**/*.jsx', { eager: true });
+        return pages[`./Pages/${name}.jsx`];
+    },
     setup({ el, App, props }) {
         createRoot(el).render(<App {...props} />);
     },

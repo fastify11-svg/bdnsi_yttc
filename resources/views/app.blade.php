@@ -13,11 +13,9 @@
     <title>{{ $siteName }}</title>
     <link rel="icon" type="image/x-icon" href="{{ $favIcon }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap"/>
-    <!-- Application Styles -->
-    <link rel="stylesheet" href="{{ asset(mix('css/app.css')) }}"/>
-
-    <!-- Dynamic JS assets script -->
-    <script src="{{ asset(mix('js/app.js')) }}" defer></script>
+    <!-- Application Styles & Scripts -->
+    @viteReactRefresh
+    @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     @inertiaHead
 </head>
 <body class="font-sans antialiased bg-gray-100 text-gray-900">
