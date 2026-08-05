@@ -15,6 +15,10 @@ use Illuminate\Database\Eloquent\Model;
 class Result extends Model
 {
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Scopes\CenterScope());
+    }
 
     protected $fillable = [
         'student_id',

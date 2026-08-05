@@ -61,8 +61,6 @@ class HandleInertiaRequests extends Middleware
                         'mobile' => $user->center->mobile ?? $user->phone ?? 'N/A',
                         'email' => $user->center->email ?? $user->email,
                         'center_logo' => $user->center->center_logo ?? null,
-                        'director_photo' => $user->center->director_photo ?? null,
-                        'director_signature' => $user->center->director_signature ?? null,
                         'status' => is_object($user->center->status) ? $user->center->status->value : $user->center->status,
                     ] : null,
                     'avatar' => $user->avatar ?? null,
@@ -89,8 +87,19 @@ class HandleInertiaRequests extends Middleware
                 'notice' => \App\Models\SiteConfig::firstCached()->marquee_notice ?? 'Welcome to BDNSI Portal',
             ],
             'site_config' => function () {
-                $config = \App\Models\SiteConfig::firstCached();
-                return $config ? $config->toArray() : [];
+                $c = \App\Models\SiteConfig::firstCached();
+                return $c ? $c->only([
+                    'portal_name', 'tagline', 'header_logo', 'main_logo', 'favicon',
+                    'site_phone', 'official_email', 'headquarter_address',
+                    'facebook_url', 'youtube_url', 'twitter_url', 'linkedin_url',
+                    'marquee_notice', 'about_short', 'footer_copyright',
+                    'toggle_center_apply', 'toggle_result_verify', 'toggle_success_students',
+                    'toggle_video_gallery', 'toggle_photo_gallery', 'toggle_verified_centers',
+                    'toggle_sponsors', 'toggle_notice_board', 'toggle_contact_form', 'toggle_whatsapp',
+                    'primary_color', 'secondary_color', 'accent_color',
+                    'footer_top_bg_image', 'footer_side_bg_image', 'footer_disclaimer_text',
+                    'footer_planning_text', 'footer_tech_support_text'
+                ]) : [];
             },
             'footer_links' => function () {
                 return \App\Models\FooterLink::where('is_active', 1)->orderBy('sort_order', 'asc')->get();

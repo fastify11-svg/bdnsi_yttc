@@ -46,6 +46,11 @@ class Student extends Authenticatable
 {
     use HasFactory, DeletesImage;
 
+    protected static function booted()
+    {
+        static::addGlobalScope(new \App\Scopes\CenterScope());
+    }
+
     protected $fillable = [
         'center_id',
         'name',
