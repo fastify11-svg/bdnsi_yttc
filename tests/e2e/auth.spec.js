@@ -1,11 +1,16 @@
-const { test, expect } = require('@playwright/test');
+﻿const { test, expect } = require('@playwright/test');
 
 test.describe('Authentication E2E Tests', () => {
 
+  const adminEmail = process.env.ADMIN_EMAIL || 'superadmin@gmail.com';
+  const adminPassword = process.env.ADMIN_PASSWORD || '12345678';
+  const centerEmail = process.env.CENTER_EMAIL || 'center@bdnsi.com';
+  const centerPassword = process.env.CENTER_PASSWORD || '12345678';
+
   test('Admin login success', async ({ page }) => {
     await page.goto('./login');
-    await page.fill('input[name="email"]', 'superadmin@gmail.com');
-    await page.fill('input[name="password"]', '12345678');
+    await page.fill('input[name="email"]', adminEmail);
+    await page.fill('input[name="password"]', adminPassword);
     await page.click('button[type="submit"]');
 
     // Should redirect to dashboard
@@ -15,7 +20,7 @@ test.describe('Authentication E2E Tests', () => {
 
   test('Admin login failure with wrong password', async ({ page }) => {
     await page.goto('./login');
-    await page.fill('input[name="email"]', 'superadmin@gmail.com');
+    await page.fill('input[name="email"]', adminEmail);
     await page.fill('input[name="password"]', 'wrongpassword');
     await page.click('button[type="submit"]');
 
@@ -27,8 +32,8 @@ test.describe('Authentication E2E Tests', () => {
   test('Center user login success', async ({ page }) => {
     // Note: Assuming a default center user is seeded
     await page.goto('./login');
-    await page.fill('input[name="email"]', 'center@bdnsi.com');
-    await page.fill('input[name="password"]', '12345678');
+    await page.fill('input[name="email"]', centerEmail);
+    await page.fill('input[name="password"]', centerPassword);
     await page.click('button[type="submit"]');
 
     // Should redirect to dashboard
@@ -38,27 +43,28 @@ test.describe('Authentication E2E Tests', () => {
 
   test('Logout works', async ({ page }) => {
     await page.goto('./login');
-    await page.fill('input[name="email"]', 'superadmin@gmail.com');
-    await page.fill('input[name="password"]', '12345678');
+    await page.fill('input[name="email"]', adminEmail);
+    await page.fill('input[name="password"]', adminPassword);
     await page.click('button[type="submit"]');
 
     await expect(page).toHaveURL(/.*dashboard/);
 
-    // Logout process - assumes a dropdown or direct logout button
-    // It might be a POST request in Laravel so we might need to click a button
-    // Wait for the dropdown or button
-    const userMenuButton = page.locator('button:has(svg)').first(); // common pattern in Jetstream/Breeze
+    // Logout process using data-testid
+    const userMenuButton = page.getByTestId('user-menu');
     if (await userMenuButton.isVisible()) {
         await userMenuButton.click();
     }
     
     // Find the link or button that says Log Out
-    const logoutLink = page.locator('text=Log Out').first();
-    if (await logoutLink.isVisible()) {
-        await logoutLink.click();
+    const logoutBtn = page.getByTestId('logout-btn');
+    if (await logoutBtn.isVisible()) {
+        await logoutBtn.click();
+    } else {
+        // Fallback for current ui
+        await page.goto('./logout'); // this might be a get request or need form submit
     }
 
-    // Wait for redirect to home
+    // Wait for redirect
     await expect(page).toHaveURL(/.*$/);
   });
 

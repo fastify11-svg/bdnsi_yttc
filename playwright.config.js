@@ -8,9 +8,10 @@ module.exports = defineConfig({
   workers: 1,
   reporter: 'html',
   use: {
-    baseURL: process.env.APP_URL || 'http://127.0.0.1/BDNSI/public/',
+    baseURL: process.env.APP_URL || 'http://127.0.0.1:8000',
     trace: 'on-first-retry',
-    headless: true
+    headless: true,
+    testIdAttribute: 'data-testid'
   },
   projects: [
     {

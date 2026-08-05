@@ -155,6 +155,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                     {/* Admin User Header Profile Dropdown */}
                     <div className="relative">
                         <button
+                            data-testid="user-menu"
                             onClick={() => setUserDropdown(!userDropdown)}
                             className="flex items-center gap-3 p-1.5 rounded-2xl hover:bg-slate-100/80 transition"
                         >
@@ -190,6 +191,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                                 </Link>
                                 <div className="border-t border-slate-100 my-1"></div>
                                 <button
+                                    data-testid="logout-btn"
                                     onClick={handleLogout}
                                     className="w-full text-left px-4 py-2.5 text-rose-600 hover:bg-rose-50 flex items-center gap-2.5 font-bold transition"
                                 >
@@ -269,6 +271,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                             </div>
 
                             <button
+                                data-testid="mobile-logout-btn"
                                 onClick={handleLogout}
                                 className="w-full flex items-center justify-center gap-2 py-2.5 text-xs font-bold text-rose-400 hover:bg-rose-500/10 rounded-xl transition border border-rose-500/20"
                             >

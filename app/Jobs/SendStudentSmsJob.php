@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 namespace App\Jobs;
 
@@ -10,6 +10,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class SendStudentSmsJob implements ShouldQueue
 {
@@ -36,11 +37,21 @@ class SendStudentSmsJob implements ShouldQueue
      */
     public function handle()
     {
-        try {
-            Helper::sendSms($this->phone, $this->message);
-        } catch (\Throwable $e) {
-            Log::error('SMS dispatch failed', ['phone' => $this->phone, 'error' => $e->getMessage()]);
-        }
+        Helper::sendSms($this->phone, $this->message);
+    }
+
+    /**
+     * Handle a job failure.
+     *
+     * @param  \Throwable  $exception
+     * @return void
+     */
+    public function failed(Throwable $exception)
+    {
+        // Send a critical alert to Slack or default error log
+        Log::channel('slack')->critical('SMS dispatch failed!', [
+            'phone' => $this->phone,
+            'error' => $exception->getMessage()
+        ]);
     }
 }
-
