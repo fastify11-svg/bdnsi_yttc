@@ -17,7 +17,25 @@ test.describe('Frontend E2E Tests', () => {
   });
 
   test('student result page loads', async ({ page }) => {
-    await page.goto('result');
+    await page.goto('./result');
     await expect(page.locator('text=Student Result').first()).toBeVisible();
+    // Test the search form existence
+    await expect(page.locator('form').first()).toBeVisible();
+  });
+
+  test('all courses page loads', async ({ page }) => {
+    await page.goto('./all-course');
+    await expect(page.locator('text=All Courses').first()).toBeVisible();
+  });
+
+  test('verified center page loads', async ({ page }) => {
+    await page.goto('./verified-center');
+    await expect(page.locator('text=Verified Centers').first()).toBeVisible();
+  });
+
+  test('contact us form loads', async ({ page }) => {
+    await page.goto('./contact-us');
+    await expect(page.locator('text=Contact Us').first()).toBeVisible();
+    await expect(page.locator('form').first()).toBeVisible();
   });
 });
