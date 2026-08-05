@@ -77,7 +77,7 @@ Route::get('whatapp-link/{phone}', function ($phone) {
     return view('frontend.page.whatapplink',[
         'data'=>$data
     ]);
-})->name('whatapp.link');
+})->middleware('throttle:10,1')->name('whatapp.link');
 
 Route::get('/lang-change', function (Request $request) {
     $locale = $request->input('locale');

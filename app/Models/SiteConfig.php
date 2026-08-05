@@ -40,7 +40,7 @@ class SiteConfig extends Model
             return self::$cachedConfig;
         }
 
-        self::$cachedConfig = \Illuminate\Support\Facades\Cache::rememberForever(self::CACHE_KEY, function () {
+        self::$cachedConfig = \Illuminate\Support\Facades\Cache::remember(self::CACHE_KEY, now()->addHours(24), function () {
             return self::first();
         });
 

@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 namespace App\Jobs;
 
@@ -37,7 +37,15 @@ class SendStudentSmsJob implements ShouldQueue
      */
     public function handle()
     {
-        Helper::sendSms($this->phone, $this->message);
+        try {
+            Helper::sendSms($this->phone, $this->message);
+        } catch (Throwable $e) {
+            Log::error('SMS dispatch error', [
+                'phone' => $this->phone,
+                'error' => $e->getMessage()
+            ]);
+            $this->fail($e);
+        }
     }
 
     /**
@@ -48,10 +56,16 @@ class SendStudentSmsJob implements ShouldQueue
      */
     public function failed(Throwable $exception)
     {
-        // Send a critical alert to Slack or default error log
-        Log::channel('slack')->critical('SMS dispatch failed!', [
-            'phone' => $this->phone,
-            'error' => $exception->getMessage()
-        ]);
+        if (config('logging.channels.slack.url')) {
+            Log::channel('slack')->critical('SMS dispatch failed!', [
+                'phone' => $this->phone,
+                'error' => $exception->getMessage()
+            ]);
+        } else {
+            Log::error('SMS dispatch failed (Slack not configured)', [
+                'phone' => $this->phone,
+                'error' => $exception->getMessage()
+            ]);
+        }
     }
 }

@@ -1,16 +1,28 @@
-﻿const { test, expect } = require('@playwright/test');
+const { test, expect } = require('@playwright/test');
 
 test.describe('Authentication E2E Tests', () => {
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'superadmin@gmail.com';
-  const adminPassword = process.env.ADMIN_PASSWORD || '12345678';
-  const centerEmail = process.env.CENTER_EMAIL || 'center@bdnsi.com';
-  const centerPassword = process.env.CENTER_PASSWORD || '12345678';
+  const adminEmail = process.env.ADMIN_EMAIL;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+  const centerEmail = process.env.CENTER_EMAIL;
+  const centerPassword = process.env.CENTER_PASSWORD;
+
+  test.beforeAll(() => {
+    if (!adminEmail || !adminPassword || !centerEmail || !centerPassword) {
+      console.warn('WARNING: Missing CI credentials (ADMIN_EMAIL, ADMIN_PASSWORD, CENTER_EMAIL, CENTER_PASSWORD) in process.env. Using dummy values for local development if not in CI.');
+    }
+  });
+
+  const getAdminEmail = () => process.env.ADMIN_EMAIL || 'superadmin@gmail.com';
+  const getAdminPassword = () => process.env.ADMIN_PASSWORD || '12345678';
+  const getCenterEmail = () => process.env.CENTER_EMAIL || 'center@bdnsi.com';
+  const getCenterPassword = () => process.env.CENTER_PASSWORD || '12345678';
+
 
   test('Admin login success', async ({ page }) => {
     await page.goto('./login');
-    await page.fill('input[name="email"]', adminEmail);
-    await page.fill('input[name="password"]', adminPassword);
+    await page.fill('input[name="email"]', getAdminEmail());
+    await page.fill('input[name="password"]', getAdminPassword());
     await page.click('button[type="submit"]');
 
     // Should redirect to dashboard
@@ -20,7 +32,7 @@ test.describe('Authentication E2E Tests', () => {
 
   test('Admin login failure with wrong password', async ({ page }) => {
     await page.goto('./login');
-    await page.fill('input[name="email"]', adminEmail);
+    await page.fill('input[name="email"]', getAdminEmail());
     await page.fill('input[name="password"]', 'wrongpassword');
     await page.click('button[type="submit"]');
 
@@ -32,8 +44,8 @@ test.describe('Authentication E2E Tests', () => {
   test('Center user login success', async ({ page }) => {
     // Note: Assuming a default center user is seeded
     await page.goto('./login');
-    await page.fill('input[name="email"]', centerEmail);
-    await page.fill('input[name="password"]', centerPassword);
+    await page.fill('input[name="email"]', getCenterEmail());
+    await page.fill('input[name="password"]', getCenterPassword());
     await page.click('button[type="submit"]');
 
     // Should redirect to dashboard
@@ -43,8 +55,8 @@ test.describe('Authentication E2E Tests', () => {
 
   test('Logout works', async ({ page }) => {
     await page.goto('./login');
-    await page.fill('input[name="email"]', adminEmail);
-    await page.fill('input[name="password"]', adminPassword);
+    await page.fill('input[name="email"]', getAdminEmail());
+    await page.fill('input[name="password"]', getAdminPassword());
     await page.click('button[type="submit"]');
 
     await expect(page).toHaveURL(/.*dashboard/);
@@ -65,7 +77,7 @@ test.describe('Authentication E2E Tests', () => {
     }
 
     // Wait for redirect
-    await expect(page).toHaveURL(/.*$/);
+    await expect(page).toHaveURL(/\/(login)?$/);
   });
 
 });
