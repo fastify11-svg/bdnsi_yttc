@@ -18,6 +18,7 @@ class SendStudentSmsJob implements ShouldQueue
 
     public $phone;
     public $message;
+    public $queue = 'high';
 
     /**
      * Create a new job instance.
