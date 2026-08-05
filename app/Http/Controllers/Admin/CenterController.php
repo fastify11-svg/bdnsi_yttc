@@ -104,7 +104,6 @@ class CenterController extends Controller
                     'phone' => $center->mobile ?? '01711000000',
                     'center_id' => $center->id,
                     'password' => Hash::make($defaultPassword),
-                    'text_password' => $defaultPassword,
                 ]);
             }
         } else {

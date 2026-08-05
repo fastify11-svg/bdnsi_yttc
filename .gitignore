@@ -11,3 +11,20 @@ Homestead.yaml
 npm-debug.log
 yarn-error.log
 /.idea
+
+# Custom ignores for sensitive and debug files
+*.sql
+alter_table.php
+audit_*.php
+check_*.php
+dump_*.php
+e2e_*.php
+fix_*.php
+full_stack_audit.php
+register_demo_student.php
+test_*.php
+update_*.php
+composer.phar
+build_output.log
+audit_report.log
+/archive_backup_2026

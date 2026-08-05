@@ -22,7 +22,6 @@ class User extends Authenticatable
         'center_id',
         'password',
         'avatar',
-        'text_password',
     ];
 
 

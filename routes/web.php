@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Session;
 */
 
 Route::get('result', \App\Http\Controllers\ResultController::class)
-    ->middleware('module:toggle_result_verify')
+    ->middleware(['module:toggle_result_verify', 'throttle:results'])
     ->name('result');
 
 
@@ -49,7 +49,7 @@ Route::get('/verified-institute', [HomeController::class,'verifiedCenter'])
     ->name('verifiedInstitute');
 
 Route::match(['get','post'],'/contact-us', [HomeController::class,'contactUs'])
-    ->middleware(['module:toggle_contact_form', 'throttle:3,1'])
+    ->middleware(['module:toggle_contact_form', 'throttle:contact'])
     ->name('contactUs');
 
 Route::resource('center-request', \App\Http\Controllers\CenterRequestController::class)
