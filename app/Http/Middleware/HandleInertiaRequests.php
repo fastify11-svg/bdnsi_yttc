@@ -73,7 +73,9 @@ class HandleInertiaRequests extends Middleware
                     'avatar' => $adminUser->avatar ?? null,
                     'roles' => method_exists($adminUser, 'getRoleNames') ? $adminUser->getRoleNames() : [],
                     'permissions' => method_exists($adminUser, 'allPermissions') ? $adminUser->allPermissions()->pluck('name') : [],
-                    'unread_inquiries_count' => \App\Models\ContactUs::where('is_seen', false)->count(),
+                    'unread_inquiries_count' => \Illuminate\Support\Facades\Cache::remember('unread_inquiries', 60, function() {
+                        return \App\Models\ContactUs::where('is_seen', false)->count();
+                    }),
                 ] : null,
             ],
             'flash' => [
@@ -102,10 +104,14 @@ class HandleInertiaRequests extends Middleware
                 ]) : [];
             },
             'footer_links' => function () {
-                return \App\Models\FooterLink::where('is_active', 1)->orderBy('sort_order', 'asc')->get();
+                return \Illuminate\Support\Facades\Cache::remember('footer_links', 3600, function () {
+                    return \App\Models\FooterLink::where('is_active', 1)->orderBy('sort_order', 'asc')->get();
+                });
             },
             'footer_logos' => function () {
-                return \App\Models\FooterPartnerLogo::where('is_active', 1)->get();
+                return \Illuminate\Support\Facades\Cache::remember('footer_logos', 3600, function () {
+                    return \App\Models\FooterPartnerLogo::where('is_active', 1)->get();
+                });
             },
         ]);
     }

@@ -17,6 +17,14 @@ class ContactUs extends Model
         'is_seen' ,
     ];
 
+    protected static function booted()
+    {
+        static::saved(function ($model) {
+            \Illuminate\Support\Facades\Cache::forget('unread_inquiries');
+        });
 
-
+        static::deleted(function ($model) {
+            \Illuminate\Support\Facades\Cache::forget('unread_inquiries');
+        });
+    }
 }

@@ -42,7 +42,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->name('login');
 
     Route::post('/login', [AuthenticatedSessionController::class, 'store'])
-        ->middleware('guest:admin');
+        ->middleware(['guest:admin', 'throttle:admin-login']);
 
     Route::get('/forgot-password', [PasswordResetLinkController::class, 'create'])
         ->middleware('guest:admin')

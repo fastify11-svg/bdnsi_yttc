@@ -96,5 +96,5 @@ Route::post('/gemini/extract-ocr', [\App\Http\Controllers\GeminiOcrController::c
 
 Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
-})->name('health');
+})->middleware('throttle:health')->name('health');
 

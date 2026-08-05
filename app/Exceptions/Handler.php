@@ -34,4 +34,17 @@ class Handler extends ExceptionHandler
     {
         //
     }
+
+    public function render($request, \Throwable $e)
+    {
+        if ($e instanceof \Illuminate\Http\Exceptions\ThrottleRequestsException) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'আপনি খুব বেশিবার চেষ্টা করেছেন। অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন।'], 429);
+            }
+            
+            return response()->view('errors.429', ['message' => 'আপনি খুব বেশিবার চেষ্টা করেছেন। অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন।'], 429);
+        }
+
+        return parent::render($request, $e);
+    }
 }
