@@ -64,4 +64,24 @@ class SiteConfig extends Model
     public function getFaviconAttribute($value) { return \App\Lib\Image::url($value); }
     public function getFooterTopBgImageAttribute($value) { return \App\Lib\Image::url($value); }
     public function getFooterSideBgImageAttribute($value) { return \App\Lib\Image::url($value); }
+
+    public static function updateSettings(\Illuminate\Http\Request $request)
+    {
+        $config = self::first() ?? new self();
+
+        $data = $request->except(['_token', '_method', 'created_at', 'main_logo', 'favicon', 'header_logo', 'footer_top_bg_image', 'footer_side_bg_image']);
+        
+        foreach (['main_logo', 'favicon', 'header_logo', 'footer_top_bg_image', 'footer_side_bg_image'] as $imageKey) {
+            if ($request->hasFile($imageKey)) {
+                $data[$imageKey] = \App\Lib\Image::store($imageKey, 'config');
+            } elseif ($request->has($imageKey) && !is_string($request->input($imageKey))) {
+                unset($data[$imageKey]);
+            }
+        }
+
+        $config->fill($data);
+        $config->save();
+
+        return $config;
+    }
 }

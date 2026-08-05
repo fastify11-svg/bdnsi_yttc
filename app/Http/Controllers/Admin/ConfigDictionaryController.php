@@ -44,21 +44,7 @@ class ConfigDictionaryController extends Controller
             'footer_side_bg_image' => 'nullable|image|max:3072',
         ]);
 
-        $config = SiteConfig::first() ?? new SiteConfig();
-
-        $data = $request->except(['_token', '_method', 'created_at', 'main_logo', 'favicon', 'header_logo', 'footer_top_bg_image', 'footer_side_bg_image']);
-        
-        foreach (['main_logo', 'favicon', 'header_logo', 'footer_top_bg_image', 'footer_side_bg_image'] as $imageKey) {
-            if ($request->hasFile($imageKey)) {
-                $data[$imageKey] = Image::store($imageKey, 'config');
-            } elseif ($request->has($imageKey) && !is_string($request->input($imageKey))) {
-                unset($data[$imageKey]);
-            }
-        }
-
-        $config->fill($data);
-        $config->save();
-        
+        $config = SiteConfig::updateSettings($request);
         
         return response()->report($config, 'Successfully Updated System Configuration');
     }
