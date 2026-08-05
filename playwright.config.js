@@ -6,7 +6,7 @@ module.exports = defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: 1,
-  reporter: 'html',
+  reporter: process.env.CI ? 'github' : 'html',
   use: {
     baseURL: process.env.APP_URL || 'http://127.0.0.1:8000',
     trace: 'on-first-retry',

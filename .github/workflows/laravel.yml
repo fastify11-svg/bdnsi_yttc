@@ -26,13 +26,13 @@ jobs:
           --health-retries=3
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Setup PHP
       uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
       with:
         php-version: '8.2'
     - name: Setup Node.js
-      uses: actions/setup-node@v3
+      uses: actions/setup-node@v4
       with:
         node-version: '20'
     - name: Copy .env
@@ -55,7 +55,7 @@ jobs:
         DB_DATABASE: bdnsi_test
         DB_USERNAME: root
         DB_PASSWORD: ""
-      run: php artisan migrate && vendor/bin/phpunit
+      run: php artisan migrate --seed && vendor/bin/phpunit
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps chromium
     - name: Run Playwright tests
