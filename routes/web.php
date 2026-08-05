@@ -93,3 +93,8 @@ require __DIR__.'/admin.php';
 require __DIR__.'/student.php';
  
 Route::post('/gemini/extract-ocr', [\App\Http\Controllers\GeminiOcrController::class, 'extractData'])->middleware(['throttle:10,1', 'auth:admin'])->name('gemini.ocr');
+
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()]);
+})->name('health');
+

@@ -396,7 +396,7 @@ class StudentController extends Controller
                 . $centerName . ' Technician '
                 . $subjectName . ' under  '.config('site.setting.name').' Your Roll No: '
                 . $student->roll . ' and Registration No: ' . $student->registration . '. Thanks for staying with '.config('site.setting.name');
-            Helper::sendSms($student->phone, $message);
+            \App\Jobs\SendStudentSmsJob::dispatch($student->phone, $message);
             DB::commit();
             
             if ($request->header('X-Inertia')) {

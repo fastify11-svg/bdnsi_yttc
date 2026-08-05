@@ -82,7 +82,7 @@ class ResultController extends Controller
                         'viva' => $viva,
                     ]);
                 $message = 'Congratulation!! ' . $student->name . ', You have successfully filled the application form for  '.$student->center->name .' ' . $student->subject->name . ' course under Young Technical Training. Your Roll No: ' . $student->roll .' and Registration No: ' . $student->registration . '. Thanks for staying with '.config('site.setting.name');
-                Helper::sendSms($student->phone,$message);
+                \App\Jobs\SendStudentSmsJob::dispatch($student->phone, $message);
 
             DB::commit();
             return response()->success('Result published successfully');

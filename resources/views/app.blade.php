@@ -7,8 +7,8 @@
     <meta name="csrf-token" content="{{ csrf_token() }}"/>
     @php
         $siteConfig = \App\Models\SiteConfig::firstCached();
-        $siteName = $siteConfig->portal_name ?? 'BDNSI';
-        $favIcon = $siteConfig->favicon ? asset($siteConfig->favicon) : asset('favicon.ico');
+        $siteName = $siteConfig?->portal_name ?? 'BDNSI';
+        $favIcon = $siteConfig?->favicon ? asset($siteConfig->favicon) : asset('favicon.ico');
     @endphp
     <title>{{ $siteName }}</title>
     <link rel="icon" type="image/x-icon" href="{{ $favIcon }}">

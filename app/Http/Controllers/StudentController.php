@@ -128,9 +128,7 @@ class StudentController extends Controller
             . (Auth::user()->center->name ?? '') . ' Technician '
             . ($student->subject->name ?? '') . ' under  '.config('site.setting.name').' Your Roll No: '
             . $student->roll . ' and Registration No: ' . $student->registration . '. Thanks for staying with National '.config('site.setting.name');
-        try {
-            Helper::sendSms($student->phone,$message);
-        } catch (\Throwable $e) {}
+        \App\Jobs\SendStudentSmsJob::dispatch($student->phone, $message);
         return redirect()->route('student.index')->with('success', 'Student Created successfully');
     }
 

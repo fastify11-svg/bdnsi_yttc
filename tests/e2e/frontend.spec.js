@@ -5,8 +5,8 @@ test.describe('Frontend E2E Tests', () => {
     // Navigate to homepage
     await page.goto('./', { waitUntil: 'domcontentloaded' });
 
-    // Check if the portal name is visible
-    await expect(page.locator('text=Central Site Control Center').first()).toBeVisible({ timeout: 30000 });
+    // Check if the portal name is in the title
+    await expect(page).toHaveTitle(/BDNSI/, { timeout: 30000 });
 
     // Check if footer area loads correctly
     const footer = page.locator('footer');

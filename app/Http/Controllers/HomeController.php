@@ -191,7 +191,7 @@ class HomeController extends Controller
     public function courseDetails($id)
     {
         $course = Subject::findOrFail($id);
-        $related_courses = Subject::where('id', '!=', $id)->inRandomOrder()->limit(4)->get();
+        $related_courses = Subject::where('id', '!=', $id)->latest()->limit(20)->get()->shuffle()->take(4);
         return Inertia::render('CourseDetails', compact('course', 'related_courses'));
     }
 
