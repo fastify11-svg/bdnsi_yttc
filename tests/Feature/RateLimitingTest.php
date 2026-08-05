@@ -1,35 +1,26 @@
 <?php
-
 namespace Tests\Feature;
-
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
-
 class RateLimitingTest extends TestCase
 {
     use RefreshDatabase;
-
     public function test_results_route_is_rate_limited()
     {
         $this->seed();
-
         // Send 10 allowed requests
         for ($i = 0; $i < 10; $i++) {
             $response = $this->get('/result?roll=123456');
             $this->assertNotEquals(429, $response->status());
         }
-
         // The 11th request should be rate limited
         $response = $this->get('/result?roll=123456');
-
-        if ($response->status() == 302) { $response->assertStatus(302); } else { $response->assertStatus(429); }
+        $response->assertStatus(429);
     }
-
     public function test_contact_route_is_rate_limited()
     {
         $this->seed();
-
         // Send 3 allowed requests
         for ($i = 0; $i < 3; $i++) {
             $response = $this->post('/contact-us', [
@@ -40,7 +31,6 @@ class RateLimitingTest extends TestCase
             ]);
             $this->assertNotEquals(429, $response->status());
         }
-
         // The 4th request should be rate limited
         $response = $this->post('/contact-us', [
             'name' => 'Test User',
@@ -48,14 +38,11 @@ class RateLimitingTest extends TestCase
             'subject' => 'Test Subject',
             'message' => 'Test Message Content',
         ]);
-
-        if ($response->status() == 302) { $response->assertStatus(302); } else { $response->assertStatus(429); }
+        $response->assertStatus(429);
     }
-
     public function test_admin_login_route_is_rate_limited()
     {
         $this->seed();
-
         // Send 5 allowed requests
         for ($i = 0; $i < 5; $i++) {
             $response = $this->post('/admin/login', [
@@ -64,14 +51,11 @@ class RateLimitingTest extends TestCase
             ]);
             $this->assertNotEquals(429, $response->status());
         }
-
         // The 6th request should be rate limited
         $response = $this->post('/admin/login', [
             'email' => 'admin@admin.com',
             'password' => 'wrongpassword',
         ]);
-
-        if ($response->status() == 302) { $response->assertStatus(302); } else { $response->assertStatus(429); }
+        $response->assertStatus(429);
     }
 }
-
