@@ -58,4 +58,10 @@ class SiteConfig extends Model
         $value = $config->{$feature} ?? 1;
         return $value === 'on' || $value === 1 || $value === '1';
     }
+
+    public function getMainLogoAttribute($value) { return \App\Lib\Image::url($value); }
+    public function getHeaderLogoAttribute($value) { return \App\Lib\Image::url($value); }
+    public function getFaviconAttribute($value) { return \App\Lib\Image::url($value); }
+    public function getFooterTopBgImageAttribute($value) { return \App\Lib\Image::url($value); }
+    public function getFooterSideBgImageAttribute($value) { return \App\Lib\Image::url($value); }
 }
