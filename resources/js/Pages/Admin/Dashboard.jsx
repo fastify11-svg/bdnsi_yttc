@@ -2,9 +2,13 @@ import React from 'react';
 import { Link, useForm, usePage } from '@inertiajs/inertia-react';
 import AdminLayout from '../../Layouts/AdminLayout';
 import { getUrl } from '../../utils/urlHelper';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, AreaChart, Area, PieChart, Pie, Cell } from 'recharts';
 
-export default function Dashboard({ cards = {}, adminList = [] }) {
+const COLORS = ['#10B981', '#F59E0B', '#EF4444', '#6366F1', '#8B5CF6'];
+
+export default function Dashboard({ cards = {}, adminList = [], analytics = {} }) {
     const { app_url } = usePage().props;
+    const { monthlyRegistrations = [], statusBreakdown = [], topCenters = [] } = analytics;
     const { data, setData, post, processing, reset, errors } = useForm({
         name: '',
         email: '',
@@ -76,6 +80,92 @@ export default function Dashboard({ cards = {}, adminList = [] }) {
                                 Loading system metrics...
                             </div>
                         )}
+                    </div>
+                </div>
+
+                {/* Advanced Analytics & Charts Section */}
+                <div>
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4 mt-8">
+                        <div>
+                            <p className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600">ANALYTICS</p>
+                            <h2 className="text-xl font-black text-slate-900 tracking-tight">System Analytics</h2>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+                        {/* Monthly Registrations Chart (Area) */}
+                        <div className="bg-white p-5 rounded-3xl shadow-xs border border-slate-200/80 xl:col-span-2">
+                            <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i className="fa-solid fa-chart-line text-indigo-500"></i>
+                                Monthly Registrations (Last 6 Months)
+                            </h3>
+                            <div className="h-72 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <AreaChart data={monthlyRegistrations} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
+                                        <defs>
+                                            <linearGradient id="colorTotal" x1="0" y1="0" x2="0" y2="1">
+                                                <stop offset="5%" stopColor="#6366F1" stopOpacity={0.8}/>
+                                                <stop offset="95%" stopColor="#6366F1" stopOpacity={0}/>
+                                            </linearGradient>
+                                        </defs>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                        <XAxis dataKey="month_name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748B'}} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748B'}} />
+                                        <RechartsTooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                        <Area type="monotone" dataKey="total" stroke="#6366F1" strokeWidth={3} fillOpacity={1} fill="url(#colorTotal)" name="Registrations" />
+                                    </AreaChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Status Breakdown (Pie) */}
+                        <div className="bg-white p-5 rounded-3xl shadow-xs border border-slate-200/80">
+                            <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i className="fa-solid fa-chart-pie text-emerald-500"></i>
+                                Student Status Breakdown
+                            </h3>
+                            <div className="h-72 w-full flex flex-col justify-center">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={statusBreakdown}
+                                            cx="50%"
+                                            cy="50%"
+                                            innerRadius={60}
+                                            outerRadius={90}
+                                            paddingAngle={5}
+                                            dataKey="value"
+                                            stroke="none"
+                                        >
+                                            {statusBreakdown.map((entry, index) => (
+                                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                                            ))}
+                                        </Pie>
+                                        <RechartsTooltip contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                        <Legend verticalAlign="bottom" height={36} iconType="circle" />
+                                    </PieChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
+
+                        {/* Top Centers (Bar) */}
+                        <div className="bg-white p-5 rounded-3xl shadow-xs border border-slate-200/80 lg:col-span-2 xl:col-span-3">
+                            <h3 className="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
+                                <i className="fa-solid fa-ranking-star text-amber-500"></i>
+                                Top 5 Centers by Students
+                            </h3>
+                            <div className="h-80 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={topCenters} margin={{ top: 20, right: 30, left: 0, bottom: 5 }} barSize={40}>
+                                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                                        <XAxis dataKey="center_name" axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748B'}} dy={10} />
+                                        <YAxis axisLine={false} tickLine={false} tick={{fontSize: 12, fill: '#64748B'}} />
+                                        <RechartsTooltip cursor={{fill: '#F1F5F9'}} contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} />
+                                        <Bar dataKey="total_students" fill="#3B82F6" radius={[6, 6, 0, 0]} name="Total Students" />
+                                    </BarChart>
+                                </ResponsiveContainer>
+                            </div>
+                        </div>
                     </div>
                 </div>
 

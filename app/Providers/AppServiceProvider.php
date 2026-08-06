@@ -34,5 +34,82 @@ class AppServiceProvider extends ServiceProvider
         Blade::directive('selected', function($expression){
             return "<?php echo ($expression) ? 'selected' : ''; ?>";
         });
+        
+        Blade::directive('viteReactRefresh', function () {
+            return '<?php
+                $isDev = file_exists(public_path("hot"));
+                if ($isDev) {
+                    $url = file_get_contents(public_path("hot"));
+                    echo \'<script type="module">
+                        import RefreshRuntime from "\'.$url.\'/@react-refresh"
+                        RefreshRuntime.injectIntoGlobalHook(window)
+                        window.$RefreshReg$ = () => {}
+                        window.$RefreshSig$ = () => (type) => type
+                        window.__vite_plugin_react_preamble_installed__ = true
+                    </script>\';
+                }
+            ?>';
+        });
+
+        Blade::directive('vite', function ($expression) {
+            return '<?php
+                $isDev = file_exists(public_path("hot"));
+                if ($isDev) {
+                    $url = file_get_contents(public_path("hot"));
+                    $files = ' . $expression . ';
+                    $html = \'<script type="module" src="\'.$url.\'/@vite/client"></script>\';
+                    foreach((array)$files as $file) {
+                        if (str_ends_with($file, ".css")) {
+                            $html .= \'<link rel="stylesheet" href="\'.$url.\'/\'.$file.\'">\';
+                        } else {
+                            $html .= \'<script type="module" src="\'.$url.\'/\'.$file.\'"></script>\';
+                        }
+                    }
+                    echo $html;
+                } else {
+                    $manifestPath = public_path("build/manifest.json");
+                    if (!file_exists($manifestPath)) {
+                        echo "";
+                    } else {
+                        $manifest = json_decode(file_get_contents($manifestPath), true);
+                        $files = ' . $expression . ';
+                        $html = "";
+                        $processed = [];
+                        $getLinks = function($file) use (&$getLinks, &$manifest, &$processed) {
+                            $tags = "";
+                            if (isset($processed[$file])) return $tags;
+                            $processed[$file] = true;
+                            if (!isset($manifest[$file])) return $tags;
+                            
+                            $chunk = $manifest[$file];
+                            
+                            if (isset($chunk["css"])) {
+                                foreach($chunk["css"] as $css) {
+                                    $tags .= \'<link rel="stylesheet" href="/build/\'.$css.\'">\';
+                                }
+                            }
+                            if (isset($chunk["imports"])) {
+                                foreach($chunk["imports"] as $import) {
+                                    $tags .= $getLinks($import);
+                                }
+                            }
+                            
+                            $compiled = $chunk["file"];
+                            if (str_ends_with($compiled, ".css")) {
+                                $tags .= \'<link rel="stylesheet" href="/build/\'.$compiled.\'">\';
+                            } else {
+                                $tags .= \'<script type="module" src="/build/\'.$compiled.\'"></script>\';
+                            }
+                            return $tags;
+                        };
+
+                        foreach((array)$files as $file) {
+                            $html .= $getLinks($file);
+                        }
+                        echo $html;
+                    }
+                }
+            ?>';
+        });
     }
 }

@@ -101,7 +101,7 @@ class HandleInertiaRequests extends Middleware
                     'primary_color', 'secondary_color', 'accent_color',
                     'footer_top_bg_image', 'footer_side_bg_image', 'footer_disclaimer_text',
                     'footer_planning_text', 'footer_tech_support_text'
-                ]) : [];
+                ]) : (object)[];
             },
             'footer_links' => function () {
                 return \Illuminate\Support\Facades\Cache::remember('footer_links', 3600, function () {

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Notice extends Model
 {
-    use DeletesImage;
+    use DeletesImage, \App\Traits\ClearsFrontendCache;
 
     protected $fillable=[
             'details',

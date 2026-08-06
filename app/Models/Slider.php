@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Slider extends Model
 {
+    use \App\Traits\ClearsFrontendCache;
 
 
     protected $fillable = [

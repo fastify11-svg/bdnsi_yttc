@@ -37,12 +37,60 @@ class DashboardController extends Controller
                 'value' => Student::where('status',StudentStatus::Pending)->count(),
                 'url' => route('admin.student.index'),
             ],
+            'Total Centers ' => [
+                'value' => \App\Models\Center::count(),
+                'url' => route('admin.center.index'),
+            ],
+            'Total Courses ' => [
+                'value' => \App\Models\Subject::count(),
+                'url' => route('admin.subject.index'),
+            ],
         ]);
+        
         $adminList = Admin::all();
+
+        // Analytics Data
+
+        // 1. Monthly Registrations (Last 6 Months)
+        $sixMonthsAgo = now()->subMonths(5)->startOfMonth();
+        $monthlyRegistrations = Student::select(
+            DB::raw("DATE_FORMAT(created_at, '%b %Y') as month_name"),
+            DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month_key"),
+            DB::raw("COUNT(*) as total")
+        )
+        ->where('created_at', '>=', $sixMonthsAgo)
+        ->groupBy('month_name', 'month_key')
+        ->orderBy('month_key', 'ASC')
+        ->get();
+
+        // 2. Student Status Breakdown
+        $statusBreakdown = Student::select('status', DB::raw("COUNT(*) as total"))
+            ->groupBy('status')
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'name' => $item->status == StudentStatus::Approved->value ? 'Approved' : ($item->status == StudentStatus::Pending->value ? 'Pending' : 'Other'),
+                    'value' => $item->total,
+                ];
+            });
+
+        // 3. Top Centers
+        $topCenters = DB::table('students')
+            ->join('centers', 'students.center_id', '=', 'centers.id')
+            ->select('centers.name as center_name', DB::raw("COUNT(students.id) as total_students"))
+            ->groupBy('centers.id', 'centers.name')
+            ->orderBy('total_students', 'DESC')
+            ->limit(5)
+            ->get();
 
         return \Inertia\Inertia::render('Admin/Dashboard', [
             'cards' => $cards,
             'adminList' => $adminList,
+            'analytics' => [
+                'monthlyRegistrations' => $monthlyRegistrations,
+                'statusBreakdown' => $statusBreakdown,
+                'topCenters' => $topCenters,
+            ]
         ]);
     }
 

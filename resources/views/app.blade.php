@@ -22,3 +22,4 @@
     @inertia
 </body>
 </html>
+<script>window.addEventListener('error', function(e) { fetch('/log-error?msg=' + encodeURIComponent(e.message)); });</script> 

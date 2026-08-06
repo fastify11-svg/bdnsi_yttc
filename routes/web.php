@@ -98,3 +98,4 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
 })->middleware('throttle:health')->name('health');
 
+

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class YoutubeVideo extends Model
 {
+    use \App\Traits\ClearsFrontendCache;
 
     protected $fillable = [
         'title',

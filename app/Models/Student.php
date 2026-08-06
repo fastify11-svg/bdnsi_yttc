@@ -44,7 +44,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class Student extends Authenticatable
 {
-    use HasFactory, DeletesImage, \App\Traits\Student\HasGrades;
+    use HasFactory, DeletesImage, \App\Traits\Student\HasGrades, \App\Traits\ClearsFrontendCache;
 
     protected static function booted()
     {

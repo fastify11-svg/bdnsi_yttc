@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Center extends Model
 {
-    use HasFactory, DeletesImage;
+    use HasFactory, DeletesImage, \App\Traits\ClearsFrontendCache;
 
     protected $fillable = [
         'code',

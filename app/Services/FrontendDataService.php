@@ -20,43 +20,70 @@ class FrontendDataService
     {
         $config = SiteConfig::firstCached();
 
-        $sliders = Slider::where('type', \App\Enums\SliderType::Slider)
-            ->where('status', 1)
-            ->orderBy('order_index', 'asc')
-            ->orderBy('created_at', 'desc')
-            ->get();
-            
-        if ($sliders->isEmpty()) {
-            $sliders = Slider::where('status', 1)->orderBy('order_index', 'asc')->take(5)->get();
-        }
+        $sliders = \Illuminate\Support\Facades\Cache::remember('homepage_sliders', 3600, function () {
+            $data = Slider::where('type', \App\Enums\SliderType::Slider)
+                ->where('status', 1)
+                ->orderBy('order_index', 'asc')
+                ->orderBy('created_at', 'desc')
+                ->get();
+                
+            if ($data->isEmpty()) {
+                $data = Slider::where('status', 1)->orderBy('order_index', 'asc')->take(5)->get();
+            }
+            return $data;
+        });
         
-        $sponsors = SiteConfig::isEnabled('toggle_sponsors') ? Slider::where('type', \App\Enums\SliderType::Sponsor)->where('status', 1)->orderBy('order_index', 'asc')->take(30)->get() : collect([]);
-        $photo_gallery = SiteConfig::isEnabled('toggle_photo_gallery') ? Slider::where('type', \App\Enums\SliderType::Gallery)->where('status', 1)->orderBy('order_index', 'asc')->take(20)->get() : collect([]);
+        $sponsors = \Illuminate\Support\Facades\Cache::remember('homepage_sponsors', 3600, function () {
+            return SiteConfig::isEnabled('toggle_sponsors') ? Slider::where('type', \App\Enums\SliderType::Sponsor)->where('status', 1)->orderBy('order_index', 'asc')->take(30)->get() : collect([]);
+        });
 
-        $courses = Subject::orderBy('name', 'asc')->limit(7)->get();
-        $teams = Team::where('status', 1)->orderBy('order_index', 'asc')->get();
-        $youtube_videos = SiteConfig::isEnabled('toggle_video_gallery') ? YoutubeVideo::where('status', 1)->take(6)->get() : collect([]);
-        $notices = SiteConfig::isEnabled('toggle_notice_board') ? Notice::latest()->take(5)->get() : collect([]);
+        $photo_gallery = \Illuminate\Support\Facades\Cache::remember('homepage_photo_gallery', 3600, function () {
+            return SiteConfig::isEnabled('toggle_photo_gallery') ? Slider::where('type', \App\Enums\SliderType::Gallery)->where('status', 1)->orderBy('order_index', 'asc')->take(20)->get() : collect([]);
+        });
 
-        $centers = SiteConfig::isEnabled('toggle_verified_centers') ? Center::where('status', CenterStatus::Approved)->take(8)->get() : collect([]);
-        if ($centers->isEmpty() && SiteConfig::isEnabled('toggle_verified_centers')) {
-            $centers = Center::take(8)->get();
-        }
+        $courses = \Illuminate\Support\Facades\Cache::remember('homepage_courses', 3600, function () {
+            return Subject::orderBy('name', 'asc')->limit(7)->get();
+        });
 
-        $success_students = SiteConfig::isEnabled('toggle_success_students') ? Student::where('status', StudentStatus::Approved)->take(12)->get() : collect([]);
-        if ($success_students->isEmpty() && SiteConfig::isEnabled('toggle_success_students')) {
-            $success_students = Student::take(12)->get();
-        }
+        $teams = \Illuminate\Support\Facades\Cache::remember('homepage_teams', 3600, function () {
+            return Team::where('status', 1)->orderBy('order_index', 'asc')->get();
+        });
+
+        $youtube_videos = \Illuminate\Support\Facades\Cache::remember('homepage_youtube_videos', 3600, function () {
+            return SiteConfig::isEnabled('toggle_video_gallery') ? YoutubeVideo::where('status', 1)->take(6)->get() : collect([]);
+        });
+
+        $notices = \Illuminate\Support\Facades\Cache::remember('homepage_notices', 3600, function () {
+            return SiteConfig::isEnabled('toggle_notice_board') ? Notice::latest()->take(5)->get() : collect([]);
+        });
+
+        $centers = \Illuminate\Support\Facades\Cache::remember('homepage_centers', 3600, function () {
+            $data = SiteConfig::isEnabled('toggle_verified_centers') ? Center::where('status', CenterStatus::Approved)->take(8)->get() : collect([]);
+            if ($data->isEmpty() && SiteConfig::isEnabled('toggle_verified_centers')) {
+                $data = Center::take(8)->get();
+            }
+            return $data;
+        });
+
+        $success_students = \Illuminate\Support\Facades\Cache::remember('homepage_success_students', 3600, function () {
+            $data = SiteConfig::isEnabled('toggle_success_students') ? Student::where('status', StudentStatus::Approved)->take(12)->get() : collect([]);
+            if ($data->isEmpty() && SiteConfig::isEnabled('toggle_success_students')) {
+                $data = Student::take(12)->get();
+            }
+            return $data;
+        });
 
         $notice = $config->marquee_notice ?? config('site.defaults.notice');
         $about_us = $config->about_short ?? config('site.defaults.about_us');
 
-        $counts = [
-            'total_centers' => Center::count() ?: config('site.defaults.total_centers'),
-            'total_courses' => Subject::count() ?: config('site.defaults.total_courses'),
-            'total_exams' => Exam::count() ?: config('site.defaults.total_exams', 176),
-            'total_students' => Student::count() ?: config('site.defaults.total_students', 54512),
-        ];
+        $counts = \Illuminate\Support\Facades\Cache::remember('homepage_counts', 3600, function () {
+            return [
+                'total_centers' => Center::count() ?: config('site.defaults.total_centers'),
+                'total_courses' => Subject::count() ?: config('site.defaults.total_courses'),
+                'total_exams' => Exam::count() ?: config('site.defaults.total_exams', 176),
+                'total_students' => Student::count() ?: config('site.defaults.total_students', 54512),
+            ];
+        });
 
         return [
             'sliders' => $sliders,
@@ -71,7 +98,7 @@ class FrontendDataService
             'notice' => $notice,
             'about_us' => $about_us,
             'counts' => $counts,
-            'site_config' => $config,
+            'site_config' => $config ?: (object)[],
         ];
     }
 }

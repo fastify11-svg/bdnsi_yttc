@@ -4,12 +4,13 @@ namespace App\Models;
 
 use App\Enums\CourseType;
 use App\Lib\Image;
+use App\Traits\ClearsFrontendCache;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Subject extends Model
 {
-
+    use ClearsFrontendCache;
 
     protected $fillable = [
         'name',
