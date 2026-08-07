@@ -36,6 +36,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                 { label: 'Question', href: '/admin/question', icon: 'fa-circle-question' },
                 { label: 'Notice', href: '/admin/notice', icon: 'fa-bullhorn' },
                 { label: 'License', href: '/admin/license', icon: 'fa-id-card' },
+                { label: 'Document Builder', href: '/admin/document-templates', icon: 'fa-file-invoice' },
             ]
         },
         {

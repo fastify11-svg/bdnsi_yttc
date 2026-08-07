@@ -48,7 +48,25 @@ class DocumentTemplateController extends Controller
 
     public function update(Request $request, DocumentTemplate $documentTemplate)
     {
-        // This will be implemented in Phase 2 for the Drag & Drop editor
+        $fields = $request->input('fields', []);
+
+        // Delete all old fields and recreate them (simpler than syncing manually)
+        $documentTemplate->fields()->delete();
+
+        foreach ($fields as $fieldData) {
+            $documentTemplate->fields()->create([
+                'variable_key' => $fieldData['variable_key'],
+                'position_x' => $fieldData['position_x'],
+                'position_y' => $fieldData['position_y'],
+                'font_size' => $fieldData['font_size'] ?? null,
+                'font_family' => $fieldData['font_family'] ?? null,
+                'font_weight' => $fieldData['font_weight'] ?? null,
+                'color' => $fieldData['color'] ?? null,
+                'text_align' => $fieldData['text_align'] ?? null,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Layout saved successfully.');
     }
 
     public function preview($id)
