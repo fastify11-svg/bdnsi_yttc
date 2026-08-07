@@ -22,14 +22,10 @@ foreach ($courses as $course) {
     // Rule 1: Diploma Courses
     if (str_contains($name, 'diploma')) {
         $type = 2; // Diploma
-        $duration = '1 Year / 2 Years';
+        $duration = '6 Months - 4 Years';
         $qualification = 'SSC / HSC / Equivalent';
         $fee = '20,000 - 35,000 BDT';
         $details = 'This comprehensive Diploma program offers an extensive curriculum that covers both foundational concepts and advanced techniques. Designed for students aiming for professional mastery, this course guarantees government-approved certification and broadens career prospects both nationally and internationally.';
-        
-        if (str_contains($name, 'advance') || str_contains($name, 'advanced')) {
-            $duration = '2 Years / 4 Years';
-        }
     } 
     // Rule 2: Certificate Courses
     elseif (str_contains($name, 'certificate')) {
