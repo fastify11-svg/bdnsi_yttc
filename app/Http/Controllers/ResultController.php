@@ -17,7 +17,9 @@ class ResultController extends Controller
         if ($request->has('roll') && strlen(trim($request->get('roll')))) {
             $search = trim($request->get('roll'));
 
-            $student = Student::with(['subject', 'center', 'session', 'result'])
+            $student = Student::with(['subject', 'center', 'session', 'result' => function ($query) {
+                $query->withoutGlobalScopes();
+            }])
                 ->where('roll', $search)
                 ->orWhere('registration', $search)
                 ->orWhere('passport', $search)

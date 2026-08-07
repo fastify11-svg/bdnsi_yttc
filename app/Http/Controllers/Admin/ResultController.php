@@ -88,7 +88,7 @@ class ResultController extends Controller
             return response()->success('Result published successfully');
         } catch (\Exception $ex) {
             DB::rollBack();
-            return $ex;
+            return response()->error($ex->getMessage());
         }
         return response()->error('Something went wrong');
     }
