@@ -20,7 +20,8 @@ class StudentObserver
     public function updated(Student $student)
     {
         // Check if status was changed to Approved
-        if ($student->isDirty('status') && $student->status == \App\Enums\StudentStatus::Approved->value) {
+        $statusValue = is_object($student->status) ? $student->status->value : $student->status;
+        if ($student->isDirty('status') && $statusValue == \App\Enums\StudentStatus::Approved) {
             $student->loadMissing('subject');
             $courseName = $student->subject->name ?? 'Course';
             $message = "Dear {$student->name}, your registration for {$courseName} has been approved successfully. Your Roll No is {$student->roll}. - " . config('site.setting.name', 'BDNSI');
