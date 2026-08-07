@@ -266,6 +266,6 @@ export default function Edit(props) {
 
                 </div>
             </div>
-        </Authenticated>
+        </AdminLayout>
     );
 }

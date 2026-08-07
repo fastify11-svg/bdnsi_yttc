@@ -58,6 +58,6 @@ export default function Index(props) {
                     </div>
                 </div>
             </div>
-        </Authenticated>
+        </AdminLayout>
     );
 }

@@ -110,6 +110,6 @@ export default function Create(props) {
                     </div>
                 </div>
             </div>
-        </Authenticated>
+        </AdminLayout>
     );
 }
