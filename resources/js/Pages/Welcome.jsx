@@ -67,7 +67,7 @@ export default function Welcome({
                     <span className="bg-[#BE123C] text-white font-black px-3 sm:px-4 py-2 text-[11px] sm:text-xs uppercase tracking-wider shrink-0 z-30 shadow-sm relative">
                         NOTICE
                     </span>
-                    <div className="overflow-hidden flex-1 flex items-center px-3 py-2">
+                    <div className="overflow-hidden flex-1 flex items-center px-3 py-2 relative z-0">
                         <div className="animate-notice-marquee">
                             <div className="flex gap-16 shrink-0 min-w-full pr-16 items-center">
                                 <p className="text-[13px] font-semibold text-slate-800">

@@ -60,10 +60,10 @@ export default function FrontendLayout({ children }) {
                             {site_config.site_name ? `${site_config.site_name} Official Portal` : 'Bangladesh Technical Education Portal'}
                         </span>
                         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
-                            <div className="flex items-center gap-1 bg-white/10 rounded px-1.5 py-0.5 text-[9px] sm:text-[10px] font-extrabold text-amber-300">
-                                <a href={getUrl('/lang-change?locale=en')} className="bg-amber-400 text-slate-950 px-1 rounded">EN</a>
-                                <a href={getUrl('/lang-change?locale=bn')} className="px-1 text-slate-300 hover:text-white cursor-pointer transition">BN</a>
-                                <a href={getUrl('/lang-change?locale=ar')} className="px-1 text-slate-300 hover:text-white cursor-pointer transition">AR</a>
+                            <div className="flex gap-2 text-[10px] sm:text-xs font-bold items-center">
+                                <Link href={getUrl('/lang-change')} className="bg-amber-400 text-slate-900 px-2 py-0.5 rounded shadow-sm hover:bg-amber-300">EN</Link>
+                                <Link href={getUrl('/lang-change')} className="hover:text-amber-300 px-1 py-0.5 transition-colors">BN</Link>
+                                <Link href={getUrl('/lang-change')} className="hover:text-amber-300 px-1 py-0.5 transition-colors">AR</Link>
                             </div>
                             {(site_config.rjsc_id || site_config.site_rjsc) && (
                                 <span className="text-slate-400 font-mono text-[9px] sm:text-[11px]">{site_config.rjsc_id || site_config.site_rjsc}</span>
@@ -77,9 +77,9 @@ export default function FrontendLayout({ children }) {
                     <div className="w-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                         <Link href={getUrl('/')} className="flex items-center gap-3 sm:gap-4 group">
                             <img
-                                src={getUrl(site_config.header_logo || site_config.site_header_logo || site_config.main_logo || site_config.site_logo || '/images/govt.png')}
+                                src={getUrl(site_config.header_logo || site_config.site_header_logo || site_config.main_logo || site_config.site_logo || '/images/1711405466.jpg')}
                                 alt="Institute Seal"
-                                className="w-12 h-12 sm:w-16 sm:h-16 object-contain group-hover:scale-105 transition-transform shrink-0"
+                                className="h-10 sm:h-14 w-auto object-contain group-hover:scale-105 transition-transform shrink-0"
                                 onError={(e) => {
                                     e.target.onerror = null;
                                     e.target.src = getUrl('/images/avatar.png');
@@ -127,7 +127,7 @@ export default function FrontendLayout({ children }) {
                         <div className="hidden lg:flex items-center">
                             <Link
                                 href={getUrl('/login')}
-                                className="text-slate-950 font-black px-4 py-1.5 rounded-md text-xs shadow-sm transition tracking-wider uppercase"
+                                className="text-slate-950 font-black px-5 py-2 rounded-md text-xs shadow-md transition hover:scale-105 tracking-wider uppercase flex items-center justify-center"
                                 style={{ backgroundColor: accentColor }}
                             >
                                 CENTER LOGIN
