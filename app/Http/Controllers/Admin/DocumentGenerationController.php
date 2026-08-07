@@ -10,14 +10,46 @@ use Illuminate\Http\Request;
 
 class DocumentGenerationController extends Controller
 {
-    public function generate($template_id, $student_id, DocumentGeneratorService $generatorService)
+    protected $generatorService;
+
+    public function __construct(DocumentGeneratorService $generatorService)
+    {
+        $this->generatorService = $generatorService;
+    }
+
+    public function generate($template_id, $student_id)
     {
         $template = DocumentTemplate::with('fields')->findOrFail($template_id);
         $student = Student::findOrFail($student_id);
 
-        $mappedFields = $generatorService->generateForStudent($template, $student);
+        $mappedFields = $this->generatorService->generateForStudent($template, $student);
 
-        // We use the same preview view but now we pass mapped fields
         return view('admin.document_template.preview', compact('template', 'mappedFields', 'student'));
+    }
+
+    /**
+     * Generate documents for multiple students at once.
+     */
+    public function bulkGenerate(Request $request)
+    {
+        $request->validate([
+            'template_id' => 'required|exists:document_templates,id',
+            'student_ids' => 'required|array',
+            'student_ids.*' => 'exists:students,id'
+        ]);
+
+        $template = DocumentTemplate::with('fields')->findOrFail($request->template_id);
+        $students = Student::whereIn('id', $request->student_ids)->get();
+
+        $documents = [];
+
+        foreach ($students as $student) {
+            $documents[] = [
+                'student' => $student,
+                'mappedFields' => $this->generatorService->generateForStudent($template, $student)
+            ];
+        }
+
+        return view('admin.document_template.bulk_preview', compact('template', 'documents'));
     }
 }
