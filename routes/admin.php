@@ -96,6 +96,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('user', \App\Http\Controllers\Admin\UserController::class);
         Route::post('subject/ai-suggest', [\App\Http\Controllers\Admin\SubjectController::class, 'aiSuggest'])->name('subject.aiSuggest');
         Route::resource('subject', \App\Http\Controllers\Admin\SubjectController::class)->except(['show']);
+        
+        Route::patch('session/{session}/toggle-status', [\App\Http\Controllers\Admin\SessionController::class, 'toggleStatus'])->name('session.toggleStatus');
         Route::resource('session', \App\Http\Controllers\Admin\SessionController::class)->except(['show']);
 
         Route::get('student/export', [\App\Http\Controllers\Admin\StudentController::class, 'exportCsv'])->name('student.export');

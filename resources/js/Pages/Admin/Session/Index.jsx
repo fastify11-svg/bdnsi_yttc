@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePage, useForm, Link } from '@inertiajs/inertia-react';
+import { Inertia } from '@inertiajs/inertia';
+import axios from 'axios';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { getUrl } from '../../../utils/urlHelper';
 
@@ -148,6 +150,30 @@ export default function Index({ sessions }) {
         }
     };
 
+    const handleToggleStatus = (id, currentStatus) => {
+        // Toggle the status in the backend directly without reloading
+        axios.patch(getUrl(`/admin/session/${id}/toggle-status`))
+            .then(res => {
+                // Update local state for immediate feedback
+                if (res.data.message) {
+                    const updatedSessions = [...sessions.data];
+                    const index = updatedSessions.findIndex(s => s.id === id);
+                    if (index !== -1) {
+                        updatedSessions[index].status = res.data.status;
+                        // For Inertia we shouldn't directly mutate props, but since we are doing a background update, we can force a soft reload
+                        Inertia.reload({ only: ['sessions'] });
+                    }
+                }
+            })
+            .catch(err => console.error(err));
+    };
+
+    const formatDate = (dateStr) => {
+        if (!dateStr) return null;
+        const options = { day: '2-digit', month: 'short', year: 'numeric' };
+        return new Date(dateStr).toLocaleDateString('en-GB', options);
+    };
+
     return (
         <AdminLayout title="Academic Session Management">
             <div className="space-y-6">
@@ -175,7 +201,7 @@ export default function Index({ sessions }) {
                                     <th className="px-6 py-3">Duration (Months)</th>
                                     <th className="px-6 py-3">Exam Date</th>
                                     <th className="px-6 py-3">Result Published Date</th>
-                                    <th className="px-6 py-3">Status</th>
+                                    <th className="px-6 py-3 text-center">Status</th>
                                     <th className="px-6 py-3 text-right">Actions</th>
                                 </tr>
                             </thead>
@@ -199,7 +225,7 @@ export default function Index({ sessions }) {
                                                 {session.exam_date ? (
                                                     <span className="text-slate-700">
                                                         <i className="fa-regular fa-calendar-check text-indigo-400 mr-1"></i>
-                                                        {session.exam_date}
+                                                        {formatDate(session.exam_date)}
                                                     </span>
                                                 ) : (
                                                     <span className="text-slate-400 text-xs italic">Not Set</span>
@@ -209,18 +235,22 @@ export default function Index({ sessions }) {
                                                 {session.result_published_date ? (
                                                     <span className="text-slate-700">
                                                         <i className="fa-regular fa-file-lines text-emerald-400 mr-1"></i>
-                                                        {session.result_published_date}
+                                                        {formatDate(session.result_published_date)}
                                                     </span>
                                                 ) : (
                                                     <span className="text-slate-400 text-xs italic">Not Set</span>
                                                 )}
                                             </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border ${
-                                                    session.status == 1 ? 'bg-emerald-100 text-emerald-800 border-emerald-200' : 'bg-rose-100 text-rose-800 border-rose-200'
-                                                }`}>
+                                            <td className="px-6 py-4 text-center">
+                                                <button
+                                                    onClick={() => handleToggleStatus(session.id, session.status)}
+                                                    className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all ${
+                                                        session.status == 1 ? 'bg-emerald-100 text-emerald-800 border-emerald-200 hover:bg-emerald-200' : 'bg-rose-100 text-rose-800 border-rose-200 hover:bg-rose-200'
+                                                    }`}
+                                                    title="Click to Toggle Status"
+                                                >
                                                     {session.status == 1 ? 'Active' : 'Inactive'}
-                                                </span>
+                                                </button>
                                             </td>
                                             <td className="px-6 py-4 text-right">
                                                 <div className="flex items-center justify-end gap-2">

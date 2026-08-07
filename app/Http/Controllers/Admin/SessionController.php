@@ -67,6 +67,13 @@ class SessionController extends Controller
         return response()->report(true, 'Session Updated successfully');
     }
 
+    public function toggleStatus(Session $session)
+    {
+        $session->status = $session->status == 1 ? 0 : 1;
+        $session->save();
+        return response()->json(['message' => 'Status updated successfully', 'status' => $session->status]);
+    }
+
     public function destroy(Session $session)
     {
         return response()->report($session->delete(), 'Session deleted successfully');
