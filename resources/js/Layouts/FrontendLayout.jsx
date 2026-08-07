@@ -216,13 +216,14 @@ export default function FrontendLayout({ children }) {
                     {/* Shaheed Minar Scenery Image Strip */}
                     <div 
                         style={{
-                            backgroundImage: site_config.footer_top_bg_image ? `url(${getUrl(site_config.footer_top_bg_image)})` : `url(${getUrl('/images/footer_top_bg.png')})`,
+                            backgroundImage: (site_config.footer_top_bg_image && !site_config.footer_top_bg_image.includes('no-image')) ? `url(${getUrl(site_config.footer_top_bg_image)})` : `url(${getUrl('/images/footer_top_bg.png')})`,
                             backgroundPosition: 'center bottom',
                             backgroundRepeat: 'no-repeat',
                             backgroundSize: 'cover',
                             height: '180px',
                             width: '100%'
                         }}
+                        className="max-h-[180px] overflow-hidden"
                     ></div>
                     
                     <div className="w-full pt-4 pb-8 relative z-10">
@@ -265,10 +266,10 @@ export default function FrontendLayout({ children }) {
                                             </ul>
                                         )}
                                     </div>
-                                    <div className="text-gray-600 text-xs font-semibold">
-                                        <p>সাইটটি শেষ হাল-নাগাদ করা হয়েছে: {new Date().toLocaleDateString('bn-BD', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                                    <div className="text-gray-600 text-xs font-semibold relative z-20">
+                                        <p>সাইটটি শেষ হাল-নাগাদ করা হয়েছে: {new Date(site_config.updated_at || Date.now()).toLocaleDateString('bn-BD', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                                     </div>
-                                    <div className="text-gray-500 text-xs mt-1 font-sans">
+                                    <div className="text-gray-500 text-xs mt-1 font-sans relative z-20">
                                         {site_config.footer_copyright || `© ${new Date().getFullYear()} ${site_config.portal_name || site_config.site_name || 'YTTC'}. All rights reserved.`}
                                     </div>
                                 </div>
@@ -292,7 +293,7 @@ export default function FrontendLayout({ children }) {
                                         </div>
                                     )}
 
-                                    <div className="bg-white/60 p-3 rounded backdrop-blur-sm shadow-sm inline-block w-full md:w-auto text-left md:text-right border border-white/50">
+                                    <div className="bg-white/60 p-3 rounded backdrop-blur-sm shadow-sm inline-block w-full md:w-auto text-left md:text-right border border-white/50 relative z-20">
                                         <p className="text-gray-800 font-semibold text-[13px] mb-1 leading-relaxed">
                                             পরিকল্পনা এবং বাস্তবায়ন: {site_config.footer_planning_text || 'BDNSI Team'}
                                         </p>
@@ -301,8 +302,8 @@ export default function FrontendLayout({ children }) {
                                         </div>
                                     </div>
                                     
-                                    {site_config.footer_side_bg_image && (
-                                        <img src={getUrl(site_config.footer_side_bg_image)} alt="Footer Decoration" className="absolute -z-10 opacity-20 -right-10 -bottom-10 h-32 object-contain" />
+                                    {(site_config.footer_side_bg_image && !site_config.footer_side_bg_image.includes('no-image')) && (
+                                        <img src={getUrl(site_config.footer_side_bg_image)} alt="Footer Decoration" className="absolute z-0 opacity-20 -right-10 -bottom-10 h-32 object-contain pointer-events-none" />
                                     )}
                                 </div>
                             </div>
