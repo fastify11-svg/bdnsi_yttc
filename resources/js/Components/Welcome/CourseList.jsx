@@ -46,15 +46,15 @@ export default function CourseList({ courses }) {
                             POPULAR
                         </div>
                         <div className="w-24 h-24 bg-slate-100 shrink-0 border border-slate-100 rounded overflow-hidden">
-                            <img
-                                src={course.image ? getUrl(course.image) : getUrl('/images/driving.png')}
-                                alt={course.name}
-                                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                                onError={(e) => {
-                                    e.target.onerror = null;
-                                    e.target.src = getUrl('/images/driving.png');
-                                }}
-                            />
+                                <img
+                                    src={(course.image || course.photo) ? getUrl(course.image || course.photo) : getUrl('/images/driving.png')}
+                                    alt={course.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                    onError={(e) => {
+                                        e.target.onerror = null;
+                                        e.target.src = getUrl('/images/driving.png');
+                                    }}
+                                />
                         </div>
                         <div className="flex-1 min-w-0 pr-4">
                             <h3 className="font-bold text-slate-800 text-sm group-hover:text-[#7024A8] transition line-clamp-2" title={course.name}>
@@ -79,7 +79,7 @@ export default function CourseList({ courses }) {
                                     <Link key={`course-mob-a-${course.id}`} href={getUrl(`/course-details/${course.id}`)} className="border border-slate-200 rounded-md overflow-hidden bg-white hover:border-purple-200 transition group flex items-start gap-3 p-2 relative h-[88px]">
                                         <div className="w-16 h-16 bg-slate-100 shrink-0 border border-slate-100 rounded overflow-hidden">
                                             <img
-                                                src={course.image ? getUrl(course.image) : getUrl('/images/driving.png')}
+                                                src={(course.image || course.photo) ? getUrl(course.image || course.photo) : getUrl('/images/driving.png')}
                                                 alt={course.name}
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                                                 onError={(e) => {
@@ -109,7 +109,7 @@ export default function CourseList({ courses }) {
                                     <Link key={`course-mob-b-${course.id}`} href={getUrl(`/course-details/${course.id}`)} className="border border-slate-200 rounded-md overflow-hidden bg-white hover:border-purple-200 transition group flex items-start gap-3 p-2 relative h-[88px]">
                                         <div className="w-16 h-16 bg-slate-100 shrink-0 border border-slate-100 rounded overflow-hidden">
                                             <img
-                                                src={course.image ? getUrl(course.image) : getUrl('/images/driving.png')}
+                                                src={(course.image || course.photo) ? getUrl(course.image || course.photo) : getUrl('/images/driving.png')}
                                                 alt={course.name}
                                                 className="w-full h-full object-cover group-hover:scale-110 transition-transform"
                                                 onError={(e) => {
