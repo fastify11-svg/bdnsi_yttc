@@ -30,22 +30,22 @@ export const FALLBACK_STUDENTS = [
 
 export const FALLBACK_GALLERY = [
     '/images/about.jpg',
-    '/images/driving.png',
-    '/images/blueverify.png',
-    '/images/govt.png',
+    '/images/1711405466.jpg',
     '/images/about.jpg',
-    '/images/driving.png',
-    '/images/blueverify.png',
-    '/images/govt.png',
+    '/images/1711405466.jpg',
     '/images/about.jpg',
-    '/images/driving.png',
+    '/images/1711405466.jpg',
+    '/images/about.jpg',
+    '/images/1711405466.jpg',
+    '/images/about.jpg',
+    '/images/1711405466.jpg',
 ];
 
 export const FALLBACK_SPONSORS = [
-    '/images/govt.png',
-    '/images/blueverify.png',
-    '/images/driving.png',
-    '/images/govt.png',
-    '/images/blueverify.png',
-    '/images/driving.png'
+    '/images/1711405466.jpg',
+    '/images/about.jpg',
+    '/images/1711405466.jpg',
+    '/images/about.jpg',
+    '/images/1711405466.jpg',
+    '/images/about.jpg'
 ];

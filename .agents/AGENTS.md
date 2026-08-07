@@ -1,10 +1,10 @@
-# Workspace Rules & Development Workflow
+# Workspace Rules & Autonomous Development Workflow (v3.0)
 
-**Project Context**: This is a Next-Gen Affiliate & Agent Management System (Software Service), NOT an e-commerce retail site.
+**Project Context**: This is a Next-Gen Affiliate & Agent Management System (Software Service).
 
-**Workflow Pipeline**: Antigravity IDE (Generation) -> GitHub -> VS Code (Local Testing/Playwright) -> Bug Fix Loop.
-
-1. **Development & Sprints**: Code should be generated in small sprints (Small Sprints) and logic must be kept clean.
-2. **GitHub Auto-Sync**: Whenever code is written or modified, automatically commit and push (or prepare to push) to the GitHub repository so that changes are seamlessly synced locally.
-3. **VS Code Environment Automation**: Continuously ensure `.vscode/extensions.json`, `.vscode/settings.json`, and `.vscode/tasks.json` are maintained in the project root. The `extensions.json` file must include necessary extensions for the project, including "ms-playwright.playwright" and "GitHub.copilot". This ensures that whenever the project is pulled locally and reloaded, VS Code will prompt to install all required extensions automatically.
-4. **Automated Testing & Feedback Loop**: When the user tests the code locally and provides bug logs or errors from Playwright / GitHub Actions, fixing these bugs must be the top priority. After fixing, the changes should be pushed back to GitHub immediately.
+**Autonomous Single-Environment Workflow Guidelines**:
+1. **No External Editor Dependency**: All coding, execution, and testing must happen autonomously within Antigravity IDE. Ignore or remove external editor configurations like `.vscode`. The user will not manually run or test code in VS Code.
+2. **Autonomous GitHub Sync (Auto-Push)**: After completing any sprint, feature, or bug fix module, autonomously commit and push the changes to GitHub. Use meaningful and professional commit messages. Do NOT wait for user commands to sync to GitHub.
+3. **Internal Execution & Testing**: Manage servers, builds, and test executions (e.g., Playwright or unit tests) entirely via the internal terminal. Ensure all commands are correctly mapped in `package.json` for independent testing.
+4. **Self-Healing Bug Fix Loop**: Rely exclusively on internal command outputs and logs. If a command fails or a test errors out, autonomously read the logs, detect the bug, fix the code, re-test, and automatically push the updated code once resolved. Do not expect manual error logs from the user.
+5. **CI/CD Pipeline Automation**: Ensure GitHub Actions configurations (`.github/workflows`) are optimized so that every autonomous push triggers automated testing and deployment pipelines without manual intervention.

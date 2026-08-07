@@ -61,9 +61,9 @@ export default function FrontendLayout({ children }) {
                         </span>
                         <div className="flex items-center gap-2 sm:gap-3 shrink-0">
                             <div className="flex items-center gap-1 bg-white/10 rounded px-1.5 py-0.5 text-[9px] sm:text-[10px] font-extrabold text-amber-300">
-                                <span className="bg-amber-400 text-slate-950 px-1 rounded">EN</span>
-                                <span className="px-1 text-slate-300 hover:text-white cursor-pointer transition">BN</span>
-                                <span className="px-1 text-slate-300 hover:text-white cursor-pointer transition">AR</span>
+                                <a href={getUrl('/lang-change?locale=en')} className="bg-amber-400 text-slate-950 px-1 rounded">EN</a>
+                                <a href={getUrl('/lang-change?locale=bn')} className="px-1 text-slate-300 hover:text-white cursor-pointer transition">BN</a>
+                                <a href={getUrl('/lang-change?locale=ar')} className="px-1 text-slate-300 hover:text-white cursor-pointer transition">AR</a>
                             </div>
                             {(site_config.rjsc_id || site_config.site_rjsc) && (
                                 <span className="text-slate-400 font-mono text-[9px] sm:text-[11px]">{site_config.rjsc_id || site_config.site_rjsc}</span>

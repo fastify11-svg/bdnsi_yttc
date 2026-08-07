@@ -54,7 +54,7 @@ export default function Welcome({
         ? photo_gallery.map(g => g.photo || g.image || '/images/about.jpg')
         : FALLBACK_GALLERY;
 
-    const sponsorList = sponsors.length > 0 ? sponsors.map(s => s.image || s.photo || '/images/govt.png') : FALLBACK_SPONSORS;
+    const sponsorList = sponsors.length > 0 ? sponsors.map(s => s.image || s.photo || '/images/1711405466.jpg') : FALLBACK_SPONSORS;
 
     return (
         <FrontendLayout>
@@ -101,7 +101,7 @@ export default function Welcome({
                                 <div key={`team-${team.id || idx}`} className="space-y-1">
                                     <div className="w-20 h-24 bg-slate-100 border border-slate-200 rounded overflow-hidden mx-auto shadow-sm group">
                                         <img
-                                            src={team.image ? getUrl(team.image) : getUrl('/images/govt.png')}
+                                            src={team.image ? getUrl(team.image) : getUrl('/images/1711405466.jpg')}
                                             alt={team.name}
                                             className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                                             onError={(e) => {
@@ -177,7 +177,7 @@ export default function Welcome({
                                 className="w-full sm:w-48 h-36 object-cover rounded border border-slate-200 shrink-0 shadow-sm"
                                 onError={(e) => {
                                     e.target.onerror = null;
-                                    e.target.src = getUrl('/images/govt.png');
+                                    e.target.src = getUrl('/images/1711405466.jpg');
                                 }}
                             />
                             <div className="space-y-3 text-[13px] text-slate-700 leading-relaxed font-medium w-full">
@@ -250,7 +250,7 @@ export default function Welcome({
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                     onError={(e) => {
                                                         e.target.onerror = null;
-                                                        e.target.src = getUrl('/images/govt.png');
+                                                        e.target.src = getUrl('/images/1711405466.jpg');
                                                     }}
                                                 />
                                                 <div className="absolute inset-0 bg-purple-900/0 group-hover:bg-purple-900/40 transition-colors flex items-center justify-center">
@@ -272,7 +272,7 @@ export default function Welcome({
                                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                                                     onError={(e) => {
                                                         e.target.onerror = null;
-                                                        e.target.src = getUrl('/images/govt.png');
+                                                        e.target.src = getUrl('/images/1711405466.jpg');
                                                     }}
                                                 />
                                                 <div className="absolute inset-0 bg-purple-900/0 group-hover:bg-purple-900/40 transition-colors flex items-center justify-center">
@@ -409,12 +409,12 @@ export default function Welcome({
                                     <div key={`center-a-${inst.id || idx}`} className="w-80 p-3 border border-slate-200 rounded-md flex items-center gap-3 bg-white hover:border-purple-300 transition shrink-0 shadow-sm group">
                                         <div className="w-12 h-12 border border-slate-200 rounded overflow-hidden shrink-0 flex items-center justify-center bg-slate-50">
                                             <img
-                                                src={inst.photo || inst.center_logo || inst.logo ? getUrl(inst.photo || inst.center_logo || inst.logo) : getUrl('/images/govt.png')}
+                                                src={inst.photo || inst.center_logo || inst.logo ? getUrl(inst.photo || inst.center_logo || inst.logo) : getUrl('/images/1711405466.jpg')}
                                                 alt={inst.name}
                                                 className="w-10 h-10 object-contain"
                                                 onError={(e) => {
                                                     e.target.onerror = null;
-                                                    e.target.src = getUrl('/images/govt.png');
+                                                    e.target.src = getUrl('/images/1711405466.jpg');
                                                 }}
                                             />
                                         </div>
@@ -430,12 +430,12 @@ export default function Welcome({
                                     <div key={`center-b-${inst.id || idx}`} className="w-80 p-3 border border-slate-200 rounded-md flex items-center gap-3 bg-white hover:border-purple-300 transition shrink-0 shadow-sm group">
                                         <div className="w-12 h-12 border border-slate-200 rounded overflow-hidden shrink-0 flex items-center justify-center bg-slate-50">
                                             <img
-                                                src={inst.photo || inst.center_logo || inst.logo ? getUrl(inst.photo || inst.center_logo || inst.logo) : getUrl('/images/govt.png')}
+                                                src={inst.photo || inst.center_logo || inst.logo ? getUrl(inst.photo || inst.center_logo || inst.logo) : getUrl('/images/1711405466.jpg')}
                                                 alt={inst.name}
                                                 className="w-10 h-10 object-contain"
                                                 onError={(e) => {
                                                     e.target.onerror = null;
-                                                    e.target.src = getUrl('/images/govt.png');
+                                                    e.target.src = getUrl('/images/1711405466.jpg');
                                                 }}
                                             />
                                         </div>
@@ -541,7 +541,7 @@ export default function Welcome({
                                             className={`h-full w-full object-contain transition-all duration-300 ${clickedSponsors[idx] ? 'grayscale' : 'group-hover:grayscale'}`}
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.src = getUrl('/images/govt.png');
+                                                e.target.src = getUrl('/images/1711405466.jpg');
                                             }}
                                         />
                                     </div>
@@ -558,7 +558,7 @@ export default function Welcome({
                                             className={`h-full w-full object-contain transition-all duration-300 ${clickedSponsors[idx] ? 'grayscale' : 'group-hover:grayscale'}`}
                                             onError={(e) => {
                                                 e.target.onerror = null;
-                                                e.target.src = getUrl('/images/govt.png');
+                                                e.target.src = getUrl('/images/1711405466.jpg');
                                             }}
                                         />
                                     </div>
