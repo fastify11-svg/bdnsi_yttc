@@ -35,7 +35,17 @@
 </head>
 <body>
 
-    @foreach($template->fields as $field)
+    @foreach($mappedFields ?? $template->fields as $item)
+        @php
+            $isMapped = isset($item['value']);
+            $field = $isMapped ? $item['field'] : $item;
+            $val = $isMapped ? $item['value'] : '[' . $field->variable_key . ']';
+            $type = $isMapped ? $item['type'] : 'text';
+            if (!$isMapped) {
+                if ($field->variable_key === 'qr_code') $type = 'qrcode_dummy';
+                if ($field->variable_key === 'student_image') $type = 'image_dummy';
+            }
+        @endphp
         <div class="dynamic-field" style="
             left: {{ $field->position_x }};
             top: {{ $field->position_y }};
@@ -45,7 +55,17 @@
             color: {{ $field->color ?? '#000000' }};
             text-align: {{ $field->text_align ?? 'left' }};
         ">
-            [{{ $field->variable_key }}]
+            @if($type === 'qrcode')
+                <img src="data:image/svg+xml;base64,{{ $val }}" style="width:100px; height:100px;" alt="QR Code" />
+            @elseif($type === 'qrcode_dummy')
+                <div style="width:100px; height:100px; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[QR]</div>
+            @elseif($type === 'image')
+                <img src="{{ $val }}" style="width:120px; height:150px; object-fit:cover;" alt="Student Photo" />
+            @elseif($type === 'image_dummy')
+                <div style="width:120px; height:150px; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[PHOTO]</div>
+            @else
+                {{ $val }}
+            @endif
         </div>
     @endforeach
 

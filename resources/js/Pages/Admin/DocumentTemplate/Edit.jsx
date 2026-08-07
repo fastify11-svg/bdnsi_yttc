@@ -23,6 +23,8 @@ export default function Edit(props) {
         { key: 'cgpa', label: 'CGPA', sample: '4.50' },
         { key: 'grade', label: 'Grade', sample: 'A+' },
         { key: 'issue_date', label: 'Issue Date', sample: '10 Oct 2024' },
+        { key: 'qr_code', label: 'QR Code (Verification)', sample: '[QR CODE]' },
+        { key: 'student_image', label: 'Student Photo', sample: '[STUDENT PHOTO]' },
     ];
 
     const canvasRef = useRef(null);

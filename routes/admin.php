@@ -111,6 +111,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         
         Route::resource('document-templates', \App\Http\Controllers\Admin\DocumentTemplateController::class);
         Route::get('document-templates/{id}/preview', [\App\Http\Controllers\Admin\DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
+        Route::get('document-templates/{template_id}/generate/{student_id}', [\App\Http\Controllers\Admin\DocumentGenerationController::class, 'generate'])->name('document-templates.generate');
         Route::get('student-registration-form/{id}', [\App\Http\Controllers\Admin\StudentController::class, 'registrationForm'])->name('registrationForm');
 
         Route::resource('result', \App\Http\Controllers\Admin\ResultController::class)->only(['index','create','store','show']);
