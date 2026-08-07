@@ -35,6 +35,7 @@
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
         "react-dropzone": "^19.1.1",
+        "react-is": "^19.2.8",
         "recharts": "^3.10.1",
         "select2": "^4.1.0-rc.0",
         "tailwind-scrollbar-hide": "^1.1.7"

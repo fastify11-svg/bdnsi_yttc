@@ -41,6 +41,7 @@ export default function Login({ status, canResetPassword }) {
                         </label>
                         <input
                             type="text"
+                            name="email"
                             value={data.email}
                             onChange={(e) => setData('email', e.target.value)}
                             required
@@ -57,6 +58,7 @@ export default function Login({ status, canResetPassword }) {
                         </label>
                         <input
                             type="password"
+                            name="password"
                             value={data.password}
                             onChange={(e) => setData('password', e.target.value)}
                             required

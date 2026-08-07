@@ -13,31 +13,31 @@ test.describe('Authentication E2E Tests', () => {
     }
   });
 
-  const getAdminEmail = () => process.env.ADMIN_EMAIL || 'superadmin@gmail.com';
+  const getAdminEmail = () => process.env.ADMIN_EMAIL || 'admin@gmail.com';
   const getAdminPassword = () => process.env.ADMIN_PASSWORD || '12345678';
-  const getCenterEmail = () => process.env.CENTER_EMAIL || 'center@bdnsi.com';
+  const getCenterEmail = () => process.env.CENTER_EMAIL || 'user@gmail.com';
   const getCenterPassword = () => process.env.CENTER_PASSWORD || '12345678';
 
 
   test('Admin login success', async ({ page }) => {
-    await page.goto('./login');
+    await page.goto('./admin/login');
     await page.fill('input[name="email"]', getAdminEmail());
     await page.fill('input[name="password"]', getAdminPassword());
     await page.click('button[type="submit"]');
 
     // Should redirect to dashboard
-    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page).toHaveURL(/.*admin\/dashboard/);
     await expect(page.locator('text=Dashboard').first()).toBeVisible();
   });
 
   test('Admin login failure with wrong password', async ({ page }) => {
-    await page.goto('./login');
+    await page.goto('./admin/login');
     await page.fill('input[name="email"]', getAdminEmail());
     await page.fill('input[name="password"]', 'wrongpassword');
     await page.click('button[type="submit"]');
 
     // Should stay on login and show error
-    await expect(page).toHaveURL(/.*login/);
+    await expect(page).toHaveURL(/.*admin\/login/);
     await expect(page.locator('text=These credentials do not match our records.')).toBeVisible();
   });
 
@@ -54,12 +54,12 @@ test.describe('Authentication E2E Tests', () => {
   });
 
   test('Logout works', async ({ page }) => {
-    await page.goto('./login');
+    await page.goto('./admin/login');
     await page.fill('input[name="email"]', getAdminEmail());
     await page.fill('input[name="password"]', getAdminPassword());
     await page.click('button[type="submit"]');
 
-    await expect(page).toHaveURL(/.*dashboard/);
+    await expect(page).toHaveURL(/.*admin\/dashboard/);
 
     // Logout process using data-testid
     const userMenuButton = page.getByTestId('user-menu');
@@ -73,11 +73,11 @@ test.describe('Authentication E2E Tests', () => {
         await logoutBtn.click();
     } else {
         // Fallback for current ui
-        await page.goto('./logout'); // this might be a get request or need form submit
+        await page.goto('./admin/logout'); // this might be a get request or need form submit
     }
 
     // Wait for redirect
-    await expect(page).toHaveURL(/\/(login)?$/);
+    await expect(page).toHaveURL(/\/(admin\/login)?$/);
   });
 
 });

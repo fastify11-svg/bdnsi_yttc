@@ -25,7 +25,7 @@ test.describe('Frontend E2E Tests', () => {
 
   test('all courses page loads', async ({ page }) => {
     await page.goto('./all-course');
-    await expect(page.locator('text=All Courses').first()).toBeVisible();
+    await expect(page.locator('text=Explore Our Courses').first()).toBeVisible();
   });
 
   test('verified center page loads', async ({ page }) => {
