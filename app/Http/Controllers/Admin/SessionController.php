@@ -14,11 +14,12 @@ class SessionController extends Controller
     protected $permissionPrefix = 'session';
     public function index(Request $request)
     {
-        if ($request->ajax()) {
+        if ($request->ajax() && !$request->header('X-Inertia')) {
             return datatables(Session::query())->toJson();
         }
 
-        return view('admin.session.index');
+        $sessions = Session::latest()->paginate(25);
+        return \Inertia\Inertia::render('Admin/Session/Index', compact('sessions'));
     }
 
     public function create()
