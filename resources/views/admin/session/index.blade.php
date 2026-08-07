@@ -17,9 +17,9 @@
             <tr>
                 <th>{{ __('ID') }}</th>
                 <th>{{ __('Name') }}</th>
-                <th>{{ __('Start Date') }}</th>
-                <th>{{ __('End Date') }}</th>
-                <th>{{ __('Duration') }}</th>
+                <th>{{ __('Duration (Months)') }}</th>
+                <th>{{ __('Exam Date') }}</th>
+                <th>{{ __('Result Date') }}</th>
                 <th>{{ __('Status') }}</th>
                 <th>{{ __('Action') }}</th>
             </tr>
@@ -37,6 +37,9 @@
                     dataSrc(response) {
                         response.data.map(function (item) {
                             item.name = `<p class="text-center">${item.name}</p>`;
+                            item.duration = item.course_duration_string ? `<span class="badge bg-info text-white">${item.course_duration_string}</span>` : 'N/A';
+                            item.exam_date = item.exam_date ? item.exam_date : '<span class="text-secondary">Not Set</span>';
+                            item.result_published_date = item.result_published_date ? item.result_published_date : '<span class="text-secondary">Not Set</span>';
                             item.action = actionIcons({
                                 @can('session-update')
                                 'edit': '{{ route('admin.session.edit', '@') }}'.replace('@', item.id),
@@ -55,9 +58,9 @@
                 columns: [
                     {data: 'id'},
                     {data: 'name'},
-                    {data: 'start_date'},
-                    {data: 'end_date'},
                     {data: 'duration'},
+                    {data: 'exam_date'},
+                    {data: 'result_published_date'},
                     {data: 'status'},
                     {data: 'action', orderable: false, searchable: false},
                 ]
