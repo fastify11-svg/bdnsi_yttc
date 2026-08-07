@@ -34,6 +34,7 @@ class SessionController extends Controller
             'exam_date' => 'nullable|date',
             'result_published_date' => 'nullable|date',
             'duration' => 'required|numeric',
+            'status' => 'required',
         ]);
 
         return response()->report(Session::create($validated), 'Session Created successfully');
