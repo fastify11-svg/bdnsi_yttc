@@ -1,0 +1,18 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class DocumentTemplate extends Model
+{
+    protected $fillable = [
+        'name', 'type', 'background_image', 'width', 'height', 'status'
+    ];
+
+    public function fields()
+    {
+        return $this->hasMany(DocumentField::class);
+    }
+}

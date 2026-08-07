@@ -108,7 +108,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('admit-card/{id}',[\App\Http\Controllers\Admin\StudentController::class,'admit'])->name('student.admit');
         Route::get('certificate/{id}',[\App\Http\Controllers\Admin\StudentController::class,'certificate'])->name('certificateStudent');
         Route::get('without-backgroundcertificate/{id}',[\App\Http\Controllers\Admin\StudentController::class,'certificateWithoutBackground'])->name('certificateWithoutBackground');
-
+        
+        Route::resource('document-templates', \App\Http\Controllers\Admin\DocumentTemplateController::class);
+        Route::get('document-templates/{id}/preview', [\App\Http\Controllers\Admin\DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
         Route::get('student-registration-form/{id}', [\App\Http\Controllers\Admin\StudentController::class, 'registrationForm'])->name('registrationForm');
 
         Route::resource('result', \App\Http\Controllers\Admin\ResultController::class)->only(['index','create','store','show']);
