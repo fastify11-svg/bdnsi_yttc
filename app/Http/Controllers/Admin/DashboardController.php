@@ -69,7 +69,7 @@ class DashboardController extends Controller
             ->get()
             ->map(function ($item) {
                 return [
-                    'name' => $item->status == StudentStatus::Approved->value ? 'Approved' : ($item->status == StudentStatus::Pending->value ? 'Pending' : 'Other'),
+                    'name' => $item->status?->value == StudentStatus::Approved ? 'Approved' : ($item->status?->value == StudentStatus::Pending ? 'Pending' : 'Other'),
                     'value' => $item->total,
                 ];
             });
