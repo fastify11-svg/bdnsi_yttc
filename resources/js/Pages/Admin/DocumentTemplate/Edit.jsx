@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Authenticated from '@/Layouts/Authenticated';
+import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
 
@@ -130,13 +130,9 @@ export default function Edit(props) {
     };
 
     return (
-        <Authenticated
-            auth={props.auth}
-            errors={props.errors}
-            header={<h2 className="font-semibold text-xl text-gray-800 leading-tight">Edit Template: {template.name}</h2>}
+        <AdminLayout
+            title={`Edit Template: ${template.name}`}
         >
-            <Head title={`Edit Template: ${template.name}`} />
-
             <div className="py-6">
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8 flex flex-col md:flex-row gap-6">
                     
