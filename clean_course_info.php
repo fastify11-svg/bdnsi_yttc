@@ -60,6 +60,15 @@ foreach ($courses as $course) {
     $course->rate = $fee;
     $course->course_details = $details;
 
+    if (empty($course->code) || $course->code === 'NO-CODE') {
+        $generatedCode = 'BDNSI-' . strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', str_replace(' ', '', ucwords($course->name))), 0, 4));
+        if (strlen($generatedCode) < 10) {
+            $generatedCode .= str_pad(rand(1, 99), 2, '0', STR_PAD_LEFT);
+        }
+        // Ensure uniqueness if multiple courses have the same prefix
+        $course->code = $generatedCode . '-' . $course->id;
+    }
+
     $course->save();
     $count++;
 }
