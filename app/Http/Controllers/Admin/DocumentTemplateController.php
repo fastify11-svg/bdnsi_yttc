@@ -82,4 +82,12 @@ class DocumentTemplateController extends Controller
         // This view will just output plain HTML with absolute positioned fields
         return view('admin.document_template.preview', compact('template'));
     }
+
+    public function toggleStatus(DocumentTemplate $template)
+    {
+        $template->status = !$template->status;
+        $template->save();
+
+        return redirect()->back()->with('success', 'Template status updated.');
+    }
 }

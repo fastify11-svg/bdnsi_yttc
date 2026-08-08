@@ -83,17 +83,28 @@ class StudentController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax() && !$request->header('X-Inertia')) {
+            $activeTemplates = \App\Models\DocumentTemplate::where('status', 1)->get();
             return datatables(Student::with('center:id,code', 'subject:id,name', 'result'))
-                ->editColumn('registration', function ($registration) {
+                ->editColumn('registration', function ($registration) use ($activeTemplates) {
                     $regBtn = '<a style="background-color:#0F5233; color:#ffffff; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'registration' => 'registration']) . '">' . e($registration->registration ?: 'N/A') . '</a>';
                     $transcriptBtn = '<a style="background-color:#EBF8FF; color:#1D4ED8; border:1px solid #BFDBFE; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'transcript' => 'transcript']) . '">Transcript</a>';
-                    $certBtn = '<a style="background-color:#FAF5FF; color:#6D28D9; border:1px solid #E9D8FD; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'certificate' => 'certificate']) . '">Certificate</a>';
-                    $origCertBtn = '<a style="background-color:#F0FFF4; color:#15803D; border:1px solid #BBF7D0; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.certificateStudent", [$registration->id, 'original' => 'original']) . '">Original Certificate</a>';
-                    $origCpdfBtn = '<a style="background-color:#EEF2FF; color:#4338CA; border:1px solid #E0E7FF; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'orginalcpdf' => 'orginalcpdf']) . '">OrginalC-Pdf</a>';
-                    $cpdfBtn = '<a style="background-color:#ECFDF5; color:#047857; border:1px solid #D1FAE5; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'cpdf' => 'cpdf']) . '">C-Pdf</a>';
-                    $idcardBtn = '<a style="background-color:#FFFBEB; color:#B45309; border:1px solid #FEF3C7; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.show", [$registration->id, 'idcard' => 'idcard']) . '">Id Card</a>';
+                    
+                    $dynamicBtns = '';
+                    $colors = [
+                        ['bg' => '#FAF5FF', 'text' => '#6D28D9', 'border' => '#E9D8FD'],
+                        ['bg' => '#F0FFF4', 'text' => '#15803D', 'border' => '#BBF7D0'],
+                        ['bg' => '#EEF2FF', 'text' => '#4338CA', 'border' => '#E0E7FF'],
+                        ['bg' => '#ECFDF5', 'text' => '#047857', 'border' => '#D1FAE5'],
+                        ['bg' => '#FFFBEB', 'text' => '#B45309', 'border' => '#FEF3C7'],
+                    ];
+                    
+                    foreach ($activeTemplates as $index => $template) {
+                        $color = $colors[$index % count($colors)];
+                        $url = route('admin.document-templates.generate', ['template_id' => $template->id, 'student_id' => $registration->id]);
+                        $dynamicBtns .= '<a style="background-color:'.$color['bg'].'; color:'.$color['text'].'; border:1px solid '.$color['border'].'; padding:3px 8px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . $url . '">' . e($template->name) . '</a>';
+                    }
 
-                    return '<div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; max-width:320px;">' . $regBtn . $transcriptBtn . $certBtn . $origCertBtn . $origCpdfBtn . $cpdfBtn . $idcardBtn . '</div>';
+                    return '<div style="display:flex; flex-wrap:wrap; gap:6px; align-items:center; max-width:320px;">' . $regBtn . $transcriptBtn . $dynamicBtns . '</div>';
                 })
                 ->editColumn('roll', function ($roll) {
                     return '<a style="background-color:#BE123C; color:#ffffff; padding:3px 10px; border-radius:9999px; font-size:11px; font-weight:700; text-decoration:none; display:inline-block;" target="_blank" href="' . route("admin.student.admit", [$roll->id, 'admit' => 'admit']) . '">' . e($roll->roll ?: 'N/A') . '</a>';

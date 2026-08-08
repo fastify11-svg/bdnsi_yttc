@@ -36,13 +36,14 @@ export default function Index(props) {
                                         <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Template</th>
                                         <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
                                         <th scope="col" className="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Dimensions</th>
+                                        <th scope="col" className="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
                                         <th scope="col" className="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody className="bg-white divide-y divide-gray-100">
                                     {templates.length === 0 ? (
                                         <tr>
-                                            <td colSpan="4" className="px-6 py-12 whitespace-nowrap text-center">
+                                            <td colSpan="5" className="px-6 py-12 whitespace-nowrap text-center">
                                                 <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                                 </svg>
@@ -86,6 +87,19 @@ export default function Index(props) {
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
                                                     {template.width} <span className="text-gray-400 font-normal mx-1">×</span> {template.height}
+                                                </td>
+                                                <td className="px-6 py-4 whitespace-nowrap text-center">
+                                                    <button 
+                                                        onClick={() => {
+                                                            import('@inertiajs/inertia').then(({ Inertia }) => {
+                                                                Inertia.patch(getUrl(`/admin/document-templates/${template.id}/toggle-status`), {}, { preserveScroll: true });
+                                                            });
+                                                        }}
+                                                        className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${template.status ? 'bg-green-500' : 'bg-gray-300'}`}
+                                                    >
+                                                        <span className="sr-only">Use setting</span>
+                                                        <span aria-hidden="true" className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${template.status ? 'translate-x-5' : 'translate-x-0'}`}></span>
+                                                    </button>
                                                 </td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                                     <div className="flex items-center justify-end space-x-3">

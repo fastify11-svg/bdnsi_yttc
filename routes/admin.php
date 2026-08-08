@@ -110,6 +110,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('without-backgroundcertificate/{id}',[\App\Http\Controllers\Admin\StudentController::class,'certificateWithoutBackground'])->name('certificateWithoutBackground');
         
         Route::resource('document-templates', \App\Http\Controllers\Admin\DocumentTemplateController::class);
+        Route::patch('document-templates/{template}/toggle-status', [\App\Http\Controllers\Admin\DocumentTemplateController::class, 'toggleStatus'])->name('document-templates.toggleStatus');
         Route::get('document-templates/{id}/preview', [\App\Http\Controllers\Admin\DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
         Route::get('document-templates/{template_id}/generate/{student_id}', [\App\Http\Controllers\Admin\DocumentGenerationController::class, 'generate'])->name('document-templates.generate');
         Route::post('document-templates/bulk-generate', [\App\Http\Controllers\Admin\DocumentGenerationController::class, 'bulkGenerate'])->name('document-templates.bulk-generate');
