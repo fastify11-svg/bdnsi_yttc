@@ -88,3 +88,8 @@ public/build/
 # Playwright
 test-results/
 playwright-report/
+deploy.tar.gz
+vendor.zip
+vendor.tar.gz
+zip_vendor.js
+zip.php

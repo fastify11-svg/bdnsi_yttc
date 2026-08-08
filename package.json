@@ -29,6 +29,7 @@
         "@inertiajs/inertia": "^0.11.1",
         "@inertiajs/inertia-react": "^0.8.1",
         "datatables.net": "^1.11.5",
+        "dotenv": "^17.4.2",
         "html2pdf.js": "^0.14.0",
         "jquery": "^3.6.0",
         "pdfjs-dist": "^2.16.105",
@@ -38,6 +39,8 @@
         "react-is": "^19.2.8",
         "recharts": "^3.10.1",
         "select2": "^4.1.0-rc.0",
+        "ssh2": "^1.17.0",
+        "ssh2-sftp-client": "^12.1.1",
         "tailwind-scrollbar-hide": "^1.1.7"
     }
 }
