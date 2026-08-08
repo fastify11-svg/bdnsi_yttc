@@ -1,0 +1,73 @@
+{
+  "_rolldown-runtime-C0FnF6B9.js": {
+    "file": "assets/rolldown-runtime-C0FnF6B9.js",
+    "name": "rolldown-runtime"
+  },
+  "_vendor-CBss0tjt.js": {
+    "file": "assets/vendor-CBss0tjt.js",
+    "name": "vendor",
+    "imports": [
+      "_rolldown-runtime-C0FnF6B9.js"
+    ],
+    "css": [
+      "assets/vendor-zXd8mtO7.css"
+    ],
+    "assets": [
+      "assets/fa-brands-400-Bs6tcqqs.woff2",
+      "assets/fa-regular-400-DRN8N0d1.woff2",
+      "assets/fa-solid-900-IAB4Droh.woff2",
+      "assets/fa-v4compatibility-CErXDOsT.woff2"
+    ]
+  },
+  "_vendor-react-C4wDKI_C.js": {
+    "file": "assets/vendor-react-C4wDKI_C.js",
+    "name": "vendor-react",
+    "imports": [
+      "_rolldown-runtime-C0FnF6B9.js",
+      "_vendor-CBss0tjt.js"
+    ]
+  },
+  "_vendor-zXd8mtO7.css": {
+    "file": "assets/vendor-zXd8mtO7.css",
+    "src": "_vendor-zXd8mtO7.css"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2": {
+    "file": "assets/fa-brands-400-Bs6tcqqs.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-brands-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2": {
+    "file": "assets/fa-regular-400-DRN8N0d1.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-regular-400.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2": {
+    "file": "assets/fa-solid-900-IAB4Droh.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-solid-900.woff2"
+  },
+  "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2": {
+    "file": "assets/fa-v4compatibility-CErXDOsT.woff2",
+    "src": "node_modules/@fortawesome/fontawesome-free/webfonts/fa-v4compatibility.woff2"
+  },
+  "resources/css/app.css": {
+    "file": "assets/app-CjxnIBaF.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
+    "src": "resources/css/app.css",
+    "isEntry": true
+  },
+  "resources/js/app.jsx": {
+    "file": "assets/app-BHWTw2km.js",
+    "name": "app",
+    "src": "resources/js/app.jsx",
+    "isEntry": true,
+    "imports": [
+      "_rolldown-runtime-C0FnF6B9.js",
+      "_vendor-CBss0tjt.js",
+      "_vendor-react-C4wDKI_C.js"
+    ],
+    "dynamicImports": [
+      "_vendor-CBss0tjt.js"
+    ]
+  }
+}

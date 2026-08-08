@@ -83,7 +83,7 @@ update_logos2.php
 update_sessions.php
 
 # Build artifacts - should NOT be in git
-public/build/
+# public/build/
 
 # Playwright
 test-results/
