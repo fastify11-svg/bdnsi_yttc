@@ -383,8 +383,7 @@ export default function Welcome({
             </div>
 
             {/* 4. OUR COURSES Card (Desktop Grid & Mobile 2-Row Horizontal Auto-Slider) */}
-
-
+            <CourseList courses={courses} />
             {/* 5. VERIFIED CENTERS Card (Continuous Auto-Slider) */}
             {isEnabled(config.toggle_verified_centers) && (
                 <div className="bg-white rounded-md border border-slate-200 overflow-hidden shadow-sm">
