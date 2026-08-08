@@ -65,6 +65,10 @@ class DocumentTemplateController extends Controller
                 'text_align' => $fieldData['text_align'] ?? null,
                 'width' => $fieldData['width'] ?? null,
                 'height' => $fieldData['height'] ?? null,
+                'z_index' => $fieldData['z_index'] ?? 1,
+                'letter_spacing' => $fieldData['letter_spacing'] ?? null,
+                'text_transform' => $fieldData['text_transform'] ?? null,
+                'text_shadow' => $fieldData['text_shadow'] ?? null,
             ]);
         }
 

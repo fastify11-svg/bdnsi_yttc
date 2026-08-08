@@ -7,9 +7,36 @@ import { getUrl } from '@/utils/urlHelper';
 export default function Edit(props) {
     const { template } = props;
     
-    const [fields, setFields] = useState(template.fields || []);
+    // Undo/Redo State
+    const [history, setHistory] = useState([template.fields || []]);
+    const [historyIndex, setHistoryIndex] = useState(0);
+    
     const [selectedFieldId, setSelectedFieldId] = useState(null);
     const [snapToGrid, setSnapToGrid] = useState(false);
+    const [zoom, setZoom] = useState(1);
+    
+    const fields = history[historyIndex];
+
+    const pushToHistory = (newFields) => {
+        const newHistory = history.slice(0, historyIndex + 1);
+        newHistory.push(newFields);
+        setHistory(newHistory);
+        setHistoryIndex(newHistory.length - 1);
+    };
+
+    const undo = () => {
+        if (historyIndex > 0) {
+            setHistoryIndex(historyIndex - 1);
+            setSelectedFieldId(null);
+        }
+    };
+
+    const redo = () => {
+        if (historyIndex < history.length - 1) {
+            setHistoryIndex(historyIndex + 1);
+            setSelectedFieldId(null);
+        }
+    };
     
     const availableVariables = [
         { key: 'student_name', label: 'Student Name', sample: 'John Doe', type: 'text' },
@@ -26,7 +53,6 @@ export default function Edit(props) {
     ];
 
     const canvasRef = useRef(null);
-
     const [draggingId, setDraggingId] = useState(null);
     const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
 
@@ -38,9 +64,10 @@ export default function Edit(props) {
         setSelectedFieldId(field.id);
         
         const rect = e.target.getBoundingClientRect();
+        // Calculate offset considering zoom
         setDragOffset({
-            x: e.clientX - rect.left,
-            y: e.clientY - rect.top
+            x: (e.clientX - rect.left) / zoom,
+            y: (e.clientY - rect.top) / zoom
         });
     };
 
@@ -49,8 +76,9 @@ export default function Edit(props) {
         
         const canvasRect = canvasRef.current.getBoundingClientRect();
         
-        let newX = e.clientX - canvasRect.left - dragOffset.x;
-        let newY = e.clientY - canvasRect.top - dragOffset.y;
+        // Calculate raw coordinates accounting for zoom
+        let newX = (e.clientX - canvasRect.left) / zoom - dragOffset.x;
+        let newY = (e.clientY - canvasRect.top) / zoom - dragOffset.y;
         
         if (snapToGrid) {
             newX = Math.round(newX / 10) * 10;
@@ -60,17 +88,38 @@ export default function Edit(props) {
         if (newX < 0) newX = 0;
         if (newY < 0) newY = 0;
         
-        setFields(fields.map(f => {
+        const newFields = fields.map(f => {
             if (f.id === draggingId) {
                 return { ...f, position_x: `${newX}px`, position_y: `${newY}px` };
             }
             return f;
-        }));
-    }, [draggingId, dragOffset, snapToGrid, fields]);
+        });
+
+        // Don't push to history continuously while dragging, just update current state temporarily
+        // We'll commit to history on mouseUp
+        const tempHistory = [...history];
+        tempHistory[historyIndex] = newFields;
+        setHistory(tempHistory);
+        
+    }, [draggingId, dragOffset, snapToGrid, fields, zoom, history, historyIndex]);
 
     const handleMouseUp = useCallback(() => {
-        setDraggingId(null);
-    }, []);
+        if (draggingId) {
+            // Commit drag to history
+            const tempHistory = [...history];
+            const currentFields = tempHistory[historyIndex];
+            
+            // Remove the temporary change, and push proper new state
+            tempHistory[historyIndex] = history[historyIndex]; 
+            
+            const newHistory = history.slice(0, historyIndex + 1);
+            newHistory.push(currentFields);
+            setHistory(newHistory);
+            setHistoryIndex(newHistory.length - 1);
+            
+            setDraggingId(null);
+        }
+    }, [draggingId, history, historyIndex]);
 
     useEffect(() => {
         if (draggingId) {
@@ -86,15 +135,27 @@ export default function Edit(props) {
         };
     }, [draggingId, handleMouseMove, handleMouseUp]);
 
-    // Keyboard Nudging
+    // Keyboard Nudging & Undo/Redo Shortcuts
     useEffect(() => {
         const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key.toLowerCase() === 'z') {
+                e.preventDefault();
+                undo();
+                return;
+            }
+            if (e.ctrlKey && e.key.toLowerCase() === 'y') {
+                e.preventDefault();
+                redo();
+                return;
+            }
+
             if (!selectedFieldId) return;
+
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
                 e.preventDefault(); // Prevent scrolling
                 const step = e.shiftKey ? 10 : 1; // Shift+Arrow moves by 10px
                 
-                setFields(prevFields => prevFields.map(f => {
+                const newFields = fields.map(f => {
                     if (f.id === selectedFieldId) {
                         let curX = parseInt(f.position_x) || 0;
                         let curY = parseInt(f.position_y) || 0;
@@ -107,13 +168,14 @@ export default function Edit(props) {
                         return { ...f, position_x: `${curX}px`, position_y: `${curY}px` };
                     }
                     return f;
-                }));
+                });
+                pushToHistory(newFields);
             }
         };
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [selectedFieldId]);
+    }, [selectedFieldId, fields, historyIndex]);
 
     const addField = (variable) => {
         const newField = {
@@ -122,36 +184,39 @@ export default function Edit(props) {
             position_x: '50px',
             position_y: '50px',
             font_size: '16px',
-            font_family: 'Arial',
+            font_family: 'Roboto',
             font_weight: 'normal',
             color: '#000000',
             text_align: 'left',
+            z_index: fields.length + 1,
+            letter_spacing: '0px',
+            text_transform: 'none',
+            text_shadow: 'none',
             width: variable.type === 'image' ? '100px' : null,
             height: variable.type === 'image' ? '100px' : null,
             isNew: true,
             sample: variable.sample
         };
-        setFields([...fields, newField]);
+        pushToHistory([...fields, newField]);
         setSelectedFieldId(newField.id);
     };
 
     const removeField = (id) => {
-        setFields(fields.filter(f => f.id !== id));
+        pushToHistory(fields.filter(f => f.id !== id));
         if (selectedFieldId === id) setSelectedFieldId(null);
     };
 
     const updateSelectedField = (key, value) => {
-        setFields(fields.map(f => {
+        const newFields = fields.map(f => {
             if (f.id === selectedFieldId) {
                 return { ...f, [key]: value };
             }
             return f;
-        }));
+        });
+        pushToHistory(newFields);
     };
 
     const selectedField = fields.find(f => f.id === selectedFieldId);
-    
-    // Determine if selected field is an image type based on available variables
     const isImageField = selectedField ? availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'image' : false;
 
     const [isSaving, setIsSaving] = useState(false);
@@ -162,13 +227,24 @@ export default function Edit(props) {
             fields: fields
         }, {
             preserveScroll: true,
-            onSuccess: () => {
-                setIsSaving(false);
-                // Notification handled by global flash message usually
-            },
+            onSuccess: () => setIsSaving(false),
             onError: () => setIsSaving(false)
         });
     };
+
+    const fonts = [
+        'Roboto', 'Open Sans', 'Montserrat', 'Playfair Display', 
+        'Great Vibes', 'Lato', 'Oswald', 'Poppins', 'Cinzel'
+    ];
+
+    // Dynamically inject Google Fonts
+    useEffect(() => {
+        const link = document.createElement('link');
+        link.href = `https://fonts.googleapis.com/css2?family=${fonts.map(f => f.replace(' ', '+')).join('&family=')}&display=swap`;
+        link.rel = 'stylesheet';
+        document.head.appendChild(link);
+        return () => document.head.removeChild(link);
+    }, []);
 
     return (
         <AdminLayout title={`Edit Template: ${template.name}`}>
@@ -186,15 +262,22 @@ export default function Edit(props) {
                             <h2 className="mt-2 text-2xl font-bold text-gray-900 leading-tight">Design Builder: {template.name}</h2>
                         </div>
                         <div className="flex space-x-3">
-                            <a 
-                                href={getUrl(`/admin/document-templates/${template.id}/preview`)}
-                                target="_blank"
-                                rel="noreferrer"
-                                className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                            <button 
+                                onClick={undo}
+                                disabled={historyIndex === 0}
+                                className="inline-flex items-center p-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none disabled:opacity-50"
+                                title="Undo (Ctrl+Z)"
                             >
-                                <svg className="-ml-1 mr-2 h-5 w-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                Live Preview
-                            </a>
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"></path></svg>
+                            </button>
+                            <button 
+                                onClick={redo}
+                                disabled={historyIndex === history.length - 1}
+                                className="inline-flex items-center p-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none disabled:opacity-50"
+                                title="Redo (Ctrl+Y)"
+                            >
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 10h-10a8 8 0 00-8 8v2M21 10l-6 6m6-6l-6-6"></path></svg>
+                            </button>
                             <button 
                                 onClick={saveLayout}
                                 disabled={isSaving}
@@ -235,7 +318,7 @@ export default function Edit(props) {
                                 <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
                                     <h3 className="font-bold text-gray-800">Properties</h3>
                                 </div>
-                                <div className="p-4 overflow-y-auto flex-1">
+                                <div className="p-4 overflow-y-auto flex-1 custom-scrollbar">
                                     {!selectedField ? (
                                         <div className="h-full flex flex-col items-center justify-center text-center text-gray-400">
                                             <svg className="w-12 h-12 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
@@ -256,10 +339,10 @@ export default function Edit(props) {
                                                 </button>
                                             </div>
 
-                                            {/* Position */}
-                                            <div className="grid grid-cols-2 gap-3">
+                                            {/* Layer & Position */}
+                                            <div className="grid grid-cols-2 gap-3 border-b border-gray-100 pb-3">
                                                 <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1">X Position</label>
+                                                    <label className="block text-[10px] uppercase text-gray-400 mb-1">X Pos</label>
                                                     <input 
                                                         type="text" 
                                                         value={selectedField.position_x || ''} 
@@ -268,7 +351,7 @@ export default function Edit(props) {
                                                     />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-xs font-medium text-gray-500 mb-1">Y Position</label>
+                                                    <label className="block text-[10px] uppercase text-gray-400 mb-1">Y Pos</label>
                                                     <input 
                                                         type="text" 
                                                         value={selectedField.position_y || ''} 
@@ -276,13 +359,25 @@ export default function Edit(props) {
                                                         className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                     />
                                                 </div>
+                                                <div className="col-span-2">
+                                                    <label className="block text-[10px] uppercase text-gray-400 mb-1">Layer (Z-Index)</label>
+                                                    <div className="flex items-center space-x-2">
+                                                        <input 
+                                                            type="number" 
+                                                            value={selectedField.z_index || 1} 
+                                                            onChange={e => updateSelectedField('z_index', parseInt(e.target.value))}
+                                                            className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                        />
+                                                        <button onClick={() => updateSelectedField('z_index', (selectedField.z_index || 1) + 1)} className="px-2 py-1 bg-gray-100 rounded text-xs hover:bg-gray-200">Forward</button>
+                                                        <button onClick={() => updateSelectedField('z_index', Math.max(1, (selectedField.z_index || 1) - 1))} className="px-2 py-1 bg-gray-100 rounded text-xs hover:bg-gray-200">Backward</button>
+                                                    </div>
+                                                </div>
                                             </div>
 
-                                            {/* Image Specific Dimensions */}
                                             {isImageField && (
-                                                <div className="grid grid-cols-2 gap-3 border-t border-gray-100 pt-3">
+                                                <div className="grid grid-cols-2 gap-3 border-b border-gray-100 pb-3">
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-500 mb-1">Width</label>
+                                                        <label className="block text-[10px] uppercase text-gray-400 mb-1">Width</label>
                                                         <input 
                                                             type="text" 
                                                             value={selectedField.width || '100px'} 
@@ -291,7 +386,7 @@ export default function Edit(props) {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-xs font-medium text-gray-500 mb-1">Height</label>
+                                                        <label className="block text-[10px] uppercase text-gray-400 mb-1">Height</label>
                                                         <input 
                                                             type="text" 
                                                             value={selectedField.height || '100px'} 
@@ -302,11 +397,10 @@ export default function Edit(props) {
                                                 </div>
                                             )}
 
-                                            {/* Typography */}
                                             {!isImageField && (
                                                 <>
-                                                    <div className="border-t border-gray-100 pt-3">
-                                                        <label className="block text-xs font-medium text-gray-500 mb-1">Typography</label>
+                                                    <div className="border-b border-gray-100 pb-3">
+                                                        <label className="block text-[10px] uppercase text-gray-400 mb-1">Typography</label>
                                                         <div className="flex items-center space-x-2 mb-3">
                                                             <input 
                                                                 type="color" 
@@ -316,14 +410,13 @@ export default function Edit(props) {
                                                                 title="Text Color"
                                                             />
                                                             <select 
-                                                                value={selectedField.font_family || 'Arial'} 
+                                                                value={selectedField.font_family || 'Roboto'} 
                                                                 onChange={e => updateSelectedField('font_family', e.target.value)}
                                                                 className="flex-1 text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                             >
-                                                                <option value="Arial">Arial</option>
-                                                                <option value="'Times New Roman'">Times New Roman</option>
-                                                                <option value="'Courier New'">Courier New</option>
-                                                                <option value="'Brush Script MT'">Brush Script MT (Cursive)</option>
+                                                                {fonts.map(font => (
+                                                                    <option key={font} value={font} style={{ fontFamily: font }}>{font}</option>
+                                                                ))}
                                                             </select>
                                                         </div>
 
@@ -334,7 +427,7 @@ export default function Edit(props) {
                                                                     type="text" 
                                                                     value={selectedField.font_size || ''} 
                                                                     onChange={e => updateSelectedField('font_size', e.target.value)}
-                                                                    placeholder="e.g. 16px"
+                                                                    placeholder="16px"
                                                                     className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                                 />
                                                             </div>
@@ -347,6 +440,7 @@ export default function Edit(props) {
                                                                 >
                                                                     <option value="normal">Normal</option>
                                                                     <option value="bold">Bold</option>
+                                                                    <option value="500">Medium</option>
                                                                     <option value="600">Semi-Bold</option>
                                                                     <option value="800">Extra-Bold</option>
                                                                 </select>
@@ -368,12 +462,48 @@ export default function Edit(props) {
                                                             </div>
                                                         </div>
                                                     </div>
+                                                    
+                                                    {/* Advanced Styling */}
+                                                    <div className="pt-3 border-gray-100 pb-3">
+                                                        <label className="block text-[10px] uppercase text-gray-400 mb-2">Advanced Styling</label>
+                                                        <div className="grid grid-cols-2 gap-3 mb-3">
+                                                            <div>
+                                                                <label className="block text-[10px] text-gray-400 mb-1">Letter Spacing</label>
+                                                                <input 
+                                                                    type="text" 
+                                                                    value={selectedField.letter_spacing || '0px'} 
+                                                                    onChange={e => updateSelectedField('letter_spacing', e.target.value)}
+                                                                    placeholder="2px"
+                                                                    className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                                />
+                                                            </div>
+                                                            <div>
+                                                                <label className="block text-[10px] text-gray-400 mb-1">Transform</label>
+                                                                <select 
+                                                                    value={selectedField.text_transform || 'none'} 
+                                                                    onChange={e => updateSelectedField('text_transform', e.target.value)}
+                                                                    className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                                >
+                                                                    <option value="none">None</option>
+                                                                    <option value="uppercase">UPPERCASE</option>
+                                                                    <option value="lowercase">lowercase</option>
+                                                                    <option value="capitalize">Capitalize</option>
+                                                                </select>
+                                                            </div>
+                                                            <div className="col-span-2">
+                                                                <label className="block text-[10px] text-gray-400 mb-1">Text Shadow</label>
+                                                                <input 
+                                                                    type="text" 
+                                                                    value={selectedField.text_shadow || 'none'} 
+                                                                    onChange={e => updateSelectedField('text_shadow', e.target.value)}
+                                                                    placeholder="1px 1px 2px #ccc"
+                                                                    className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                 </>
                                             )}
-
-                                            <div className="border-t border-gray-100 pt-3">
-                                                <p className="text-xs text-gray-400">Tip: Select an element and use <kbd className="font-mono bg-gray-100 border border-gray-300 rounded px-1 text-gray-600">Arrow Keys</kbd> to nudge precisely.</p>
-                                            </div>
                                         </div>
                                     )}
                                 </div>
@@ -384,7 +514,7 @@ export default function Edit(props) {
                         <div className="flex-1 bg-gray-200 rounded-xl overflow-hidden shadow-inner border border-gray-300 flex flex-col relative">
                             {/* Canvas Toolbar */}
                             <div className="h-12 bg-white border-b border-gray-300 flex items-center justify-between px-4 z-10">
-                                <div className="flex items-center space-x-4">
+                                <div className="flex items-center space-x-6">
                                     <label className="flex items-center text-sm text-gray-700 font-medium cursor-pointer">
                                         <input 
                                             type="checkbox" 
@@ -392,8 +522,25 @@ export default function Edit(props) {
                                             onChange={e => setSnapToGrid(e.target.checked)} 
                                             className="mr-2 rounded text-indigo-600 focus:ring-indigo-500 border-gray-300"
                                         />
-                                        Snap to Grid (10px)
+                                        Snap (10px)
                                     </label>
+                                    
+                                    <div className="flex items-center space-x-2 border-l pl-6 border-gray-300">
+                                        <span className="text-sm font-medium text-gray-700">Zoom:</span>
+                                        <select 
+                                            value={zoom} 
+                                            onChange={e => setZoom(parseFloat(e.target.value))}
+                                            className="text-sm rounded border-gray-300 py-1 pl-2 pr-8 focus:ring-indigo-500"
+                                        >
+                                            <option value="0.25">25%</option>
+                                            <option value="0.5">50%</option>
+                                            <option value="0.75">75%</option>
+                                            <option value="1">100%</option>
+                                            <option value="1.25">125%</option>
+                                            <option value="1.5">150%</option>
+                                            <option value="2">200%</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="text-xs text-gray-500 font-mono">
                                     Canvas: {template.width} × {template.height}
@@ -403,68 +550,76 @@ export default function Edit(props) {
                             {/* Scrollable Canvas Area */}
                             <div className="flex-1 overflow-auto p-8 relative flex justify-center items-start custom-scrollbar">
                                 <div 
-                                    ref={canvasRef}
-                                    className="relative bg-white shadow-2xl border border-gray-300 transform-gpu transition-shadow"
-                                    style={{ 
-                                        width: template.width, 
-                                        height: template.height,
-                                        backgroundImage: template.background_image ? `url(/storage/${template.background_image})` : 'none',
-                                        backgroundSize: '100% 100%',
-                                        backgroundRepeat: 'no-repeat',
-                                        minWidth: template.width,
-                                        minHeight: template.height,
-                                        backgroundPosition: 'center'
-                                    }}
+                                    className="transform-gpu origin-top-center transition-transform duration-200 ease-in-out"
+                                    style={{ transform: `scale(${zoom})` }}
                                 >
-                                    {/* Grid Overlay if enabled */}
-                                    {snapToGrid && (
-                                        <div className="absolute inset-0 pointer-events-none opacity-20" style={{
-                                            backgroundImage: `linear-gradient(to right, #ccc 1px, transparent 1px), linear-gradient(to bottom, #ccc 1px, transparent 1px)`,
-                                            backgroundSize: '10px 10px'
-                                        }}></div>
-                                    )}
+                                    <div 
+                                        ref={canvasRef}
+                                        className="relative bg-white shadow-2xl border border-gray-300"
+                                        style={{ 
+                                            width: template.width, 
+                                            height: template.height,
+                                            backgroundImage: template.background_image ? `url(/storage/${template.background_image})` : 'none',
+                                            backgroundSize: '100% 100%',
+                                            backgroundRepeat: 'no-repeat',
+                                            minWidth: template.width,
+                                            minHeight: template.height,
+                                            backgroundPosition: 'center'
+                                        }}
+                                    >
+                                        {/* Grid Overlay if enabled */}
+                                        {snapToGrid && (
+                                            <div className="absolute inset-0 pointer-events-none opacity-20 z-0" style={{
+                                                backgroundImage: `linear-gradient(to right, #ccc 1px, transparent 1px), linear-gradient(to bottom, #ccc 1px, transparent 1px)`,
+                                                backgroundSize: '10px 10px'
+                                            }}></div>
+                                        )}
 
-                                    {fields.map(field => {
-                                        const isSelected = selectedFieldId === field.id;
-                                        const isImage = availableVariables.find(v => v.key === field.variable_key)?.type === 'image';
-                                        
-                                        const sampleText = field.sample || availableVariables.find(v => v.key === field.variable_key)?.sample || `[${field.variable_key}]`;
-                                        
-                                        return (
-                                            <div
-                                                key={field.id}
-                                                onMouseDown={(e) => handleMouseDown(e, field)}
-                                                className={`absolute cursor-move select-none transition-shadow ${isSelected ? 'ring-2 ring-indigo-500 ring-offset-2 z-20 shadow-lg' : 'hover:ring-2 hover:ring-gray-300 hover:ring-offset-1 z-10'}`}
-                                                style={{
-                                                    left: field.position_x,
-                                                    top: field.position_y,
-                                                    ...(isImage ? {
-                                                        width: field.width || '100px',
-                                                        height: field.height || '100px',
-                                                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                                                        border: '2px dashed #6366f1',
-                                                        display: 'flex',
-                                                        alignItems: 'center',
-                                                        justifyContent: 'center',
-                                                        color: '#6366f1',
-                                                        fontSize: '12px',
-                                                        fontWeight: 'bold'
-                                                    } : {
-                                                        fontSize: field.font_size || '16px',
-                                                        fontFamily: field.font_family || 'Arial',
-                                                        fontWeight: field.font_weight || 'normal',
-                                                        color: field.color || '#000000',
-                                                        textAlign: field.text_align || 'left',
-                                                        whiteSpace: 'nowrap',
-                                                        padding: '2px 4px',
-                                                        border: isSelected ? '1px dashed transparent' : '1px dashed transparent',
-                                                    })
-                                                }}
-                                            >
-                                                {sampleText}
-                                            </div>
-                                        );
-                                    })}
+                                        {fields.map(field => {
+                                            const isSelected = selectedFieldId === field.id;
+                                            const isImage = availableVariables.find(v => v.key === field.variable_key)?.type === 'image';
+                                            const sampleText = field.sample || availableVariables.find(v => v.key === field.variable_key)?.sample || `[${field.variable_key}]`;
+                                            
+                                            return (
+                                                <div
+                                                    key={field.id}
+                                                    onMouseDown={(e) => handleMouseDown(e, field)}
+                                                    className={`absolute cursor-move select-none transition-shadow ${isSelected ? 'ring-2 ring-indigo-500 ring-offset-2 shadow-lg' : 'hover:ring-2 hover:ring-gray-300 hover:ring-offset-1'}`}
+                                                    style={{
+                                                        left: field.position_x,
+                                                        top: field.position_y,
+                                                        zIndex: field.z_index || 1,
+                                                        ...(isImage ? {
+                                                            width: field.width || '100px',
+                                                            height: field.height || '100px',
+                                                            backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                                                            border: '2px dashed #6366f1',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#6366f1',
+                                                            fontSize: '12px',
+                                                            fontWeight: 'bold'
+                                                        } : {
+                                                            fontSize: field.font_size || '16px',
+                                                            fontFamily: field.font_family || 'Roboto',
+                                                            fontWeight: field.font_weight || 'normal',
+                                                            color: field.color || '#000000',
+                                                            textAlign: field.text_align || 'left',
+                                                            letterSpacing: field.letter_spacing || 'normal',
+                                                            textTransform: field.text_transform || 'none',
+                                                            textShadow: field.text_shadow || 'none',
+                                                            whiteSpace: 'nowrap',
+                                                            padding: '2px 4px',
+                                                            border: isSelected ? '1px dashed transparent' : '1px dashed transparent',
+                                                        })
+                                                    }}
+                                                >
+                                                    {sampleText}
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -488,6 +643,9 @@ export default function Edit(props) {
                 }
                 .custom-scrollbar::-webkit-scrollbar-thumb:hover {
                     background-color: #94a3b8;
+                }
+                .origin-top-center {
+                    transform-origin: top center;
                 }
             `}</style>
         </AdminLayout>
