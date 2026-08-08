@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, useForm, Link } from '@inertiajs/inertia-react';
+import { getUrl } from '@/utils/urlHelper';
 
 export default function Create(props) {
     const { data, setData, post, processing, errors } = useForm({
@@ -13,7 +14,7 @@ export default function Create(props) {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('admin.document-templates.store'));
+        post(getUrl('/admin/document-templates'));
     };
 
     return (
@@ -92,7 +93,7 @@ export default function Create(props) {
 
                                 <div className="flex justify-end space-x-3">
                                     <Link
-                                        href={route('admin.document-templates.index')}
+                                        href={getUrl('/admin/document-templates')}
                                         className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50"
                                     >
                                         Cancel

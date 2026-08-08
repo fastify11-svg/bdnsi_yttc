@@ -1,6 +1,7 @@
 import React from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link } from '@inertiajs/inertia-react';
+import { getUrl } from '@/utils/urlHelper';
 
 export default function Index(props) {
     const { templates } = props;
@@ -13,7 +14,7 @@ export default function Index(props) {
                 <div className="max-w-7xl mx-auto sm:px-6 lg:px-8">
                     <div className="flex justify-end mb-4">
                         <Link
-                            href={route('admin.document-templates.create')}
+                            href={getUrl('/admin/document-templates/create')}
                             className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded"
                         >
                             Create New Template
@@ -45,9 +46,9 @@ export default function Index(props) {
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{template.type}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{template.width} x {template.height}</td>
                                                 <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                                                    <a href={route('admin.document-templates.preview', template.id)} target="_blank" className="text-blue-600 hover:text-blue-900">Preview HTML</a>
+                                                    <a href={getUrl(`/admin/document-templates/${template.id}/preview`)} target="_blank" className="text-blue-600 hover:text-blue-900">Preview HTML</a>
                                                     <span>|</span>
-                                                    <Link href={route('admin.document-templates.edit', template.id)} className="text-indigo-600 hover:text-indigo-900">Design Builder</Link>
+                                                    <Link href={getUrl(`/admin/document-templates/${template.id}/edit`)} className="text-indigo-600 hover:text-indigo-900">Design Builder</Link>
                                                 </td>
                                             </tr>
                                         ))

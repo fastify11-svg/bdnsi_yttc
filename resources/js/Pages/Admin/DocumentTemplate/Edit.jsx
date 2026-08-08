@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import AdminLayout from '@/Layouts/AdminLayout';
 import { Head, Link } from '@inertiajs/inertia-react';
 import { Inertia } from '@inertiajs/inertia';
+import { getUrl } from '@/utils/urlHelper';
 
 export default function Edit(props) {
     const { template } = props;
@@ -123,7 +124,7 @@ export default function Edit(props) {
     const selectedField = fields.find(f => f.id === selectedFieldId);
 
     const saveLayout = () => {
-        Inertia.put(route('admin.document-templates.update', template.id), {
+        Inertia.put(getUrl(`/admin/document-templates/${template.id}`), {
             fields: fields
         }, {
             preserveScroll: true,
