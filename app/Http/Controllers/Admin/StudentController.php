@@ -25,6 +25,27 @@ use Illuminate\Validation\Rule;
 
 class StudentController extends Controller
 {
+    private function renderDynamicTemplate($type, $student, $fallbackView) {
+        $template = \App\Models\DocumentTemplate::where('type', $type)->where('status', 1)->first();
+        if ($template) {
+            $mappedFields = $template->fields->map(function($field) use ($student) {
+                $val = '';
+                if ($field->variable_key == 'name') $val = $student->name;
+                elseif ($field->variable_key == 'fathers_name') $val = $student->fathers_name;
+                elseif ($field->variable_key == 'mothers_name') $val = $student->mothers_name;
+                elseif ($field->variable_key == 'roll') $val = $student->roll;
+                elseif ($field->variable_key == 'registration') $val = $student->registration;
+                elseif ($field->variable_key == 'center_code') $val = optional($student->center)->code;
+                elseif ($field->variable_key == 'center_name') $val = optional($student->center)->name;
+                elseif ($field->variable_key == 'student_image') $val = $student->picture;
+                elseif ($field->variable_key == 'qr_code') $val = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::size(100)->generate($student->id . '-' . $student->roll));
+                
+                return ['field' => $field, 'value' => $val, 'type' => in_array($field->variable_key, ['qr_code', 'student_image']) ? ($field->variable_key === 'qr_code' ? 'qrcode' : 'image') : 'text'];
+            });
+            return view('admin.document_template.preview', compact('template', 'mappedFields'));
+        }
+        return view($fallbackView, compact('student'));
+    }
     use ChecksPermission;
     protected $permissionPrefix = 'student';
     protected $skipActions = ['admit', 'certificate','certificateWithoutBackground'];
@@ -32,22 +53,22 @@ class StudentController extends Controller
     public function admit($id)
     {
         $student = Student::where('id', $id)->firstOrFail();
-        return view('admin.student.admitCard', compact('student'));
+        return $this->renderDynamicTemplate('admit_card', $student, 'admin.student.admitCard');
     }
 
     public function certificate(Request  $request, $id)
     {
         $student = Student::where('id', $id)->firstOrFail();
          if ($request->original=='original'){
-             return view('admin.student.orginalCertificate', compact('student'));
+             return $this->renderDynamicTemplate('original_certificate', $student, 'admin.student.orginalCertificate');
          }
-        return view('admin.student.certificate2', compact('student'));
+        return $this->renderDynamicTemplate('certificate', $student, 'admin.student.certificate2');
     }
 
     public function certificateWithoutBackground($id)
     {
         $student = Student::where('id', $id)->firstOrFail();
-        return view('admin.student.certificate', compact('student'));
+        return $this->renderDynamicTemplate('certificate', $student, 'admin.student.certificate');
     }
 
     public function index(Request $request)
@@ -417,21 +438,21 @@ class StudentController extends Controller
     {
         if ($request->registration == 'registration') {
             $student = Student::where('id', $student->id)->firstOrFail();
-            return view('admin.student.registrationForm', compact('student'));
+            return $this->renderDynamicTemplate('registration_card', $student, 'admin.student.registrationForm');
         } elseif ($request->transcript == 'transcript') {
             $student = Student::where('id', $student->id)->firstOrFail();
-            return view('admin.student.transcript', compact('student'));
+            return $this->renderDynamicTemplate('transcript', $student, 'admin.student.transcript');
         } elseif ($request->idcard == 'idcard') {
             $student = Student::where('id', $student->id)->firstOrFail();
-            return view('admin.student.idcard', compact('student'));
+            return $this->renderDynamicTemplate('id_card', $student, 'admin.student.idcard');
         }
         elseif ($request->cpdf == 'cpdf') {
             $student = Student::where('id', $student->id)->firstOrFail();
-            return view('admin.student.cpdf', compact('student'));
+            return $this->renderDynamicTemplate('certificate_pdf', $student, 'admin.student.cpdf');
         }
         elseif ($request->orginalcpdf == 'orginalcpdf') {
             $student = Student::where('id', $student->id)->firstOrFail();
-            return view('admin.student.originalCpdf', compact('student'));
+            return $this->renderDynamicTemplate('original_c_pdf', $student, 'admin.student.originalCpdf');
         }
         else {
             $student->load(['center', 'subject', 'session', 'result']);

@@ -46,9 +46,13 @@ export default function Create(props) {
                                         value={data.type}
                                         onChange={e => setData('type', e.target.value)}
                                     >
-                                        <option value="certificate">Certificate</option>
                                         <option value="admit_card">Admit Card</option>
+                                        <option value="registration_card">Registration Card</option>
                                         <option value="transcript">Transcript</option>
+                                        <option value="certificate">Certificate</option>
+                                        <option value="original_certificate">Original Certificate</option>
+                                        <option value="original_c_pdf">Original C-Pdf</option>
+                                        <option value="certificate_pdf">Certificate PDF</option>
                                         <option value="id_card">ID Card</option>
                                     </select>
                                     {errors.type && <div className="text-red-500 text-xs mt-1">{errors.type}</div>}
