@@ -9,16 +9,32 @@ async function runE2E() {
     });
 
     let cookies = [];
+    let csrfToken = '';
+    let xsrfToken = '';
 
     // 1. Get CSRF cookie and token
     try {
         console.log('Fetching login page for CSRF token...');
         const res = await api.get('/admin/login');
         if (res.headers['set-cookie']) {
-            cookies = cookies.concat(res.headers['set-cookie'].map(c => c.split(';')[0]));
+            res.headers['set-cookie'].forEach(c => {
+                let parts = c.split(';')[0];
+                cookies.push(parts);
+                if (parts.startsWith('XSRF-TOKEN=')) {
+                    xsrfToken = decodeURIComponent(parts.split('=')[1]);
+                }
+            });
         }
+        // extract _token from html
+        const match = res.data.match(/name="_token" value="([^"]+)"/);
+        if (match) {
+            csrfToken = match[1];
+        }
+        console.log('CSRF Token extracted:', csrfToken ? 'Yes' : 'No');
+        console.log('XSRF Token extracted:', xsrfToken ? 'Yes' : 'No');
     } catch(err) {
         console.error('Error fetching login:', err.message);
+        return;
     }
 
     // 2. Submit Login
@@ -26,25 +42,30 @@ async function runE2E() {
         console.log('Attempting login...');
         const loginRes = await api.post('/admin/login', {
             email: 'admin@gmail.com',
-            password: 'password', // wait, earlier it was 12345678, let me try 12345678
+            password: '12345678',
         }, {
             headers: {
                 'Cookie': cookies.join('; '),
+                'X-XSRF-TOKEN': xsrfToken,
                 'Content-Type': 'application/json'
             }
         });
-        if (loginRes.headers['set-cookie']) {
-            cookies = cookies.concat(loginRes.headers['set-cookie'].map(c => c.split(';')[0]));
-        }
-        console.log('Login request successful (Status: ' + loginRes.status + ')');
+        
+        console.log('Login request status: ' + loginRes.status);
     } catch (err) {
         if(err.response && err.response.status === 302) {
              console.log('Login successful (302 Redirect)');
              if (err.response.headers['set-cookie']) {
-                 cookies = cookies.concat(err.response.headers['set-cookie'].map(c => c.split(';')[0]));
+                 err.response.headers['set-cookie'].forEach(c => {
+                    let parts = c.split(';')[0];
+                    if(!cookies.includes(parts)) {
+                        cookies.push(parts);
+                    }
+                });
              }
         } else {
              console.log('Login failed', err.message);
+             return;
         }
     }
 
@@ -59,20 +80,26 @@ async function runE2E() {
             }
         });
         const pageData = res2.data;
-        console.log('Component:', pageData.component);
-        // We can check if it's updated. Wait, Inertia data-page won't contain the React source, it just tells which component to load!
-        // So the frontend script needs to be checked.
-        // Let's just fetch the raw HTML to see if our updated JS is served.
+        console.log('Component Loaded:', pageData.component);
+        console.log('Checking props...');
+        // Let's also check if we can submit a fake result!
+        console.log('Props keys:', Object.keys(pageData.props));
+        
+        // Wait, did the javascript bundle update? We can check the URL of the JS bundle on the live server.
+        const htmlRes = await api.get('/admin/result/create', {
+            headers: {
+                'Cookie': cookies.join('; ')
+            }
+        });
+        const html = htmlRes.data;
+        if(html.includes('Publish Semester Results (Auto-Generate based on CGPA)')) {
+            console.log('SUCCESS: New checkbox text found in the raw HTML bundle! Live server IS deployed!');
+        } else {
+            console.log('WARNING: The text was not found. Either it is packed in JS and not directly in HTML, or not deployed.');
+        }
+
     } catch(err) {
-         console.log('Error fetching create page:', err.message);
-    }
-    
-    // Better yet: test if the fix_db.php exists!
-    try {
-        const checkFix = await api.get('/fix_db.php');
-        console.log('fix_db.php output:', checkFix.data);
-    } catch(e) {
-        console.log('fix_db.php not found (404)');
+         console.log('Error fetching create page:', err.response ? err.response.status : err.message);
     }
 }
 
