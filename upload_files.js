@@ -7,12 +7,10 @@ const remoteBaseDir = '/home/u881397359/domains/nenobet.live/public_html';
 const localBaseDir = 'C:\\xampp\\htdocs\\BDNSI';
 
 const filesToUpload = [
-    'app/Models/DocumentField.php',
     'app/Http/Controllers/Admin/DocumentTemplateController.php',
+    'app/Http/Controllers/Admin/StudentController.php',
     'resources/js/Pages/Admin/DocumentTemplate/Index.jsx',
-    'resources/js/Pages/Admin/DocumentTemplate/Create.jsx',
-    'resources/js/Pages/Admin/DocumentTemplate/Edit.jsx',
-    'database/migrations/2026_08_08_112257_add_advanced_typography_to_document_fields_table.php'
+    'routes/admin.php'
 ];
 
 function getFiles(dir, files = []) {

@@ -113,6 +113,11 @@ class Student extends Authenticatable
         return $this->hasOne(Result::class);
     }
 
+    public function semesterResults()
+    {
+        return $this->hasMany(SemesterResult::class);
+    }
+
 
     public function scopeOwn($query, $centerId = null)
     {

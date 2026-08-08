@@ -48,7 +48,7 @@ class ResultController extends Controller
             $students = Student::where(
                 'roll',$request->get('roll'))
             ->whereStatus(StudentStatus::Approved)
-            ->with('result')->get();
+            ->with(['result', 'semesterResults'])->get();
         }
 
         return \Inertia\Inertia::render('Admin/Result/Create', [
@@ -61,12 +61,16 @@ class ResultController extends Controller
 
     public function store(Request $request)
     {
-
         $request->validate([
             'id' => 'required',
-            'written' => 'required|numeric',
-            'practical' => 'required|numeric',
-            'viva' => 'required|numeric',
+            'written' => 'nullable|numeric',
+            'practical' => 'nullable|numeric',
+            'viva' => 'nullable|numeric',
+            'semesters' => 'nullable|array',
+            'semesters.*.semester_name' => 'required|string',
+            'semesters.*.written' => 'required|numeric',
+            'semesters.*.practical' => 'required|numeric',
+            'semesters.*.viva' => 'required|numeric',
         ]);
 
         try {
@@ -75,12 +79,34 @@ class ResultController extends Controller
             $viva = $request->get('viva');
             DB::beginTransaction();
                 $student=Student::find($request->id);
-                Result::updateOrCreate(['student_id' => $request->id],
-                    [
-                        'written' => $written,
-                        'practical' => $practical,
-                        'viva' => $viva,
-                    ]);
+                
+                // Save final result if provided
+                if ($request->has('written') && $request->has('practical') && $request->has('viva') && 
+                    $request->written !== null && $request->practical !== null && $request->viva !== null) {
+                    Result::updateOrCreate(['student_id' => $request->id],
+                        [
+                            'written' => $request->get('written'),
+                            'practical' => $request->get('practical'),
+                            'viva' => $request->get('viva'),
+                        ]);
+                }
+
+                // Save semester results if provided
+                if ($request->has('semesters') && is_array($request->semesters)) {
+                    // We can either delete old ones and recreate, or update based on name
+                    \App\Models\SemesterResult::where('student_id', $request->id)->delete();
+                    
+                    foreach ($request->semesters as $sem) {
+                        \App\Models\SemesterResult::create([
+                            'student_id' => $request->id,
+                            'semester_name' => $sem['semester_name'],
+                            'written' => $sem['written'],
+                            'practical' => $sem['practical'],
+                            'viva' => $sem['viva'],
+                        ]);
+                    }
+                }
+
                 $message = 'Congratulation!! ' . $student->name . ', You have successfully filled the application form for  '.$student->center->name .' ' . $student->subject->name . ' course under Young Technical Training. Your Roll No: ' . $student->roll .' and Registration No: ' . $student->registration . '. Thanks for staying with '.config('site.setting.name');
                 \App\Jobs\SendStudentSmsJob::dispatch($student->phone, $message);
 

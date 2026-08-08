@@ -32,6 +32,30 @@ export default function Create({ students = [] }) {
     });
     const [targetGpa, setTargetGpa] = useState('');
 
+    const [semesters, setSemesters] = useState(student?.semester_results || []);
+
+    React.useEffect(() => {
+        if (student) {
+            setSemesters(student.semester_results || []);
+        }
+    }, [student]);
+
+    const handleAddSemester = () => {
+        setSemesters([...semesters, { semester_name: '', written: 0, practical: 0, viva: 0 }]);
+    };
+
+    const handleRemoveSemester = (index) => {
+        const newSemesters = [...semesters];
+        newSemesters.splice(index, 1);
+        setSemesters(newSemesters);
+    };
+
+    const handleSemesterChange = (index, field, value) => {
+        const newSemesters = [...semesters];
+        newSemesters[index][field] = value;
+        setSemesters(newSemesters);
+    };
+
     // Update marks when student changes
     React.useEffect(() => {
         if (student) {
@@ -82,7 +106,8 @@ export default function Create({ students = [] }) {
                 id: student.id,
                 written: marks.written,
                 practical: marks.practical,
-                viva: marks.viva
+                viva: marks.viva,
+                semesters: semesters
             });
             
             if (res.data?.success || res.data?.type === 'success') {
@@ -248,7 +273,78 @@ export default function Create({ students = [] }) {
                                     </tbody>
                                 </table>
                             </div>
-                            <div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
+                            
+                            {/* Semesters Section */}
+                            <div className="p-4 bg-slate-50 border-t border-slate-200">
+                                <div className="flex justify-between items-center mb-4">
+                                    <h3 className="font-bold text-slate-800 flex items-center gap-2">
+                                        <i className="fa-solid fa-layer-group text-indigo-600"></i> Semester Results (Optional)
+                                    </h3>
+                                    <button 
+                                        type="button"
+                                        onClick={handleAddSemester}
+                                        className="bg-emerald-100 text-emerald-700 hover:bg-emerald-600 hover:text-white transition px-3 py-1 rounded-md text-xs font-bold flex items-center gap-2"
+                                    >
+                                        <i className="fa-solid fa-plus"></i> Add Semester
+                                    </button>
+                                </div>
+                                {semesters.length > 0 && (
+                                    <div className="space-y-3">
+                                        {semesters.map((sem, index) => (
+                                            <div key={index} className="flex items-center gap-3 bg-white p-3 rounded-lg border border-slate-200 shadow-sm flex-wrap sm:flex-nowrap">
+                                                <div className="flex-1 min-w-[150px]">
+                                                    <input 
+                                                        type="text" 
+                                                        placeholder="Semester Name (e.g. 1st Semester)"
+                                                        value={sem.semester_name}
+                                                        onChange={(e) => handleSemesterChange(index, 'semester_name', e.target.value)}
+                                                        className="w-full px-3 py-1.5 border border-slate-300 rounded focus:outline-none text-sm"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="w-full sm:w-24">
+                                                    <input 
+                                                        type="number" 
+                                                        placeholder="Written"
+                                                        value={sem.written}
+                                                        onChange={(e) => handleSemesterChange(index, 'written', e.target.value)}
+                                                        className="w-full px-3 py-1.5 border border-slate-300 rounded focus:outline-none text-sm"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="w-full sm:w-24">
+                                                    <input 
+                                                        type="number" 
+                                                        placeholder="Practical"
+                                                        value={sem.practical}
+                                                        onChange={(e) => handleSemesterChange(index, 'practical', e.target.value)}
+                                                        className="w-full px-3 py-1.5 border border-slate-300 rounded focus:outline-none text-sm"
+                                                        required
+                                                    />
+                                                </div>
+                                                <div className="w-full sm:w-24">
+                                                    <input 
+                                                        type="number" 
+                                                        placeholder="Viva"
+                                                        value={sem.viva}
+                                                        onChange={(e) => handleSemesterChange(index, 'viva', e.target.value)}
+                                                        className="w-full px-3 py-1.5 border border-slate-300 rounded focus:outline-none text-sm"
+                                                        required
+                                                    />
+                                                </div>
+                                                <button 
+                                                    type="button"
+                                                    onClick={() => handleRemoveSemester(index)}
+                                                    className="text-rose-500 hover:text-rose-700 p-2"
+                                                >
+                                                    <i className="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+<div className="p-4 bg-slate-50 border-t border-slate-200 flex justify-between items-center">
                                 {isOverLimit && (
                                     <span className="text-rose-500 text-xs font-bold">Total marks cannot exceed {markLimit}!</span>
                                 )}
