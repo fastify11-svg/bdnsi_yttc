@@ -39,17 +39,30 @@ export default function Edit(props) {
     };
     
     const availableVariables = [
-        { key: 'student_name', label: 'Student Name', sample: 'John Doe', type: 'text' },
-        { key: 'student_roll', label: 'Roll Number', sample: '123456', type: 'text' },
-        { key: 'student_registration', label: 'Registration No', sample: 'REG-7890', type: 'text' },
-        { key: 'center_name', label: 'Center Name', sample: 'Dhaka Main Campus', type: 'text' },
-        { key: 'session_name', label: 'Session', sample: 'Jan-Dec 2024', type: 'text' },
-        { key: 'course_name', label: 'Course Name', sample: 'Diploma in Computer Science', type: 'text' },
-        { key: 'cgpa', label: 'CGPA', sample: '4.50', type: 'text' },
-        { key: 'grade', label: 'Grade', sample: 'A+', type: 'text' },
-        { key: 'issue_date', label: 'Issue Date', sample: '10 Oct 2024', type: 'text' },
-        { key: 'qr_code', label: 'QR Code', sample: '[QR]', type: 'image' },
-        { key: 'student_image', label: 'Student Photo', sample: '[PHOTO]', type: 'image' },
+        // Student Info
+        { key: 'student_name', label: 'Student Name', sample: 'John Doe', type: 'text', group: 'Student' },
+        { key: 'fathers_name', label: 'Father\'s Name', sample: 'James Doe', type: 'text', group: 'Student' },
+        { key: 'mothers_name', label: 'Mother\'s Name', sample: 'Jane Doe', type: 'text', group: 'Student' },
+        { key: 'student_roll', label: 'Roll Number', sample: '123456', type: 'text', group: 'Student' },
+        { key: 'student_registration', label: 'Registration No', sample: 'REG-7890', type: 'text', group: 'Student' },
+        { key: 'student_phone', label: 'Student Phone', sample: '01700000000', type: 'text', group: 'Student' },
+        // Course Info
+        { key: 'course_name', label: 'Course Name', sample: 'Diploma in Computer Science', type: 'text', group: 'Course' },
+        { key: 'course_duration', label: 'Course Duration', sample: '1 Year', type: 'text', group: 'Course' },
+        { key: 'session_name', label: 'Session', sample: 'Jan-Dec 2024', type: 'text', group: 'Course' },
+        // Center Info
+        { key: 'center_name', label: 'Center Name', sample: 'Dhaka Main Campus', type: 'text', group: 'Center' },
+        { key: 'center_code', label: 'Center Code', sample: 'DH101', type: 'text', group: 'Center' },
+        // Results & Certificate
+        { key: 'cgpa', label: 'CGPA', sample: '4.50', type: 'text', group: 'Result' },
+        { key: 'grade', label: 'Grade', sample: 'A+', type: 'text', group: 'Result' },
+        { key: 'serial_no', label: 'Serial No', sample: '123456789', type: 'text', group: 'Result' },
+        { key: 'exam_date', label: 'Exam Date', sample: '25-June-2024', type: 'text', group: 'Result' },
+        { key: 'result_published_date', label: 'Result Published', sample: '30-June-2024', type: 'text', group: 'Result' },
+        { key: 'issue_date', label: 'Issue Date', sample: '10 Oct 2024', type: 'text', group: 'Result' },
+        // Media
+        { key: 'qr_code', label: 'QR Code', sample: '[QR]', type: 'image', group: 'Media' },
+        { key: 'student_image', label: 'Student Photo', sample: '[PHOTO]', type: 'image', group: 'Media' },
     ];
 
     const canvasRef = useRef(null);
@@ -299,16 +312,29 @@ export default function Edit(props) {
                                     <h3 className="font-bold text-gray-800">Insert Elements</h3>
                                     <span className="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full font-semibold">{fields.length} added</span>
                                 </div>
-                                <div className="p-4 overflow-y-auto space-y-2 flex-1">
-                                    {availableVariables.map(v => (
-                                        <button 
-                                            key={v.key}
-                                            onClick={() => addField(v)}
-                                            className="w-full flex items-center justify-between px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg shadow-sm hover:border-indigo-500 hover:shadow transition-all group"
-                                        >
-                                            <span className="font-medium text-gray-700 group-hover:text-indigo-700">{v.label}</span>
-                                            <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
-                                        </button>
+                                <div className="p-4 overflow-y-auto space-y-4 flex-1 custom-scrollbar">
+                                    {Object.entries(
+                                        availableVariables.reduce((acc, v) => {
+                                            if (!acc[v.group]) acc[v.group] = [];
+                                            acc[v.group].push(v);
+                                            return acc;
+                                        }, {})
+                                    ).map(([group, vars]) => (
+                                        <div key={group}>
+                                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{group}</h4>
+                                            <div className="space-y-1.5">
+                                                {vars.map(v => (
+                                                    <button 
+                                                        key={v.key}
+                                                        onClick={() => addField(v)}
+                                                        className="w-full flex items-center justify-between px-3 py-2 text-sm bg-white border border-gray-200 rounded-lg shadow-sm hover:border-indigo-500 hover:shadow-md hover:bg-indigo-50 transition-all group"
+                                                    >
+                                                        <span className="font-medium text-gray-700 group-hover:text-indigo-700">{v.label}</span>
+                                                        <svg className="w-4 h-4 text-gray-400 group-hover:text-indigo-500 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4v16m8-8H4"></path></svg>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

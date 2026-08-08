@@ -30,15 +30,24 @@ class StudentController extends Controller
         if ($template) {
             $mappedFields = $template->fields->map(function($field) use ($student) {
                 $val = '';
-                if ($field->variable_key == 'name') $val = $student->name;
+                if ($field->variable_key == 'student_name' || $field->variable_key == 'name') $val = $student->name;
                 elseif ($field->variable_key == 'fathers_name') $val = $student->fathers_name;
                 elseif ($field->variable_key == 'mothers_name') $val = $student->mothers_name;
-                elseif ($field->variable_key == 'roll') $val = $student->roll;
-                elseif ($field->variable_key == 'registration') $val = $student->registration;
-                elseif ($field->variable_key == 'center_code') $val = optional($student->center)->code;
+                elseif ($field->variable_key == 'student_roll' || $field->variable_key == 'roll') $val = $student->roll;
+                elseif ($field->variable_key == 'student_registration' || $field->variable_key == 'registration') $val = $student->registration;
+                elseif ($field->variable_key == 'serial_no') $val = \App\Lib\Helper::certificateSerialNumber($student->id);
+                elseif ($field->variable_key == 'session_name') $val = optional($student->session)->name;
+                elseif ($field->variable_key == 'course_name') $val = optional($student->subject)->name;
+                elseif ($field->variable_key == 'course_duration') $val = $student->course_duration;
                 elseif ($field->variable_key == 'center_name') $val = optional($student->center)->name;
+                elseif ($field->variable_key == 'center_code') $val = optional($student->center)->code;
+                elseif ($field->variable_key == 'exam_date') $val = $student->exam_date ? \Carbon\Carbon::parse($student->exam_date)->format('j-F-Y') : '';
+                elseif ($field->variable_key == 'result_published_date') $val = $student->result_publised ? \Carbon\Carbon::parse($student->result_publised)->format('j-F-Y') : '';
+                elseif ($field->variable_key == 'cgpa') $val = $student->t_written_gpa() ? number_format($student->t_written_gpa(), 2) : '';
+                elseif ($field->variable_key == 'grade') $val = \App\Lib\Helper::getGrade($student->t_written_gpa());
+                elseif ($field->variable_key == 'student_phone') $val = $student->phone;
                 elseif ($field->variable_key == 'student_image') $val = $student->picture;
-                elseif ($field->variable_key == 'qr_code') $val = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::size(100)->generate($student->id . '-' . $student->roll));
+                elseif ($field->variable_key == 'qr_code') $val = base64_encode(\SimpleSoftwareIO\QrCode\Facades\QrCode::size(100)->generate(route('result', ['roll' => $student->roll])));
                 
                 return ['field' => $field, 'value' => $val, 'type' => in_array($field->variable_key, ['qr_code', 'student_image']) ? ($field->variable_key === 'qr_code' ? 'qrcode' : 'image') : 'text'];
             });
