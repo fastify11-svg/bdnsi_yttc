@@ -66,11 +66,7 @@ class ResultController extends Controller
             'written' => 'nullable|numeric',
             'practical' => 'nullable|numeric',
             'viva' => 'nullable|numeric',
-            'semesters' => 'nullable|array',
-            'semesters.*.semester_name' => 'required|string',
-            'semesters.*.written' => 'required|numeric',
-            'semesters.*.practical' => 'required|numeric',
-            'semesters.*.viva' => 'required|numeric',
+            'publish_semesters' => 'nullable|boolean',
         ]);
 
         try {
@@ -92,19 +88,121 @@ class ResultController extends Controller
                 }
 
                 // Save semester results if provided
-                if ($request->has('semesters') && is_array($request->semesters)) {
-                    // We can either delete old ones and recreate, or update based on name
+                if ($request->has('publish_semesters') && $request->publish_semesters) {
                     \App\Models\SemesterResult::where('student_id', $request->id)->delete();
                     
-                    foreach ($request->semesters as $sem) {
+                    $durationStr = $student->subject->duration ?? '';
+                    $lowerDuration = strtolower($durationStr);
+                    $numSemesters = 1;
+                    if (strpos($lowerDuration, '4 year') !== false || strpos($lowerDuration, '48 month') !== false) {
+                        $numSemesters = 8;
+                    } elseif (strpos($lowerDuration, '3 year') !== false || strpos($lowerDuration, '36 month') !== false) {
+                        $numSemesters = 6;
+                    } elseif (strpos($lowerDuration, '2 year') !== false || strpos($lowerDuration, '24 month') !== false) {
+                        $numSemesters = 4;
+                    } elseif (strpos($lowerDuration, '1 year') !== false || strpos($lowerDuration, '12 month') !== false) {
+                        $numSemesters = 2;
+                    } elseif (strpos($lowerDuration, '6 month') !== false) {
+                        $numSemesters = 1;
+                    }
+                    
+                    $courseType = $student->course_type;
+                    $typeStr = is_object($courseType) ? ($courseType->value ?? $courseType->description) : $courseType;
+                    
+                    $limit = 100;
+                    if ($typeStr == 0 || $typeStr === '0' || $typeStr === 'Regular') {
+                        $limit = 100;
+                    } elseif ($typeStr == 1 || $typeStr === '1' || $typeStr === 'Short_Course' || $typeStr === 'Short Course') {
+                        $limit = 1200;
+                    } elseif ($typeStr == 2 || $typeStr === '2' || $typeStr === 'Diploma') {
+                        $limit = 4800;
+                    }
+                    
+                    $totalMarks = (int)$written + (int)$practical + (int)$viva;
+                    $percentage = ($limit > 0) ? ($totalMarks / $limit) * 100 : 0;
+                    
+                    $targetCgpa = 0.00;
+                    if ($percentage >= 80) $targetCgpa = 4.00;
+                    elseif ($percentage >= 75) $targetCgpa = 3.75;
+                    elseif ($percentage >= 70) $targetCgpa = 3.50;
+                    elseif ($percentage >= 65) $targetCgpa = 3.25;
+                    elseif ($percentage >= 60) $targetCgpa = 3.00;
+                    elseif ($percentage >= 55) $targetCgpa = 2.75;
+                    elseif ($percentage >= 50) $targetCgpa = 2.50;
+                    elseif ($percentage >= 45) $targetCgpa = 2.25;
+                    elseif ($percentage >= 40) $targetCgpa = 2.00;
+                    else $targetCgpa = 0.00;
+                    
+                    $baseGrades = [
+                        '4.00' => 'A+',
+                        '3.75' => 'A',
+                        '3.50' => 'A-',
+                        '3.25' => 'B+',
+                        '3.00' => 'B',
+                        '2.75' => 'B-',
+                        '2.50' => 'C+',
+                        '2.25' => 'C',
+                        '2.00' => 'D',
+                        '0.00' => 'F'
+                    ];
+                    
+                    // Generate subjects for all semesters to strictly match the target CGPA
+                    $totalSubjects = $numSemesters * 5;
+                    $grades = array_fill(0, $totalSubjects, $targetCgpa);
+                    
+                    if ($targetCgpa > 0.00 && $targetCgpa < 4.00) {
+                        $jitterCount = (int) floor($totalSubjects / 2);
+                        for ($i = 0; $i < $jitterCount; $i++) {
+                            $idx1 = rand(0, $totalSubjects - 1);
+                            $idx2 = rand(0, $totalSubjects - 1);
+                            if ($idx1 != $idx2 && $grades[$idx1] <= 3.75 && $grades[$idx2] >= 2.25) {
+                                $grades[$idx1] += 0.25;
+                                $grades[$idx2] -= 0.25;
+                            }
+                        }
+                    }
+                    
+                    $gradeIndex = 0;
+                    for ($sem = 1; $sem <= $numSemesters; $sem++) {
+                        $semName = $sem . ($sem == 1 ? 'st' : ($sem == 2 ? 'nd' : ($sem == 3 ? 'rd' : 'th'))) . ' Semester';
+                        
+                        $subjects = [];
+                        $semTotalPoints = 0;
+                        for ($sub = 1; $sub <= 5; $sub++) {
+                            $subjectName = $student->subject->name . ' - Paper ' . $sub;
+                            if ($sem == $numSemesters) {
+                                if ($sub == 3) $subjectName = 'Internship';
+                                if ($sub == 4) $subjectName = 'Practical';
+                                if ($sub == 5) $subjectName = 'Viva';
+                            }
+                            
+                            $point = number_format($grades[$gradeIndex], 2, '.', '');
+                            $gradeStr = $baseGrades[$point] ?? 'A+';
+                            
+                            $subjects[] = [
+                                'name' => $subjectName,
+                                'credit' => 4,
+                                'grade' => $gradeStr,
+                                'point' => $point,
+                                'total_point' => number_format($point * 4, 2, '.', '')
+                            ];
+                            
+                            $semTotalPoints += ($point * 4);
+                            $gradeIndex++;
+                        }
+                        
+                        $semGpa = $semTotalPoints / (5 * 4);
+                        
                         \App\Models\SemesterResult::create([
                             'student_id' => $request->id,
-                            'semester_name' => $sem['semester_name'],
-                            'written' => $sem['written'],
-                            'practical' => $sem['practical'],
-                            'viva' => $sem['viva'],
+                            'semester_name' => $semName,
+                            'semester_gpa' => $semGpa,
+                            'subjects_data' => $subjects
                         ]);
                     }
+                } else {
+                    // if unchecked, maybe we clear the semesters?
+                    \App\Models\SemesterResult::where('student_id', $request->id)->delete();
                 }
 
                 $message = 'Congratulation!! ' . $student->name . ', You have successfully filled the application form for  '.$student->center->name .' ' . $student->subject->name . ' course under Young Technical Training. Your Roll No: ' . $student->roll .' and Registration No: ' . $student->registration . '. Thanks for staying with '.config('site.setting.name');

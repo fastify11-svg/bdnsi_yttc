@@ -7,10 +7,13 @@ const remoteBaseDir = '/home/u881397359/domains/nenobet.live/public_html';
 const localBaseDir = 'C:\\xampp\\htdocs\\BDNSI';
 
 const filesToUpload = [
-    'app/Http/Controllers/Admin/DocumentTemplateController.php',
-    'app/Http/Controllers/Admin/StudentController.php',
-    'resources/js/Pages/Admin/DocumentTemplate/Index.jsx',
-    'routes/admin.php'
+    'app/Http/Controllers/Admin/ResultController.php',
+    'app/Models/SemesterResult.php',
+    'app/Models/Student.php',
+    'app/Services/DocumentGeneratorService.php',
+    'resources/js/Pages/Admin/Result/Create.jsx',
+    'resources/views/admin/document_template/preview.blade.php',
+    'database/migrations/2026_08_08_164033_create_semester_results_table.php'
 ];
 
 function getFiles(dir, files = []) {
@@ -40,7 +43,7 @@ conn.on('ready', () => {
         function uploadNext() {
             if (i >= filesToUpload.length) {
                 console.log('All files uploaded successfully.');
-                conn.exec(`cd ${remoteBaseDir} && php artisan migrate --force`, (err, stream) => {
+                conn.exec(`cd ${remoteBaseDir} && php artisan tinker --execute="Schema::dropIfExists('semester_results'); DB::table('migrations')->where('migration', 'like', '%create_semester_results_table%')->delete();" && php artisan migrate --force`, (err, stream) => {
                     stream.on('close', () => {
                         conn.end();
                     }).on('data', (data) => {

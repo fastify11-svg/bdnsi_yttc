@@ -17,11 +17,8 @@ class CreateSemesterResultsTable extends Migration
             $table->id();
             $table->foreignId('student_id')->constrained()->onDelete('cascade');
             $table->string('semester_name');
-            $table->integer('written')->default(0);
-            $table->integer('practical')->default(0);
-            $table->integer('viva')->default(0);
-            $table->string('cgpa')->nullable();
-            $table->string('grade')->nullable();
+            $table->decimal('semester_gpa', 8, 2)->nullable();
+            $table->json('subjects_data')->nullable();
             $table->timestamps();
         });
     }

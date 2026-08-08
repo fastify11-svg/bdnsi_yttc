@@ -91,20 +91,15 @@ class DocumentGeneratorService
         $html = '<table style="width:100%; border-collapse: collapse; font-size: 12px; margin-top: 20px;">';
         $html .= '<thead style="background:#f3f4f6;"><tr>';
         $html .= '<th style="border:1px solid #d1d5db; padding:6px;">Semester</th>';
-        $html .= '<th style="border:1px solid #d1d5db; padding:6px;">Written</th>';
-        $html .= '<th style="border:1px solid #d1d5db; padding:6px;">Practical</th>';
-        $html .= '<th style="border:1px solid #d1d5db; padding:6px;">Viva</th>';
-        $html .= '<th style="border:1px solid #d1d5db; padding:6px;">Total</th>';
+        $html .= '<th style="border:1px solid #d1d5db; padding:6px;">Total Credits</th>';
+        $html .= '<th style="border:1px solid #d1d5db; padding:6px;">GPA</th>';
         $html .= '</tr></thead><tbody>';
 
         foreach ($semesters as $sem) {
-            $total = (int)$sem->written + (int)$sem->practical + (int)$sem->viva;
             $html .= '<tr>';
             $html .= '<td style="border:1px solid #d1d5db; padding:6px;">' . htmlspecialchars($sem->semester_name) . '</td>';
-            $html .= '<td style="border:1px solid #d1d5db; padding:6px; text-align:center;">' . $sem->written . '</td>';
-            $html .= '<td style="border:1px solid #d1d5db; padding:6px; text-align:center;">' . $sem->practical . '</td>';
-            $html .= '<td style="border:1px solid #d1d5db; padding:6px; text-align:center;">' . $sem->viva . '</td>';
-            $html .= '<td style="border:1px solid #d1d5db; padding:6px; text-align:center; font-weight:bold;">' . $total . '</td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:6px; text-align:center;">20</td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:6px; text-align:center; font-weight:bold;">' . number_format($sem->semester_gpa, 2) . '</td>';
             $html .= '</tr>';
         }
         $html .= '</tbody></table>';
@@ -119,23 +114,52 @@ class DocumentGeneratorService
 
         $html = '';
         foreach ($semesters as $index => $sem) {
-            $total = (int)$sem->written + (int)$sem->practical + (int)$sem->viva;
             // The magic is here: page-break-after! Except for the last one (optional, but harmless).
             $html .= '<div style="page-break-after: always; margin-bottom: 20px;">';
             
             $html .= '<h3 style="text-align:center; margin-bottom: 10px;">' . htmlspecialchars($sem->semester_name) . ' Marksheet</h3>';
-            $html .= '<table style="width:100%; border-collapse: collapse; font-size: 14px;">';
+            $html .= '<table style="width:100%; border-collapse: collapse; font-size: 14px; text-align:center;">';
             $html .= '<thead style="background:#f3f4f6;"><tr>';
-            $html .= '<th style="border:1px solid #d1d5db; padding:8px;">Subject / Module</th>';
-            $html .= '<th style="border:1px solid #d1d5db; padding:8px;">Marks</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:8px; text-align:left;">Subject / Module</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:8px;">Credit (C)</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:8px;">Grade</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:8px;">Grade Point (G)</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:8px;">Total Point (C &times; G)</th>';
             $html .= '</tr></thead><tbody>';
             
-            $html .= '<tr><td style="border:1px solid #d1d5db; padding:8px;">Written</td><td style="border:1px solid #d1d5db; padding:8px; text-align:center;">' . $sem->written . '</td></tr>';
-            $html .= '<tr><td style="border:1px solid #d1d5db; padding:8px;">Practical</td><td style="border:1px solid #d1d5db; padding:8px; text-align:center;">' . $sem->practical . '</td></tr>';
-            $html .= '<tr><td style="border:1px solid #d1d5db; padding:8px;">Viva</td><td style="border:1px solid #d1d5db; padding:8px; text-align:center;">' . $sem->viva . '</td></tr>';
-            $html .= '<tr><td style="border:1px solid #d1d5db; padding:8px; font-weight:bold;">Total</td><td style="border:1px solid #d1d5db; padding:8px; text-align:center; font-weight:bold;">' . $total . '</td></tr>';
+            $subjects = $sem->subjects_data ?? [];
+            if (is_string($subjects)) {
+                $subjects = json_decode($subjects, true) ?? [];
+            }
+            
+            $totalCredit = 0;
+            $totalPoints = 0;
+            foreach ($subjects as $sub) {
+                $html .= '<tr>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:8px; text-align:left;">' . htmlspecialchars($sub['name'] ?? '') . '</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:8px;">' . ($sub['credit'] ?? '') . '</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:8px;">' . ($sub['grade'] ?? '') . '</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:8px;">' . number_format($sub['point'] ?? 0, 2) . '</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:8px;">' . number_format($sub['total_point'] ?? 0, 2) . '</td>';
+                $html .= '</tr>';
+                $totalCredit += ($sub['credit'] ?? 0);
+                $totalPoints += ($sub['total_point'] ?? 0);
+            }
+            
+            $html .= '<tr style="background:#f9fafb; font-weight:bold;">';
+            $html .= '<td style="border:1px solid #d1d5db; padding:8px; text-align:right;">Total</td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:8px;">' . $totalCredit . '</td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:8px;"></td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:8px;"></td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:8px;">' . number_format($totalPoints, 2) . '</td>';
+            $html .= '</tr>';
             
             $html .= '</tbody></table>';
+            
+            $html .= '<div style="margin-top: 10px; text-align: right; font-weight: bold; font-size: 16px;">';
+            $html .= 'Semester GPA: ' . number_format($sem->semester_gpa, 2);
+            $html .= '</div>';
+            
             $html .= '</div>';
         }
 
