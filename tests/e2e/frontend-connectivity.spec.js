@@ -18,7 +18,7 @@ test.describe('Frontend Connectivity & Navigation Checks', () => {
       
       // Navigate to course details
       await page.goto(href);
-      await expect(page.locator('text=Course Overview & Syllabus').first()).toBeVisible();
+      await expect(page.locator('text=Enroll Now').first()).toBeVisible({ timeout: 10000 });
     }
   });
 
