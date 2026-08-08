@@ -63,6 +63,8 @@ class DocumentTemplateController extends Controller
                 'font_weight' => $fieldData['font_weight'] ?? null,
                 'color' => $fieldData['color'] ?? null,
                 'text_align' => $fieldData['text_align'] ?? null,
+                'width' => $fieldData['width'] ?? null,
+                'height' => $fieldData['height'] ?? null,
             ]);
         }
 
