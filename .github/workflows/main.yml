@@ -92,6 +92,8 @@ jobs:
           APP_ENV: testing
 
       - name: Run Playwright E2E Tests (Frontend)
-        run: npx playwright test
+        run: |
+          sleep 5
+          npx playwright test
         env:
           APP_URL: http://127.0.0.1:8000
