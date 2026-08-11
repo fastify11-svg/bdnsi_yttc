@@ -4,10 +4,15 @@ const conn = new Client();
 
 conn.on('ready', () => {
   console.log('Client :: ready');
-  conn.exec('ls -la /home/u881397359/domains/nenobet.live/public_html && echo "---" && ls -la /home/u881397359/domains/nenobet.live/public_html/public', (err, stream) => {
+  const commands = `
+    cd /home/u881397359/domains/nenobet.live/public_html
+    echo "APP_URL=https://nenobet.live" >> .env
+    php artisan config:clear
+  `;
+  conn.exec(commands, (err, stream) => {
     if (err) throw err;
     stream.on('close', (code, signal) => {
-      console.log('Stream :: close :: code: ' + code + ', signal: ' + signal);
+      console.log('Stream :: close :: code: ' + code);
       conn.end();
     }).on('data', (data) => {
       console.log('STDOUT: ' + data);

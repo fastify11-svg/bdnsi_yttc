@@ -5,10 +5,18 @@ test.describe('Admin Panel E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Login as admin before each test
     await page.goto('./admin/login');
-    await page.fill('input[name="email"]', 'admin@gmail.com');
-    await page.fill('input[name="password"]', '12345678');
+    await page.waitForLoadState('networkidle');
+    const email = process.env.ADMIN_EMAIL || 'admin@gmail.com';
+    const password = process.env.ADMIN_PASSWORD || '12345678';
+    await page.fill('input[name="email"]', email);
+    await page.fill('input[name="password"]', password);
     await page.click('button[type="submit"]');
-    await expect(page).toHaveURL(/.*admin\/dashboard/);
+    try {
+      await expect(page).toHaveURL(/.*admin\/dashboard/, { timeout: 8000 });
+    } catch (e) {
+      await page.screenshot({ path: 'login-failure.png' });
+      throw e;
+    }
   });
 
   test('Admin dashboard loads successfully', async ({ page }) => {
