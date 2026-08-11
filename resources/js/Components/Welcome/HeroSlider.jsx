@@ -54,14 +54,14 @@ export default function HeroSlider({ sliders }) {
                     <>
                         <button
                             onClick={() => setCurrentSlide((prev) => (prev - 1 + activeSliders.length) % activeSliders.length)}
-                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                            className="absolute left-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
                             aria-label="Previous Banner"
                         >
                             <i className="fa-solid fa-chevron-left text-sm"></i>
                         </button>
                         <button
                             onClick={() => setCurrentSlide((prev) => (prev + 1) % activeSliders.length)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300"
+                            className="absolute right-3 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/70 text-white w-9 h-9 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 z-20"
                             aria-label="Next Banner"
                         >
                             <i className="fa-solid fa-chevron-right text-sm"></i>
