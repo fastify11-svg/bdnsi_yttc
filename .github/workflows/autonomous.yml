@@ -25,8 +25,8 @@ jobs:
           cp .env.example .env
           touch database/database.sqlite
           sed -i 's/DB_CONNECTION=.*/DB_CONNECTION=sqlite/' .env
-          sed -i 's/DB_DATABASE=.*/DB_DATABASE=database\/database.sqlite/' .env
-          # Disable debugbar or telescope if they interfere with E2E
+          # For Laravel SQLite to work perfectly in Actions, DB_DATABASE should be empty so it falls back to database_path()
+          sed -i 's/DB_DATABASE=.*/DB_DATABASE=/' .env
           sed -i 's/APP_DEBUG=.*/APP_DEBUG=true/' .env
           sed -i 's/APP_ENV=.*/APP_ENV=testing/' .env
 
@@ -37,7 +37,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Run Database Migrations & Seeding
-        run: php artisan migrate:fresh --seed --force
+        run: php artisan migrate:fresh --seed --force -vvv
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -84,14 +84,8 @@ jobs:
             node auto_deploy.mjs || echo "SSH deployment fallback executed."
           fi
 
-      - name: Self-Healing Trigger (On Failure)
-        if: failure()
-        run: |
-          echo "Initiating AI Self-Healing Protocol..."
-          echo "Please check the Playwright Report artifact for details."
-
       - name: Upload Playwright Report
-        if: always()
+        if: failure()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-report
