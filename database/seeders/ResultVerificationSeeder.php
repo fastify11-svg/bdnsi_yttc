@@ -2,13 +2,17 @@
 
 namespace Database\Seeders;
 
+use App\Enums\BloodGroup;
+use App\Enums\CourseType;
+use App\Enums\Gender;
+use App\Enums\Religion;
+use App\Enums\StudentStatus;
 use App\Models\Center;
 use App\Models\Result;
 use App\Models\Session;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
 
 class ResultVerificationSeeder extends Seeder
 {
@@ -37,11 +41,11 @@ class ResultVerificationSeeder extends Seeder
                     'date_of_birth' => '2000-01-01',
                     'session_id' => $session->id,
                     'subject_id' => $subject->id,
-                    'status' => \App\Enums\StudentStatus::Approved(),
-                    'course_type' => \App\Enums\CourseType::Regular(),
-                    'gender' => \App\Enums\Gender::Male(),
-                    'religion' => \App\Enums\Religion::Muslim(),
-                    'blood_group' => \App\Enums\BloodGroup::A_Positive(),
+                    'status' => StudentStatus::Approved(),
+                    'course_type' => CourseType::Regular(),
+                    'gender' => Gender::Male(),
+                    'religion' => Religion::Muslim(),
+                    'blood_group' => BloodGroup::A_Positive(),
                     'phone' => '01700000000',
                     'present_address' => 'Dhaka',
                     'permanent_address' => 'Dhaka',

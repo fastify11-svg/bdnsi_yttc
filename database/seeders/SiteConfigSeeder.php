@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\ConfigDictionary;
 use App\Models\SiteConfig;
+use Illuminate\Database\Seeder;
 
 class SiteConfigSeeder extends Seeder
 {
@@ -22,7 +22,7 @@ class SiteConfigSeeder extends Seeder
             'header_logo' => 'default_header_logo.png',
             'main_logo' => 'default_main_logo.png',
             'favicon' => 'default_favicon.ico',
-            
+
             'hotline_phone' => '+1234567890',
             'official_email' => 'contact@example.com',
             'headquarter_address' => '123 Main Street, City',
@@ -30,14 +30,14 @@ class SiteConfigSeeder extends Seeder
             'youtube_url' => 'https://youtube.com',
             'twitter_url' => 'https://twitter.com',
             'linkedin_url' => 'https://linkedin.com',
-            
+
             'marquee_notice' => 'Welcome to the Central Site Control Center!',
             'about_short' => 'Short about us.',
             'about_full' => 'Full about us description goes here.',
             'terms_conditions' => 'Terms and conditions go here.',
             'privacy_policy' => 'Privacy policy goes here.',
             'footer_copyright' => '© 2026 Central Site. All rights reserved.',
-            
+
             'toggle_center_apply' => 1,
             'toggle_result_verify' => 1,
             'toggle_success_students' => 1,
@@ -48,7 +48,7 @@ class SiteConfigSeeder extends Seeder
             'toggle_notice_board' => 1,
             'toggle_contact_form' => 1,
             'toggle_whatsapp' => 1,
-            
+
             'primary_color' => '#7024A8',
             'secondary_color' => '#3B82F6',
             'accent_color' => '#F59E0B',
@@ -56,13 +56,13 @@ class SiteConfigSeeder extends Seeder
 
         $attributes = $config->getAttributes();
         foreach ($attributes as $key => $value) {
-            if (!in_array($key, ['id', 'created_at', 'updated_at'])) {
-                \App\Models\ConfigDictionary::updateOrCreate(
+            if (! in_array($key, ['id', 'created_at', 'updated_at'])) {
+                ConfigDictionary::updateOrCreate(
                     ['key' => $key],
                     ['value' => $value ?? '']
                 );
             }
         }
-        \App\Models\ConfigDictionary::storeCache();
+        ConfigDictionary::storeCache();
     }
 }

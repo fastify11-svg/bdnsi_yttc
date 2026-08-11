@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\StudentStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Admin;
-use App\Models\ContactUs;
+use App\Models\Center;
 use App\Models\Student;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
@@ -19,34 +21,34 @@ class DashboardController extends Controller
         /*
          * Uncomment the line below if you want to use verified middleware
          */
-        //$this->middleware('verified:admin.verification.notice');
+        // $this->middleware('verified:admin.verification.notice');
     }
 
-
-    public function index(){
+    public function index()
+    {
         $cards = collect([
             'Total Student ' => [
                 'value' => Student::count(),
                 'url' => route('admin.student.index'),
             ],
             'Total Approved Student ' => [
-                'value' => Student::where('status',StudentStatus::Approved)->count(),
+                'value' => Student::where('status', StudentStatus::Approved)->count(),
                 'url' => route('admin.student.index'),
             ],
             'Total Pending Student ' => [
-                'value' => Student::where('status',StudentStatus::Pending)->count(),
+                'value' => Student::where('status', StudentStatus::Pending)->count(),
                 'url' => route('admin.student.index'),
             ],
             'Total Centers ' => [
-                'value' => \App\Models\Center::count(),
+                'value' => Center::count(),
                 'url' => route('admin.center.index'),
             ],
             'Total Courses ' => [
-                'value' => \App\Models\Subject::count(),
+                'value' => Subject::count(),
                 'url' => route('admin.subject.index'),
             ],
         ]);
-        
+
         $adminList = Admin::all();
 
         // Analytics Data
@@ -56,15 +58,15 @@ class DashboardController extends Controller
         $monthlyRegistrations = Student::select(
             DB::raw("DATE_FORMAT(created_at, '%b %Y') as month_name"),
             DB::raw("DATE_FORMAT(created_at, '%Y-%m') as month_key"),
-            DB::raw("COUNT(*) as total")
+            DB::raw('COUNT(*) as total')
         )
-        ->where('created_at', '>=', $sixMonthsAgo)
-        ->groupBy('month_name', 'month_key')
-        ->orderBy('month_key', 'ASC')
-        ->get();
+            ->where('created_at', '>=', $sixMonthsAgo)
+            ->groupBy('month_name', 'month_key')
+            ->orderBy('month_key', 'ASC')
+            ->get();
 
         // 2. Student Status Breakdown
-        $statusBreakdown = Student::select('status', DB::raw("COUNT(*) as total"))
+        $statusBreakdown = Student::select('status', DB::raw('COUNT(*) as total'))
             ->groupBy('status')
             ->get()
             ->map(function ($item) {
@@ -77,39 +79,39 @@ class DashboardController extends Controller
         // 3. Top Centers
         $topCenters = DB::table('students')
             ->join('centers', 'students.center_id', '=', 'centers.id')
-            ->select('centers.name as center_name', DB::raw("COUNT(students.id) as total_students"))
+            ->select('centers.name as center_name', DB::raw('COUNT(students.id) as total_students'))
             ->groupBy('centers.id', 'centers.name')
             ->orderBy('total_students', 'DESC')
             ->limit(5)
             ->get();
 
-        return \Inertia\Inertia::render('Admin/Dashboard', [
+        return Inertia::render('Admin/Dashboard', [
             'cards' => $cards,
             'adminList' => $adminList,
             'analytics' => [
                 'monthlyRegistrations' => $monthlyRegistrations,
                 'statusBreakdown' => $statusBreakdown,
                 'topCenters' => $topCenters,
-            ]
+            ],
         ]);
     }
 
-    public function userCreate(Request $request){
+    public function userCreate(Request $request)
+    {
 
-     $request->validate([
+        $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:admins'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-       $user= Admin::create([
+        $user = Admin::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
+
         return response()->success('Successfully Created');
 
     }
-
-
 }

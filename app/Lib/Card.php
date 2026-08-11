@@ -5,7 +5,9 @@ namespace App\Lib;
 class Card
 {
     public $title;
+
     public $value;
+
     public $kv = [];
 
     public function __construct(string $title, string $value)
@@ -17,10 +19,12 @@ class Card
     public function setKV(array $kv)
     {
         $this->kv = $kv;
+
         return $this;
     }
 
-    public static function make(string $title, string $value, array $kv){
+    public static function make(string $title, string $value, array $kv)
+    {
         return (new self($title, $value))->setKV($kv);
     }
 }

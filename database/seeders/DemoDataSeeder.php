@@ -2,19 +2,21 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Admin;
-use App\Models\User;
-use App\Models\Notice;
-use App\Models\Exam;
-use App\Models\Quation;
-use App\Models\License;
-use App\Models\YoutubeVideo;
-use App\Models\WhatappLink;
-use App\Models\ContactUs;
+use App\Models\Center;
 use App\Models\ConfigDictionary;
-use Illuminate\Support\Facades\Hash;
+use App\Models\ContactUs;
+use App\Models\Exam;
+use App\Models\License;
+use App\Models\Notice;
+use App\Models\Quation;
+use App\Models\Subject;
+use App\Models\User;
+use App\Models\WhatappLink;
+use App\Models\YoutubeVideo;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DemoDataSeeder extends Seeder
 {
@@ -25,7 +27,7 @@ class DemoDataSeeder extends Seeder
             ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Super Administrator',
-                'password' => Hash::make('12345678')
+                'password' => Hash::make('12345678'),
             ]
         );
 
@@ -33,11 +35,11 @@ class DemoDataSeeder extends Seeder
             ['email' => 'fastify11@gmail.com'],
             [
                 'name' => 'Naeem Hossain',
-                'password' => Hash::make('12345678')
+                'password' => Hash::make('12345678'),
             ]
         );
 
-        $center = \App\Models\Center::firstOrCreate(
+        $center = Center::firstOrCreate(
             ['email' => 'center@bdnsi.com'],
             [
                 'code' => 'BDNSI001',
@@ -59,7 +61,7 @@ class DemoDataSeeder extends Seeder
                 'username' => 'demouser',
                 'phone' => '01700000001',
                 'center_id' => $center->id,
-                'password' => Hash::make('12345678')
+                'password' => Hash::make('12345678'),
             ]
         );
 
@@ -74,7 +76,7 @@ class DemoDataSeeder extends Seeder
                 'details' => 'Special Announcement: Registration Open for New Skill Development Batches in Electrical, Mechanical, Welding, and Computer Application.',
                 'bn_details' => 'নতুন কারিগরি দক্ষতায় ভর্তির জন্য আবেদনপত্র গ্রহণ চলছে। ইলেকট্রিক্যাল, মেকানিক্যাল ও কম্পিউটার ট্রেনিং কোর্সে ভর্তি হোন।',
                 'ar_details' => 'إعلان خاص: التسجيل مفتوح لدفعة المهارات الجديدة',
-            ]
+            ],
         ];
 
         foreach ($notices as $n) {
@@ -82,7 +84,7 @@ class DemoDataSeeder extends Seeder
         }
 
         // 2.5 Subjects (Courses)
-        $subject1 = \App\Models\Subject::firstOrCreate(
+        $subject1 = Subject::firstOrCreate(
             ['code' => 'COA101'],
             [
                 'name' => 'Computer Office Application',
@@ -90,11 +92,11 @@ class DemoDataSeeder extends Seeder
                 'rate' => 5000,
                 'education_qualification' => 'SSC',
                 'course_details' => 'Learn Microsoft Office, Excel, PowerPoint and Internet Browsing.',
-                'type' => 1
+                'type' => 1,
             ]
         );
 
-        $subject2 = \App\Models\Subject::firstOrCreate(
+        $subject2 = Subject::firstOrCreate(
             ['code' => 'DRV202'],
             [
                 'name' => 'Professional Driving & Auto Mechanics',
@@ -102,7 +104,7 @@ class DemoDataSeeder extends Seeder
                 'rate' => 8000,
                 'education_qualification' => 'JSC',
                 'course_details' => 'Comprehensive driving training with traffic rules and vehicle maintenance.',
-                'type' => 1
+                'type' => 1,
             ]
         );
 
@@ -114,7 +116,7 @@ class DemoDataSeeder extends Seeder
                 'per_mcq_mark' => 1,
                 'start_time' => Carbon::now(),
                 'end_time' => Carbon::now()->addDays(30),
-                'status' => 1
+                'status' => 1,
             ]
         );
 
@@ -125,7 +127,7 @@ class DemoDataSeeder extends Seeder
                 'per_mcq_mark' => 1,
                 'start_time' => Carbon::now(),
                 'end_time' => Carbon::now()->addDays(30),
-                'status' => 1
+                'status' => 1,
             ]
         );
 
@@ -137,7 +139,7 @@ class DemoDataSeeder extends Seeder
                 'option_2' => 'ধীরে চলুন',
                 'option_3' => 'গাড়ি চালান',
                 'option_4' => 'ডান দিকে ঘুরুন',
-                'answer' => 'option_1'
+                'answer' => 'option_1',
             ],
             [
                 'exam_id' => $exam1->id,
@@ -146,7 +148,7 @@ class DemoDataSeeder extends Seeder
                 'option_2' => 'মাথার সুরক্ষার জন্য',
                 'option_3' => 'বাতাস থেকে চোখ রক্ষা করতে',
                 'option_4' => 'সৌন্দর্য বৃদ্ধির জন্য',
-                'answer' => 'option_2'
+                'answer' => 'option_2',
             ],
             [
                 'exam_id' => $exam1->id,
@@ -155,7 +157,7 @@ class DemoDataSeeder extends Seeder
                 'option_2' => 'ওভারটেক করা যাবে',
                 'option_3' => 'পার্কিং করার অনুমতি আছে',
                 'option_4' => 'গতি বাড়ানো যাবে',
-                'answer' => 'option_1'
+                'answer' => 'option_1',
             ],
         ];
 
@@ -171,7 +173,7 @@ class DemoDataSeeder extends Seeder
                 'option_2' => 'Ctrl + X',
                 'option_3' => 'Ctrl + C',
                 'option_4' => 'Ctrl + Z',
-                'answer' => 'option_3'
+                'answer' => 'option_3',
             ],
             [
                 'exam_id' => $exam2->id,
@@ -180,7 +182,7 @@ class DemoDataSeeder extends Seeder
                 'option_2' => 'Hard Disk',
                 'option_3' => 'Central Processing Unit (CPU)',
                 'option_4' => 'Power Supply',
-                'answer' => 'option_3'
+                'answer' => 'option_3',
             ],
         ];
 
@@ -201,7 +203,7 @@ class DemoDataSeeder extends Seeder
                 'valid_from' => Carbon::now()->subMonths(6),
                 'valid_to' => Carbon::now()->addYears(5),
                 'allowed_vehicles' => json_encode(['Motorcycle', 'Light Motor Vehicle (LMV)']),
-                'status' => 1
+                'status' => 1,
             ],
             [
                 'cnic' => '1998451298741',
@@ -214,8 +216,8 @@ class DemoDataSeeder extends Seeder
                 'valid_from' => Carbon::now()->subMonths(3),
                 'valid_to' => Carbon::now()->addYears(5),
                 'allowed_vehicles' => json_encode(['Heavy Motor Vehicle (HMV)', 'Public Transport']),
-                'status' => 1
-            ]
+                'status' => 1,
+            ],
         ];
 
         foreach ($licenses as $l) {
@@ -228,14 +230,14 @@ class DemoDataSeeder extends Seeder
                 'title' => 'BDNSI Institute Overview & Technical Course Facilities',
                 'video_id' => 'dQw4w9WgXcQ',
                 'link' => 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-                'status' => 1
+                'status' => 1,
             ],
             [
                 'title' => 'Practical Driving & Mechanical Workshop Training',
                 'video_id' => '3JZ_D3ELwOQ',
                 'link' => 'https://www.youtube.com/watch?v=3JZ_D3ELwOQ',
-                'status' => 1
-            ]
+                'status' => 1,
+            ],
         ];
 
         foreach ($videos as $v) {
@@ -248,7 +250,7 @@ class DemoDataSeeder extends Seeder
             [
                 'name' => 'Student Helpdesk WhatsApp Support',
                 'description' => 'Official BDNSI WhatsApp Support Desk',
-                'status' => 1
+                'status' => 1,
             ]
         );
 
@@ -259,7 +261,7 @@ class DemoDataSeeder extends Seeder
                 'name' => 'Tanvir Hasan',
                 'phone' => '01812345678',
                 'message' => 'I would like to inquire about the upcoming computer graphics and driving training batch schedules.',
-                'is_seen' => 0
+                'is_seen' => 0,
             ]
         );
 

@@ -11,6 +11,7 @@ class DocumentTemplateController extends Controller
     public function index()
     {
         $templates = DocumentTemplate::latest()->get();
+
         return inertia('Admin/DocumentTemplate/Index', compact('templates'));
     }
 
@@ -41,8 +42,9 @@ class DocumentTemplateController extends Controller
     public function edit(DocumentTemplate $documentTemplate)
     {
         $documentTemplate->load('fields');
+
         return inertia('Admin/DocumentTemplate/Edit', [
-            'template' => $documentTemplate
+            'template' => $documentTemplate,
         ]);
     }
 
@@ -78,14 +80,14 @@ class DocumentTemplateController extends Controller
     public function preview($id)
     {
         $template = DocumentTemplate::with('fields')->findOrFail($id);
-        
+
         // This view will just output plain HTML with absolute positioned fields
         return view('admin.document_template.preview', compact('template'));
     }
 
     public function toggleStatus(DocumentTemplate $template)
     {
-        $template->status = !$template->status;
+        $template->status = ! $template->status;
         $template->save();
 
         return redirect()->back()->with('success', 'Template status updated.');

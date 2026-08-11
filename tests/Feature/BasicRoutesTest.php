@@ -2,8 +2,6 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class BasicRoutesTest extends TestCase
@@ -19,14 +17,14 @@ class BasicRoutesTest extends TestCase
 
         $response->assertStatus(200);
     }
-    
+
     public function test_contact_us_returns_a_successful_response()
     {
         $response = $this->get('/contact-us');
 
         $response->assertStatus(200);
     }
-    
+
     public function test_login_returns_a_successful_response()
     {
         $response = $this->get('/login');

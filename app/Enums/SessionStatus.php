@@ -10,8 +10,7 @@ use BenSampo\Enum\Enum;
  */
 final class SessionStatus extends Enum
 {
+    const Pending = 0;
 
-    const Pending =   0;
-    const Active =   1;
-
+    const Active = 1;
 }

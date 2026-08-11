@@ -8,6 +8,7 @@ use App\Models\Session;
 use App\Models\Student;
 use App\Models\Subject;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class StudentSubmissionController extends Controller
 {
@@ -24,9 +25,9 @@ class StudentSubmissionController extends Controller
                 ->get();
         }
 
-        return \Inertia\Inertia::render('Center/Student/Submission', [
+        return Inertia::render('Center/Student/Submission', [
             'students' => $students,
-            'sessions' => Session::select(['id', 'name'])->where('status',SessionStatus::Active)->get(),
+            'sessions' => Session::select(['id', 'name'])->where('status', SessionStatus::Active)->get(),
             'subjects' => Subject::select(['id', 'name'])->get(),
         ]);
     }
@@ -34,7 +35,7 @@ class StudentSubmissionController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'id.*' => 'numeric|exists:students,id'
+            'id.*' => 'numeric|exists:students,id',
         ]);
 
         if (count($validated['id']) !== Student::whereIn('id', $validated['id'])->whereStatus(StudentStatus::Pending)->count()) {

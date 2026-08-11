@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\YoutubeVideo;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class YoutubeVideoController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'youtube-video';
 
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(YoutubeVideo::latest()->get())->addIndexColumn()->toJson();
         }
 
@@ -22,10 +24,10 @@ class YoutubeVideoController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%")
-                  ->orWhere('video_id', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('video_id', 'like', "%{$search}%");
             });
         }
 
@@ -35,7 +37,7 @@ class YoutubeVideoController extends Controller
             'search' => $request->input('search', ''),
         ];
 
-        return \Inertia\Inertia::render('Admin/YoutubeVideo/Index', [
+        return Inertia::render('Admin/YoutubeVideo/Index', [
             'videos' => $videos,
             'filters' => $filters,
         ]);
@@ -43,7 +45,7 @@ class YoutubeVideoController extends Controller
 
     public function create()
     {
-        return \Inertia\Inertia::render('Admin/YoutubeVideo/Create');
+        return Inertia::render('Admin/YoutubeVideo/Create');
     }
 
     public function store(Request $request)
@@ -57,7 +59,7 @@ class YoutubeVideoController extends Controller
 
         $videoId = $this->extractYoutubeVideoId($validated['link']);
 
-        if (!$videoId) {
+        if (! $videoId) {
             return redirect()->back()->withErrors(['link' => 'Invalid YouTube URL or Video ID. Please paste a valid YouTube video link.']);
         }
 
@@ -75,7 +77,7 @@ class YoutubeVideoController extends Controller
 
     public function edit(YoutubeVideo $youtubeVideo)
     {
-        return \Inertia\Inertia::render('Admin/YoutubeVideo/Edit', [
+        return Inertia::render('Admin/YoutubeVideo/Edit', [
             'video' => $youtubeVideo,
         ]);
     }
@@ -91,7 +93,7 @@ class YoutubeVideoController extends Controller
 
         $videoId = $this->extractYoutubeVideoId($validated['link']);
 
-        if (!$videoId) {
+        if (! $videoId) {
             return redirect()->back()->withErrors(['link' => 'Invalid YouTube URL or Video ID.']);
         }
 
@@ -110,12 +112,15 @@ class YoutubeVideoController extends Controller
     public function destroy(YoutubeVideo $youtubeVideo)
     {
         $youtubeVideo->delete();
+
         return redirect()->back()->with('success', 'YouTube Video deleted successfully!');
     }
 
     public function extractYoutubeVideoId($url)
     {
-        if (empty($url)) return null;
+        if (empty($url)) {
+            return null;
+        }
 
         $url = trim($url);
 

@@ -3,7 +3,7 @@
 use App\Models\Translation;
 use Illuminate\Support\Facades\App;
 
-if (!function_exists('__t')) {
+if (! function_exists('__t')) {
     function __t($key)
     {
         $locale = App::getLocale();
@@ -12,13 +12,9 @@ if (!function_exists('__t')) {
         return $translation ? $translation->$locale : $key;
     }
 
-
-
-
 }
 
-
-if (!function_exists('translateField')) {
+if (! function_exists('translateField')) {
     function translateField($model, $field)
     {
 
@@ -27,9 +23,6 @@ if (!function_exists('translateField')) {
             ? "bn_{$field}"
             : ($locale === 'ar' ? "ar_{$field}" : $field);
 
-
-
         return $model->{$localizedField} ?? $model->{$field};
     }
 }
-

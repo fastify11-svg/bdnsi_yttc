@@ -5,27 +5,30 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\WhatappLink;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Inertia\Inertia;
 
 class WhatappLinkController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(WhatappLink::get())->addIndexColumn()->toJson();
         }
         $whatsappLinks = WhatappLink::latest()->paginate(25);
-        return \Inertia\Inertia::render('Admin/WhatappLink/Index', compact('whatsappLinks'));
+
+        return Inertia::render('Admin/WhatappLink/Index', compact('whatsappLinks'));
     }
 
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function create()
     {
@@ -35,8 +38,7 @@ class WhatappLinkController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(Request $request)
     {
@@ -46,14 +48,15 @@ class WhatappLinkController extends Controller
             'description' => 'required',
         ]);
         WhatappLink::create($validated);
+
         return response()->success('Successfully Created');
     }
 
     /**
      * Display the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return Response
      */
     public function show($id)
     {
@@ -63,8 +66,8 @@ class WhatappLinkController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return Response
      */
     public function edit($id)
     {
@@ -74,9 +77,8 @@ class WhatappLinkController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param \Illuminate\Http\Request $request
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -86,13 +88,14 @@ class WhatappLinkController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * @param  int  $id
+     * @return Response
      */
     public function destroy($id)
     {
-        $data=WhatappLink::findOrFail($id);
+        $data = WhatappLink::findOrFail($id);
         $data->delete();
-        return response()->success("Successfully Deleted");
+
+        return response()->success('Successfully Deleted');
     }
 }

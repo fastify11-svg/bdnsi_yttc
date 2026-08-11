@@ -8,14 +8,12 @@ class CreateSiteConfigsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
         Schema::create('site_configs', function (Blueprint $table) {
             $table->id();
-            
+
             // Branding
             $table->string('portal_name')->nullable();
             $table->string('tagline')->nullable();
@@ -23,7 +21,7 @@ class CreateSiteConfigsTable extends Migration
             $table->string('header_logo')->nullable();
             $table->string('main_logo')->nullable();
             $table->string('favicon')->nullable();
-            
+
             // Contact
             $table->string('hotline_phone')->nullable();
             $table->string('official_email')->nullable();
@@ -32,7 +30,7 @@ class CreateSiteConfigsTable extends Migration
             $table->string('youtube_url')->nullable();
             $table->string('twitter_url')->nullable();
             $table->string('linkedin_url')->nullable();
-            
+
             // Content
             $table->text('marquee_notice')->nullable();
             $table->text('about_short')->nullable();
@@ -40,7 +38,7 @@ class CreateSiteConfigsTable extends Migration
             $table->longText('terms_conditions')->nullable();
             $table->longText('privacy_policy')->nullable();
             $table->string('footer_copyright')->nullable();
-            
+
             // Feature Toggles
             $table->boolean('toggle_center_apply')->default(1);
             $table->boolean('toggle_result_verify')->default(1);
@@ -52,7 +50,7 @@ class CreateSiteConfigsTable extends Migration
             $table->boolean('toggle_notice_board')->default(1);
             $table->boolean('toggle_contact_form')->default(1);
             $table->boolean('toggle_whatsapp')->default(1);
-            
+
             // Theme Colors
             $table->string('primary_color')->nullable();
             $table->string('secondary_color')->nullable();

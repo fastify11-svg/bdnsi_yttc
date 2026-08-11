@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\ExamStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,7 +21,7 @@ class CreateExamsTable extends Migration
             $table->unsignedInteger('per_mcq_mark')->default(1);
             $table->dateTime('start_time');
             $table->dateTime('end_time');
-            $table->unsignedInteger('status')->default(\App\Enums\ExamStatus::Created);
+            $table->unsignedInteger('status')->default(ExamStatus::Created);
             $table->timestamps();
         });
     }

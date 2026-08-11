@@ -19,10 +19,10 @@ class ContactUsController extends Controller
         // Optional search functionality
         if ($request->has('search') && $request->search != '') {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('name', 'like', "%{$searchTerm}%")
-                  ->orWhere('email', 'like', "%{$searchTerm}%")
-                  ->orWhere('phone', 'like', "%{$searchTerm}%");
+                    ->orWhere('email', 'like', "%{$searchTerm}%")
+                    ->orWhere('phone', 'like', "%{$searchTerm}%");
             });
         }
 
@@ -30,7 +30,7 @@ class ContactUsController extends Controller
 
         return Inertia::render('Admin/ContactUs/Index', [
             'contacts' => $contacts,
-            'search' => $request->search ?? ''
+            'search' => $request->search ?? '',
         ]);
     }
 
@@ -40,8 +40,8 @@ class ContactUsController extends Controller
     public function markAsRead($id)
     {
         $contact = ContactUs::findOrFail($id);
-        
-        if (!$contact->is_seen) {
+
+        if (! $contact->is_seen) {
             $contact->is_seen = true;
             $contact->save();
         }
@@ -67,7 +67,7 @@ class ContactUsController extends Controller
     {
         $contact = ContactUs::findOrFail($id);
         $message = strtolower($contact->message);
-        
+
         $category = 'General Inquiry';
         $priority = 'Low';
         $reply = '';
@@ -97,7 +97,7 @@ class ContactUsController extends Controller
         }
 
         // Add a slight delay to simulate "AI processing time" (e.g. 1.5 seconds)
-        usleep(1500000); 
+        usleep(1500000);
 
         return response()->json([
             'success' => true,
@@ -105,8 +105,8 @@ class ContactUsController extends Controller
             'data' => [
                 'category' => $category,
                 'priority' => $priority,
-                'suggested_reply' => $reply
-            ]
+                'suggested_reply' => $reply,
+            ],
         ]);
     }
 }

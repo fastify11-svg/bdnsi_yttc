@@ -2,14 +2,15 @@
 
 namespace Tests\Feature;
 
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Tests\TestCase;
 use App\Models\Admin;
+use App\Models\Permission;
+use App\Models\Role;
 use App\Models\SiteConfig;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
+use Tests\TestCase;
 
 class SiteControlCenterTest extends TestCase
 {
@@ -22,20 +23,20 @@ class SiteControlCenterTest extends TestCase
         parent::setUp();
         // Assuming admin auth uses 'admin' guard and has id 1
         $this->admin = Admin::factory()->create();
-        
-        $role = \App\Models\Role::create([
+
+        $role = Role::create([
             'name' => 'superadmin',
-            'display_name' => 'Super Admin'
+            'display_name' => 'Super Admin',
         ]);
-        
-        $permission = \App\Models\Permission::create([
+
+        $permission = Permission::create([
             'name' => 'configDictionary-create',
-            'display_name' => 'Config Dictionary Create'
+            'display_name' => 'Config Dictionary Create',
         ]);
-        
+
         $role->attachPermission($permission);
         $this->admin->attachRole($role);
-        
+
         $this->withoutExceptionHandling();
     }
 
@@ -51,16 +52,16 @@ class SiteControlCenterTest extends TestCase
             'portal_name' => 'Automated Test Institute',
             'primary_color' => '#112233',
             'official_email' => 'test@support.com',
-            'toggle_notice_board' => '1'
+            'toggle_notice_board' => '1',
         ];
 
         $response = $this->actingAs($this->admin, 'admin')
-                         ->post(route('admin.configDictionary.store'), $payload);
+            ->post(route('admin.configDictionary.store'), $payload);
 
         $response->assertStatus(302); // Inertia redirects on success
-        
+
         $this->assertDatabaseHas('site_configs', [
-            'portal_name' => 'Automated Test Institute'
+            'portal_name' => 'Automated Test Institute',
         ]);
     }
 
@@ -78,15 +79,15 @@ class SiteControlCenterTest extends TestCase
         $file = UploadedFile::fake()->create('logo.jpg', 100, 'image/jpeg');
 
         $response = $this->actingAs($this->admin, 'admin')
-                         ->post(route('admin.configDictionary.store'), [
-                             'main_logo' => $file
-                         ]);
+            ->post(route('admin.configDictionary.store'), [
+                'main_logo' => $file,
+            ]);
 
         $response->assertStatus(302);
 
         $config = SiteConfig::first();
         $this->assertNotNull($config);
-        
+
         // The image storage generates a random hash string under the 'config' folder
         $this->assertStringContainsString('config/', $config->main_logo);
         $this->assertStringContainsString('.jpg', $config->main_logo);
@@ -101,10 +102,10 @@ class SiteControlCenterTest extends TestCase
         $this->withoutMiddleware();
         // Simulate a save action
         $this->actingAs($this->admin, 'admin')
-             ->post(route('admin.configDictionary.store'), [
-                 'portal_name' => 'Middleware Sync Test'
-             ]);
-        
+            ->post(route('admin.configDictionary.store'), [
+                'portal_name' => 'Middleware Sync Test',
+            ]);
+
         $dbValue = SiteConfig::first()->portal_name;
         $this->assertEquals('Middleware Sync Test', $dbValue);
     }

@@ -3,13 +3,9 @@
 namespace App\Http\Requests;
 
 use App\Enums\CenterStatus;
-use App\Enums\Gender;
-use App\Enums\Religion;
-use App\Lib\Geo;
 use App\Lib\Image;
 use App\Models\Center;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class CenterStoreRequest extends FormRequest
 {
@@ -26,13 +22,13 @@ class CenterStoreRequest extends FormRequest
             'mobile' => $this->mobile ?? $this->phone,
         ]);
 
-        if (!$this->hasFile('center_logo') && $this->hasFile('logo')) {
+        if (! $this->hasFile('center_logo') && $this->hasFile('logo')) {
             $this->files->set('center_logo', $this->file('logo'));
         }
-        if (!$this->hasFile('director_photo') && $this->hasFile('photo')) {
+        if (! $this->hasFile('director_photo') && $this->hasFile('photo')) {
             $this->files->set('director_photo', $this->file('photo'));
         }
-        if (!$this->hasFile('director_signature') && $this->hasFile('signature')) {
+        if (! $this->hasFile('director_signature') && $this->hasFile('signature')) {
             $this->files->set('director_signature', $this->file('signature'));
         }
     }

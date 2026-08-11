@@ -3,15 +3,19 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Lib\Image;
+use App\Models\FooterPartnerLogo;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class FooterPartnerLogoController extends Controller
 {
     public function index()
     {
-        $logos = \App\Models\FooterPartnerLogo::orderBy('sort_order', 'asc')->get();
-        return \Inertia\Inertia::render('Admin/Footer/Logos', [
-            'logos' => $logos
+        $logos = FooterPartnerLogo::orderBy('sort_order', 'asc')->get();
+
+        return Inertia::render('Admin/Footer/Logos', [
+            'logos' => $logos,
         ]);
     }
 
@@ -25,9 +29,9 @@ class FooterPartnerLogoController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $imagePath = \App\Lib\Image::store('image', 'footer_logos');
+        $imagePath = Image::store('image', 'footer_logos');
 
-        \App\Models\FooterPartnerLogo::create([
+        FooterPartnerLogo::create([
             'title' => $request->title,
             'image_path' => $imagePath,
             'url' => $request->url,
@@ -48,8 +52,8 @@ class FooterPartnerLogoController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $logo = \App\Models\FooterPartnerLogo::findOrFail($id);
-        
+        $logo = FooterPartnerLogo::findOrFail($id);
+
         $data = [
             'title' => $request->title,
             'url' => $request->url,
@@ -58,7 +62,7 @@ class FooterPartnerLogoController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            $data['image_path'] = \App\Lib\Image::store('image', 'footer_logos');
+            $data['image_path'] = Image::store('image', 'footer_logos');
         }
 
         $logo->update($data);
@@ -68,7 +72,7 @@ class FooterPartnerLogoController extends Controller
 
     public function destroy($id)
     {
-        $logo = \App\Models\FooterPartnerLogo::findOrFail($id);
+        $logo = FooterPartnerLogo::findOrFail($id);
         $logo->delete();
 
         return redirect()->back()->with('success', 'Partner logo deleted successfully.');

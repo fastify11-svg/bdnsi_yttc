@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\Division;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -677,7 +676,6 @@ class GeoSeeder extends Seeder
         ];
 
         DB::table('upazilas')->insert($upazilas);
-
 
     }
 }

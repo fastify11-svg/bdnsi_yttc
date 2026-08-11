@@ -11,11 +11,11 @@ class DashboardController extends Controller
         /*
          * Uncomment the line below if you want to use verified middleware
          */
-        //$this->middleware('verified:student.verification.notice');
+        // $this->middleware('verified:student.verification.notice');
     }
 
-
-    public function index(){
+    public function index()
+    {
         return view('student.dashboard');
     }
 }

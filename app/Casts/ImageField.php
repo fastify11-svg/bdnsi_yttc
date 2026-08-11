@@ -5,13 +5,15 @@ namespace App\Casts;
 use App\Lib\Image;
 use Illuminate\Contracts\Database\Eloquent\Castable;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 
-class ImageField implements CastsAttributes, Castable
+class ImageField implements Castable, CastsAttributes
 {
     protected $path;
+
     protected $fallbackImage;
 
-    public function __construct(string $path = null, string $fallbackImage = null)
+    public function __construct(?string $path = null, ?string $fallbackImage = null)
     {
         $this->path = $path ?? 'images';
         $this->fallbackImage = $fallbackImage ?? 'images/no-image.png';
@@ -20,10 +22,8 @@ class ImageField implements CastsAttributes, Castable
     /**
      * Cast the given value.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
+     * @param  Model  $model
      * @param  mixed  $value
-     * @param  array  $attributes
      * @return mixed
      */
     public function get($model, string $key, $value, array $attributes)
@@ -34,10 +34,8 @@ class ImageField implements CastsAttributes, Castable
     /**
      * Prepare the given value for storage.
      *
-     * @param  \Illuminate\Database\Eloquent\Model  $model
-     * @param  string  $key
+     * @param  Model  $model
      * @param  mixed  $value
-     * @param  array  $attributes
      * @return mixed
      */
     public function set($model, string $key, $value, array $attributes)
@@ -45,6 +43,7 @@ class ImageField implements CastsAttributes, Castable
         if (isset($attributes[$key]) && $attributes[$key]) {
             Image::delete($attributes[$key]);
         }
+
         return Image::storeFile($value, $this->path);
     }
 

@@ -5,7 +5,6 @@ namespace App\Models;
 use App\Enums\CourseType;
 use App\Lib\Image;
 use App\Traits\ClearsFrontendCache;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Subject extends Model
@@ -23,7 +22,6 @@ class Subject extends Model
         'type',
     ];
 
-
     protected $casts = [
         'type' => CourseType::class,
     ];
@@ -36,5 +34,4 @@ class Subject extends Model
             return asset('images/no-image.png');
         }
     }
-
 }

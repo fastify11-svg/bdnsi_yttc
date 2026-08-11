@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\DocumentTemplate;
+use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\File;
 
 class LegacyDocumentTemplateSeeder extends Seeder
@@ -13,8 +13,8 @@ class LegacyDocumentTemplateSeeder extends Seeder
         // Copy images to storage
         $publicImageDir = public_path('images/student');
         $storageDir = storage_path('app/public/document_templates');
-        
-        if (!File::exists($storageDir)) {
+
+        if (! File::exists($storageDir)) {
             File::makeDirectory($storageDir, 0755, true);
         }
 
@@ -35,7 +35,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                     ['variable_key' => 'registration', 'position_x' => '400px', 'position_y' => '640px'],
                     ['variable_key' => 'student_image', 'position_x' => '850px', 'position_y' => '350px'],
                     ['variable_key' => 'qr_code', 'position_x' => '860px', 'position_y' => '530px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy Registration Card',
@@ -52,7 +52,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                     ['variable_key' => 'center_name', 'position_x' => '400px', 'position_y' => '800px'],
                     ['variable_key' => 'student_image', 'position_x' => '850px', 'position_y' => '550px'],
                     ['variable_key' => 'qr_code', 'position_x' => '860px', 'position_y' => '750px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy Transcript',
@@ -64,7 +64,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                     ['variable_key' => 'name', 'position_x' => '400px', 'position_y' => '600px'],
                     ['variable_key' => 'roll', 'position_x' => '400px', 'position_y' => '640px'],
                     ['variable_key' => 'registration', 'position_x' => '400px', 'position_y' => '680px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy Certificate',
@@ -75,7 +75,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                 'fields' => [
                     ['variable_key' => 'name', 'position_x' => '400px', 'position_y' => '300px'],
                     ['variable_key' => 'roll', 'position_x' => '400px', 'position_y' => '350px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy Original Certificate',
@@ -85,7 +85,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                 'background_image' => 'certificate.jpg',
                 'fields' => [
                     ['variable_key' => 'name', 'position_x' => '400px', 'position_y' => '300px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy Original C-Pdf',
@@ -95,7 +95,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                 'background_image' => 'certificate.jpg',
                 'fields' => [
                     ['variable_key' => 'name', 'position_x' => '400px', 'position_y' => '300px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy Certificate PDF',
@@ -105,7 +105,7 @@ class LegacyDocumentTemplateSeeder extends Seeder
                 'background_image' => 'certificate.jpg',
                 'fields' => [
                     ['variable_key' => 'name', 'position_x' => '400px', 'position_y' => '300px'],
-                ]
+                ],
             ],
             [
                 'name' => 'Legacy ID Card',
@@ -117,8 +117,8 @@ class LegacyDocumentTemplateSeeder extends Seeder
                     ['variable_key' => 'name', 'position_x' => '200px', 'position_y' => '500px'],
                     ['variable_key' => 'roll', 'position_x' => '200px', 'position_y' => '550px'],
                     ['variable_key' => 'student_image', 'position_x' => '250px', 'position_y' => '200px'],
-                ]
-            ]
+                ],
+            ],
         ];
 
         foreach ($templates as $tmpl) {
@@ -129,9 +129,9 @@ class LegacyDocumentTemplateSeeder extends Seeder
             }
 
             // Copy background image if it exists in public
-            $sourceFile = $publicImageDir . '/' . $tmpl['background_image'];
-            $destFile = $storageDir . '/' . $tmpl['background_image'];
-            
+            $sourceFile = $publicImageDir.'/'.$tmpl['background_image'];
+            $destFile = $storageDir.'/'.$tmpl['background_image'];
+
             if (File::exists($sourceFile)) {
                 File::copy($sourceFile, $destFile);
             }
@@ -141,8 +141,8 @@ class LegacyDocumentTemplateSeeder extends Seeder
                 'type' => $tmpl['type'],
                 'width' => $tmpl['width'],
                 'height' => $tmpl['height'],
-                'background_image' => 'document_templates/' . $tmpl['background_image'],
-                'status' => 1
+                'background_image' => 'document_templates/'.$tmpl['background_image'],
+                'status' => 1,
             ]);
 
             foreach ($tmpl['fields'] as $field) {

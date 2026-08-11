@@ -11,9 +11,11 @@ use BenSampo\Enum\Enum;
  */
 final class ExamStatus extends Enum
 {
-    const Created =   0;
-    const Start_Exam =   1;
-    const End_Exam = 2;
-    const Publish_Result = 4;
+    const Created = 0;
 
+    const Start_Exam = 1;
+
+    const End_Exam = 2;
+
+    const Publish_Result = 4;
 }

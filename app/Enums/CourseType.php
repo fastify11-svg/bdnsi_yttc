@@ -11,8 +11,9 @@ use BenSampo\Enum\Enum;
  */
 final class CourseType extends Enum
 {
-    const Regular =   0;
-    const Short_Course =   1;
-    const Diploma =   2;
+    const Regular = 0;
 
+    const Short_Course = 1;
+
+    const Diploma = 2;
 }

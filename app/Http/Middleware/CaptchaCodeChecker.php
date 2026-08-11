@@ -4,7 +4,9 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Contracts\Foundation\Application;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -13,7 +15,7 @@ class CaptchaCodeChecker
     /**
      * The application instance.
      *
-     * @var \Illuminate\Contracts\Foundation\Application
+     * @var Application
      */
     protected $app;
 
@@ -25,13 +27,12 @@ class CaptchaCodeChecker
     /**
      * Handle an incoming request.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Closure(\Illuminate\Http\Request): (\Illuminate\Http\Response|\Illuminate\Http\RedirectResponse)  $next
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * @param  Closure(Request): (Response|RedirectResponse)  $next
+     * @return Response|RedirectResponse
      */
     public function handle(Request $request, Closure $next)
     {
-        if ($request->has(['code','_code'])) {
+        if ($request->has(['code', '_code'])) {
             if ($this->checkCode($request->get('code'), $request->get('_code'))) {
                 return $next($request);
             }
@@ -40,8 +41,8 @@ class CaptchaCodeChecker
         }
         throw ValidationException::withMessages([
             'code' => [
-                'invalid code'
-            ]
+                'invalid code',
+            ],
         ]);
     }
 
@@ -60,7 +61,8 @@ class CaptchaCodeChecker
         return encrypt($code);
     }
 
-    protected function checkCode($code, $encrypted) {
+    protected function checkCode($code, $encrypted)
+    {
         return decrypt($encrypted) === $code;
     }
 }

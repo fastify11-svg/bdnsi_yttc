@@ -2,6 +2,8 @@
 
 namespace App\Observers;
 
+use App\Enums\StudentStatus;
+use App\Jobs\SendStudentSmsJob;
 use App\Models\Student;
 
 class StudentObserver
@@ -9,7 +11,6 @@ class StudentObserver
     /**
      * Handle the Student "created" event.
      *
-     * @param  \App\Models\Student  $student
      * @return void
      */
     public function created(Student $student)
@@ -21,19 +22,18 @@ class StudentObserver
     {
         // Check if status was changed to Approved
         $statusValue = is_object($student->status) ? $student->status->value : $student->status;
-        if ($student->isDirty('status') && $statusValue == \App\Enums\StudentStatus::Approved) {
+        if ($student->isDirty('status') && $statusValue == StudentStatus::Approved) {
             $student->loadMissing('subject');
             $courseName = $student->subject->name ?? 'Course';
-            $message = "Dear {$student->name}, your registration for {$courseName} has been approved successfully. Your Roll No is {$student->roll}. - " . config('site.setting.name', 'BDNSI');
-            
-            \App\Jobs\SendStudentSmsJob::dispatch($student->phone, $message);
+            $message = "Dear {$student->name}, your registration for {$courseName} has been approved successfully. Your Roll No is {$student->roll}. - ".config('site.setting.name', 'BDNSI');
+
+            SendStudentSmsJob::dispatch($student->phone, $message);
         }
     }
 
     /**
      * Handle the Student "deleted" event.
      *
-     * @param  \App\Models\Student  $student
      * @return void
      */
     public function deleted(Student $student)
@@ -44,7 +44,6 @@ class StudentObserver
     /**
      * Handle the Student "restored" event.
      *
-     * @param  \App\Models\Student  $student
      * @return void
      */
     public function restored(Student $student)
@@ -55,7 +54,6 @@ class StudentObserver
     /**
      * Handle the Student "force deleted" event.
      *
-     * @param  \App\Models\Student  $student
      * @return void
      */
     public function forceDeleted(Student $student)

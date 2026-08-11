@@ -13,9 +13,13 @@ use BenSampo\Enum\Enum;
  */
 final class Religion extends Enum
 {
-    const Muslim =   0;
-    const Hindu =   1;
+    const Muslim = 0;
+
+    const Hindu = 1;
+
     const Christian = 2;
+
     const Buddha = 3;
+
     const Other = 4;
 }

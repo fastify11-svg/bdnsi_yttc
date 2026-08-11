@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Casts\ImageField;
 use App\Traits\DeletesImage;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class License extends Model
@@ -22,14 +21,14 @@ class License extends Model
         'issue_date',
         'valid_from',
         'valid_to',
-        'allowed_vehicles'
+        'allowed_vehicles',
     ];
 
     protected $casts = [
         'issue_date' => 'datetime',
         'valid_from' => 'datetime',
         'valid_to' => 'datetime',
-        'image'=>ImageField::class.":license,images/no-image.png"
+        'image' => ImageField::class.':license,images/no-image.png',
     ];
 
     // Custom accessor for allowed_vehicles
@@ -70,7 +69,7 @@ class License extends Model
             'M' => 'M - Motorcycle',
             'CYCLE' => 'CYCLE - Bicycle',
             'CAR' => 'CAR - Car',
-            'JEEP' => 'JEEP - Jeep'
+            'JEEP' => 'JEEP - Jeep',
         ];
     }
 }

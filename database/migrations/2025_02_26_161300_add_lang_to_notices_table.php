@@ -14,8 +14,8 @@ class AddLangToNoticesTable extends Migration
     public function up()
     {
         Schema::table('notices', function (Blueprint $table) {
-              $table->longText('bn_details')->nullable();
-              $table->longText('ar_details')->nullable();
+            $table->longText('bn_details')->nullable();
+            $table->longText('ar_details')->nullable();
         });
 
         Schema::table('teams', function (Blueprint $table) {
@@ -30,8 +30,6 @@ class AddLangToNoticesTable extends Migration
 
         });
 
-
-
     }
 
     /**
@@ -42,25 +40,24 @@ class AddLangToNoticesTable extends Migration
     public function down()
     {
         Schema::table('notices', function (Blueprint $table) {
-              $table->dropColumn([
-                    'bn_details',
-                    'ar_details'
-              ]);
+            $table->dropColumn([
+                'bn_details',
+                'ar_details',
+            ]);
         });
 
         Schema::table('teams', function (Blueprint $table) {
-              $table->dropColumn([
-                    'bn_name',
-                    'ar_name',
+            $table->dropColumn([
+                'bn_name',
+                'ar_name',
 
-                    'bn_designation',
-                    'ar_designation',
+                'bn_designation',
+                'ar_designation',
 
-                    'bn_description',
-                    'ar_description',
-              ]);
+                'bn_description',
+                'ar_description',
+            ]);
         });
-
 
     }
 }

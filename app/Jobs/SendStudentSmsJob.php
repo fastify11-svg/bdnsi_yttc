@@ -4,7 +4,6 @@ namespace App\Jobs;
 
 use App\Helpers\Helper;
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
@@ -17,6 +16,7 @@ class SendStudentSmsJob implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $phone;
+
     public $message;
 
     /**
@@ -43,7 +43,7 @@ class SendStudentSmsJob implements ShouldQueue
         } catch (Throwable $e) {
             Log::error('SMS dispatch error', [
                 'phone' => $this->phone,
-                'error' => $e->getMessage()
+                'error' => $e->getMessage(),
             ]);
             $this->fail($e);
         }
@@ -52,7 +52,6 @@ class SendStudentSmsJob implements ShouldQueue
     /**
      * Handle a job failure.
      *
-     * @param  \Throwable  $exception
      * @return void
      */
     public function failed(Throwable $exception)
@@ -60,12 +59,12 @@ class SendStudentSmsJob implements ShouldQueue
         if (config('logging.channels.slack.url')) {
             Log::channel('slack')->critical('SMS dispatch failed!', [
                 'phone' => $this->phone,
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ]);
         } else {
             Log::error('SMS dispatch failed (Slack not configured)', [
                 'phone' => $this->phone,
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ]);
         }
     }

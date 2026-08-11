@@ -1,11 +1,14 @@
 <?php
+
 namespace Tests\Feature;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+
 class RateLimitingTest extends TestCase
 {
     use RefreshDatabase;
+
     public function test_results_route_is_rate_limited()
     {
         $this->seed();
@@ -18,6 +21,7 @@ class RateLimitingTest extends TestCase
         $response = $this->get('/result?roll=123456');
         $response->assertStatus(429);
     }
+
     public function test_contact_route_is_rate_limited()
     {
         $this->seed();
@@ -40,6 +44,7 @@ class RateLimitingTest extends TestCase
         ]);
         $response->assertStatus(429);
     }
+
     public function test_admin_login_route_is_rate_limited()
     {
         $this->seed();

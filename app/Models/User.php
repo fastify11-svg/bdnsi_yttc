@@ -4,15 +4,13 @@ namespace App\Models;
 
 use App\Casts\ImageField;
 use App\Traits\DeletesImage;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, DeletesImage;
-
+    use DeletesImage, HasFactory, Notifiable;
 
     protected $fillable = [
         'username',
@@ -24,11 +22,9 @@ class User extends Authenticatable
         'avatar',
     ];
 
-
     protected $hidden = [
         'password', 'remember_token',
     ];
-
 
     protected $casts = [
         'email_verified_at' => 'datetime',

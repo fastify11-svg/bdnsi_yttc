@@ -4,8 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\SiteConfig;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
-use Illuminate\Support\Facades\Artisan;
 use Tests\TestCase;
 
 class FrontendE2ETest extends TestCase
@@ -15,7 +13,7 @@ class FrontendE2ETest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+
         // Ensure default configuration toggles are set to true (1) so pages are accessible.
         $toggles = [
             'toggle_result_verify' => '1',
@@ -24,9 +22,9 @@ class FrontendE2ETest extends TestCase
             'toggle_verified_centers' => '1',
             'toggle_center_apply' => '1',
             'toggle_contact_form' => '1',
-            'toggle_video_gallery' => '1'
+            'toggle_video_gallery' => '1',
         ];
-        $config = SiteConfig::first() ?? new SiteConfig();
+        $config = SiteConfig::first() ?? new SiteConfig;
         $config->fill($toggles);
         $config->save();
     }
@@ -51,7 +49,7 @@ class FrontendE2ETest extends TestCase
 
     public function test_student_result_redirects_when_module_is_inactive()
     {
-        $config = SiteConfig::first() ?? new SiteConfig();
+        $config = SiteConfig::first() ?? new SiteConfig;
         $config->toggle_result_verify = 0;
         $config->save();
 

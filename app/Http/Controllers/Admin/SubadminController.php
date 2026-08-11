@@ -8,27 +8,28 @@ use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class SubadminController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'sub-admin';
 
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(Admin::query())->toJson();
         }
         $subAdmins = Admin::latest()->paginate(25);
-        return \Inertia\Inertia::render('Admin/Subadmin/Index', compact('subAdmins'));
-    }
 
+        return Inertia::render('Admin/Subadmin/Index', compact('subAdmins'));
+    }
 
     public function create()
     {
         return view('admin.subAdmin.create');
     }
-
 
     public function store(Request $request)
     {
@@ -38,13 +39,12 @@ class SubadminController extends Controller
             'password' => 'required|confirmed',
         ]);
 
-
         $validated['password'] = Hash::make($validated['password']);
         $subadmin = Admin::create($validated);
         $subadmin->attachRole('sub_admin');
+
         return response()->report($subadmin, 'SubAdmin created successfully');
     }
-
 
     public function show(Admin $subAdmin)
     {
@@ -83,5 +83,4 @@ class SubadminController extends Controller
     {
         return response()->report($sub_admin->delete(), 'Admin deleted successfully');
     }
-
 }

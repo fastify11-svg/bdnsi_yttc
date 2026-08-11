@@ -6,19 +6,21 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
+use Inertia\Inertia;
 
 class PasswordUpdateController extends Controller
 {
     public function create()
     {
-        return \Inertia\Inertia::render('Center/Password/Update');
+        return Inertia::render('Center/Password/Update');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'old_password' => 'required|password:web',
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()]
+            'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
         return response()->report(

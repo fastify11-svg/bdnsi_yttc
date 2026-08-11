@@ -9,11 +9,11 @@ class LaratrustSetupTables extends Migration
     /**
      * Run the migrations.
      *
-     * @return  void
+     * @return void
      */
     public function up()
     {
-        if(!defined('DEFAULE_KEY_LEN')) {
+        if (! defined('DEFAULE_KEY_LEN')) {
             define('DEFAULE_KEY_LEN', config('database.connections.mysql.default_key_len'));
         }
         // Create table for storing roles
@@ -75,7 +75,7 @@ class LaratrustSetupTables extends Migration
     /**
      * Reverse the migrations.
      *
-     * @return  void
+     * @return void
      */
     public function down()
     {

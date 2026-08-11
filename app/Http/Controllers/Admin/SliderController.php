@@ -8,23 +8,26 @@ use App\Lib\Image;
 use App\Models\Slider;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SliderController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'slider';
+
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
-            return datatables(Slider::whereIn('type',[SliderType::Slider,SliderType::Gallery])->select(['id','title','subtitle','photo','type','status','order_index']))->addIndexColumn()->toJson();
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
+            return datatables(Slider::whereIn('type', [SliderType::Slider, SliderType::Gallery])->select(['id', 'title', 'subtitle', 'photo', 'type', 'status', 'order_index']))->addIndexColumn()->toJson();
         }
 
-        $sliders = Slider::whereIn('type', [\App\Enums\SliderType::Slider, \App\Enums\SliderType::Gallery])
-                    ->orderBy('order_index', 'asc')
-                    ->latest()
-                    ->paginate(25);
-                    
-        return \Inertia\Inertia::render('Admin/Slider/Index', compact('sliders'));
+        $sliders = Slider::whereIn('type', [SliderType::Slider, SliderType::Gallery])
+            ->orderBy('order_index', 'asc')
+            ->latest()
+            ->paginate(25);
+
+        return Inertia::render('Admin/Slider/Index', compact('sliders'));
     }
 
     public function store(Request $request)
@@ -79,6 +82,7 @@ class SliderController extends Controller
     public function destroy(Slider $slider)
     {
         $slider->delete();
+
         return redirect()->back()->with('success', 'Slider Deleted successfully');
     }
 }

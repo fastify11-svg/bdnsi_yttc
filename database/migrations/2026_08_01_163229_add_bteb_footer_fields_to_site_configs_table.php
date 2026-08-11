@@ -8,8 +8,6 @@ class AddBtebFooterFieldsToSiteConfigsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up(): void
     {
@@ -24,8 +22,6 @@ class AddBtebFooterFieldsToSiteConfigsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down(): void
     {
@@ -35,7 +31,7 @@ class AddBtebFooterFieldsToSiteConfigsTable extends Migration
                 'footer_side_bg_image',
                 'footer_disclaimer_text',
                 'footer_planning_text',
-                'footer_tech_support_text'
+                'footer_tech_support_text',
             ]);
         });
     }

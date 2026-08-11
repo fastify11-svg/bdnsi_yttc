@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 
 class AddPasswordToStudentsTable extends Migration
@@ -14,7 +15,7 @@ class AddPasswordToStudentsTable extends Migration
     public function up()
     {
         Schema::table('students', function (Blueprint $table) {
-            $table->string('password')->default(\Illuminate\Support\Facades\Hash::make('12345678'))->after('phone');
+            $table->string('password')->default(Hash::make('12345678'))->after('phone');
             $table->rememberToken();
         });
     }
@@ -27,7 +28,7 @@ class AddPasswordToStudentsTable extends Migration
     public function down()
     {
         Schema::table('students', function (Blueprint $table) {
-              $table->dropColumn('password');
+            $table->dropColumn('password');
         });
     }
 }

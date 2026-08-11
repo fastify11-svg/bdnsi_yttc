@@ -6,7 +6,6 @@ use App\Mixin\ResponseMixin;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Routing\ResponseFactory;
 use Illuminate\Support\Facades\Blade;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,11 +29,11 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useTailwind();
         Paginator::useBootstrap();
-        ResponseFactory::mixin(new ResponseMixin());
-        Blade::directive('selected', function($expression){
+        ResponseFactory::mixin(new ResponseMixin);
+        Blade::directive('selected', function ($expression) {
             return "<?php echo ($expression) ? 'selected' : ''; ?>";
         });
-        
+
         Blade::directive('viteReactRefresh', function () {
             return '<?php
                 $isDev = file_exists(public_path("hot"));
@@ -56,7 +55,7 @@ class AppServiceProvider extends ServiceProvider
                 $isDev = file_exists(public_path("hot"));
                 if ($isDev) {
                     $url = file_get_contents(public_path("hot"));
-                    $files = ' . $expression . ';
+                    $files = '.$expression.';
                     $html = \'<script type="module" src="\'.$url.\'/@vite/client"></script>\';
                     foreach((array)$files as $file) {
                         if (str_ends_with($file, ".css")) {
@@ -72,7 +71,7 @@ class AppServiceProvider extends ServiceProvider
                         echo "";
                     } else {
                         $manifest = json_decode(file_get_contents($manifestPath), true);
-                        $files = ' . $expression . ';
+                        $files = '.$expression.';
                         $html = "";
                         $processed = [];
                         $getLinks = function($file) use (&$getLinks, &$manifest, &$processed) {

@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\ConfigDictionary;
 use App\Models\SiteConfig;
+use Illuminate\Database\Seeder;
 
 class ConfigSeeder extends Seeder
 {

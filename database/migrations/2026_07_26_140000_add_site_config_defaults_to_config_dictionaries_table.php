@@ -2,8 +2,6 @@
 
 use App\Models\ConfigDictionary;
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
@@ -43,7 +41,7 @@ return new class extends Migration
         ];
 
         foreach ($defaults as $key => $value) {
-            if (!ConfigDictionary::where('key', $key)->exists()) {
+            if (! ConfigDictionary::where('key', $key)->exists()) {
                 ConfigDictionary::set($key, $value, false);
             }
         }
@@ -62,7 +60,7 @@ return new class extends Migration
             'module_center_apply', 'module_student_result', 'module_success_students', 'module_video_gallery',
             'module_photo_gallery', 'module_verified_centers', 'module_sponsors', 'module_notice_ticker',
             'module_contact_us', 'module_whatsapp',
-            'primary_color', 'secondary_color', 'accent_color'
+            'primary_color', 'secondary_color', 'accent_color',
         ];
 
         ConfigDictionary::whereIn('key', $keys)->delete();

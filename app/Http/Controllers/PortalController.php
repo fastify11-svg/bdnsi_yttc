@@ -31,6 +31,7 @@ class PortalController extends Controller
         Cache::forget($cid);
 
         Auth::guard()->login($user);
+
         return redirect(RouteServiceProvider::HOME);
     }
 }

@@ -3,15 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\FooterLink;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class FooterLinkController extends Controller
 {
     public function index()
     {
-        $links = \App\Models\FooterLink::orderBy('sort_order', 'asc')->get();
-        return \Inertia\Inertia::render('Admin/Footer/Links', [
-            'links' => $links
+        $links = FooterLink::orderBy('sort_order', 'asc')->get();
+
+        return Inertia::render('Admin/Footer/Links', [
+            'links' => $links,
         ]);
     }
 
@@ -24,7 +27,7 @@ class FooterLinkController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        \App\Models\FooterLink::create([
+        FooterLink::create([
             'label' => $request->label,
             'url' => $request->url ?? '#',
             'sort_order' => $request->sort_order ?? 0,
@@ -43,7 +46,7 @@ class FooterLinkController extends Controller
             'is_active' => 'nullable|boolean',
         ]);
 
-        $link = \App\Models\FooterLink::findOrFail($id);
+        $link = FooterLink::findOrFail($id);
         $link->update([
             'label' => $request->label,
             'url' => $request->url ?? '#',
@@ -56,7 +59,7 @@ class FooterLinkController extends Controller
 
     public function destroy($id)
     {
-        $link = \App\Models\FooterLink::findOrFail($id);
+        $link = FooterLink::findOrFail($id);
         $link->delete();
 
         return redirect()->back()->with('success', 'Footer link deleted successfully.');

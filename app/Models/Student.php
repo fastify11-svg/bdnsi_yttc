@@ -8,10 +8,9 @@ use App\Enums\CourseType;
 use App\Enums\Gender;
 use App\Enums\Religion;
 use App\Enums\StudentStatus;
+use App\Scopes\CenterScope;
 use App\Traits\DeletesImage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -44,11 +43,11 @@ use Illuminate\Support\Facades\Auth;
  */
 class Student extends Authenticatable
 {
-    use HasFactory, DeletesImage, \App\Traits\Student\HasGrades, \App\Traits\ClearsFrontendCache;
+    use \App\Traits\ClearsFrontendCache, \App\Traits\Student\HasGrades, DeletesImage, HasFactory;
 
     protected static function booted()
     {
-        static::addGlobalScope(new \App\Scopes\CenterScope());
+        static::addGlobalScope(new CenterScope);
     }
 
     protected $fillable = [
@@ -90,7 +89,7 @@ class Student extends Authenticatable
         'religion' => Religion::class,
         'status' => StudentStatus::class,
         'course_type' => CourseType::class,
-        'picture' => ImageField::class . ':images/students',
+        'picture' => ImageField::class.':images/students',
     ];
 
     public function center()
@@ -118,39 +117,31 @@ class Student extends Authenticatable
         return $this->hasMany(SemesterResult::class);
     }
 
-
     public function scopeOwn($query, $centerId = null)
     {
         $centerId = $centerId ?? Auth::user()->center_id;
+
         return $query->where(['center_id' => $centerId]);
     }
 
     public static function getLastFreeRoll()
     {
         $lastStudent = static::orderBy('id', 'desc')->first();
-        $lastRoll = $lastStudent && is_numeric($lastStudent->roll) ? (int)$lastStudent->roll : 100000;
+        $lastRoll = $lastStudent && is_numeric($lastStudent->roll) ? (int) $lastStudent->roll : 100000;
+
         return str_pad($lastRoll + 1, 6, '0', STR_PAD_LEFT);
     }
 
     public static function getLastFreeRegistration()
     {
         $lastStudent = static::orderBy('id', 'desc')->first();
-        $lastReg = $lastStudent && is_numeric($lastStudent->registration) ? (int)$lastStudent->registration : 1000000000;
+        $lastReg = $lastStudent && is_numeric($lastStudent->registration) ? (int) $lastStudent->registration : 1000000000;
+
         return str_pad($lastReg + 1, 10, '0', STR_PAD_LEFT);
     }
 
-
-
-
-
-
-
-
-
-public function scopeHide($query)
-{
-    return $query->whereNotIn('status',[StudentStatus::Hide]);
-}
-
-
+    public function scopeHide($query)
+    {
+        return $query->whereNotIn('status', [StudentStatus::Hide]);
+    }
 }

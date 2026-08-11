@@ -3,20 +3,22 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Lib\Image;
-use App\Models\ConfigDictionary;
 use App\Models\SiteConfig;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Inertia\Inertia;
 
 class ConfigDictionaryController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'configDictionary';
+
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function index()
     {
@@ -25,11 +27,10 @@ class ConfigDictionaryController extends Controller
 
     public function create()
     {
-       return \Inertia\Inertia::render('Admin/ConfigDictionary/Create', [
-           'settings' => SiteConfig::first()
-       ]);
+        return Inertia::render('Admin/ConfigDictionary/Create', [
+            'settings' => SiteConfig::first(),
+        ]);
     }
-
 
     public function store(Request $request)
     {
@@ -45,14 +46,15 @@ class ConfigDictionaryController extends Controller
         ]);
 
         $config = SiteConfig::updateSettings($request);
-        
+
         return response()->report($config, 'Successfully Updated System Configuration');
     }
+
     /**
      * Display the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function show($id)
     {
@@ -63,7 +65,7 @@ class ConfigDictionaryController extends Controller
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function edit($id)
     {
@@ -73,9 +75,8 @@ class ConfigDictionaryController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function update(Request $request, $id)
     {
@@ -86,7 +87,7 @@ class ConfigDictionaryController extends Controller
      * Remove the specified resource from storage.
      *
      * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function destroy($id)
     {

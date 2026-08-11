@@ -12,7 +12,6 @@ class Exam extends Model
 {
     use HasFactory;
 
-
     protected $fillable = [
         'subject_id',
         'name',
@@ -23,7 +22,7 @@ class Exam extends Model
     ];
 
     protected $casts = [
-        'status' => ExamStatus::class
+        'status' => ExamStatus::class,
     ];
 
     public function subject(): BelongsTo
@@ -35,6 +34,4 @@ class Exam extends Model
     {
         return $this->hasMany(Quation::class);
     }
-
-
 }

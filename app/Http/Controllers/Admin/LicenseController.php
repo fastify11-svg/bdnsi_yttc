@@ -3,19 +3,20 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Lib\Image;
 use App\Models\License;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class LicenseController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'license';
 
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(License::select(['id', 'cnic', 'name', 'license_number', 'allowed_vehicles', 'valid_to']))
                 ->addIndexColumn()
 
@@ -26,13 +27,14 @@ class LicenseController extends Controller
         }
 
         $licenses = License::latest()->paginate(25);
-        return \Inertia\Inertia::render('Admin/License/Index', compact('licenses'));
+
+        return Inertia::render('Admin/License/Index', compact('licenses'));
     }
 
     public function create()
     {
         return view('admin.license.create', [
-            'vehicleOptions' => License::getVehicleOptions()
+            'vehicleOptions' => License::getVehicleOptions(),
         ]);
     }
 
@@ -50,9 +52,8 @@ class LicenseController extends Controller
             'valid_from' => 'required|date',
             'valid_to' => 'required|date|after:valid_from',
             'allowed_vehicles' => 'required|array|min:1',
-            'allowed_vehicles.*' => 'required|string|in:M,CYCLE,CAR,JEEP'
+            'allowed_vehicles.*' => 'required|string|in:M,CYCLE,CAR,JEEP',
         ]);
-
 
         $license = License::create($validated);
 
@@ -68,7 +69,7 @@ class LicenseController extends Controller
     {
         return view('admin.license.edit', [
             'license' => $license,
-            'vehicleOptions' => License::getVehicleOptions()
+            'vehicleOptions' => License::getVehicleOptions(),
         ]);
     }
 
@@ -81,12 +82,12 @@ class LicenseController extends Controller
             'city' => 'required|string|max:255',
             'state' => 'nullable|string|max:255',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
-            'license_number' => 'required|string|max:255|unique:licenses,license_number,' . $license->id,
+            'license_number' => 'required|string|max:255|unique:licenses,license_number,'.$license->id,
             'issue_date' => 'required|date',
             'valid_from' => 'required|date',
             'valid_to' => 'required|date|after:valid_from',
             'allowed_vehicles' => 'required|array|min:1',
-            'allowed_vehicles.*' => 'required|string|in:M,CYCLE,CAR,JEEP'
+            'allowed_vehicles.*' => 'required|string|in:M,CYCLE,CAR,JEEP',
         ]);
 
         $license->update($validated);

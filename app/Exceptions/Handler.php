@@ -3,6 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 
 class Handler extends ExceptionHandler
 {
@@ -37,11 +38,11 @@ class Handler extends ExceptionHandler
 
     public function render($request, \Throwable $e)
     {
-        if ($e instanceof \Illuminate\Http\Exceptions\ThrottleRequestsException) {
+        if ($e instanceof ThrottleRequestsException) {
             if ($request->expectsJson()) {
                 return response()->json(['message' => 'আপনি খুব বেশিবার চেষ্টা করেছেন। অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন।'], 429);
             }
-            
+
             return response()->view('errors.429', ['message' => 'আপনি খুব বেশিবার চেষ্টা করেছেন। অনুগ্রহ করে কিছুক্ষণ অপেক্ষা করুন।'], 429);
         }
 

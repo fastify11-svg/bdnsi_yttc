@@ -7,19 +7,23 @@ use App\Models\Session;
 use App\Models\Student;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class SessionController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'session';
+
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(Session::query())->toJson();
         }
 
         $sessions = Session::latest()->paginate(25);
-        return \Inertia\Inertia::render('Admin/Session/Index', compact('sessions'));
+
+        return Inertia::render('Admin/Session/Index', compact('sessions'));
     }
 
     public function create()
@@ -72,6 +76,7 @@ class SessionController extends Controller
     {
         $session->status = $session->status == 1 ? 0 : 1;
         $session->save();
+
         return response()->json(['message' => 'Status updated successfully', 'status' => $session->status]);
     }
 

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\SessionStatus;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -14,7 +15,7 @@ class AddStatusToSessionsTable extends Migration
     public function up()
     {
         Schema::table('sessions', function (Blueprint $table) {
-              $table->unsignedTinyInteger('status',)->default(\App\Enums\SessionStatus::Active);
+            $table->unsignedTinyInteger('status')->default(SessionStatus::Active);
         });
     }
 
@@ -26,7 +27,7 @@ class AddStatusToSessionsTable extends Migration
     public function down()
     {
         Schema::table('sessions', function (Blueprint $table) {
-              $table->dropColumn('status');
+            $table->dropColumn('status');
         });
     }
 }

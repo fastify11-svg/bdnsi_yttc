@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Lib\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,7 +17,7 @@ class ProfileUpdateController extends Controller
         $validated = $request->validate([
             'name' => 'required',
             'email' => 'required|email',
-            'avatar' => 'nullable|image|max:2048'
+            'avatar' => 'nullable|image|max:2048',
         ]);
 
         return response()->report(Auth::user()->update($validated), 'Profile updated successfully');

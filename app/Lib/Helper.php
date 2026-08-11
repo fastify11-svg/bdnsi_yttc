@@ -2,27 +2,22 @@
 
 namespace App\Lib;
 
-use App\Enums\CourseType;
-use App\Models\Student;
-
 class Helper
 {
-
     public static function serialNumber($id)
     {
-
 
         $number = '19524';
         $length = 9;
 
         // Convert $id to string to handle numeric IDs
-        $id = (string)$id;
+        $id = (string) $id;
 
         // Calculate how much padding is needed
         $paddingLength = $length - strlen($id);
 
         // Create the padding from $number and concatenate with $id
-        $paddedId = substr($number, 0, $paddingLength) . $id;
+        $paddedId = substr($number, 0, $paddingLength).$id;
 
         return $paddedId;
     }
@@ -30,22 +25,20 @@ class Helper
     public static function certificateSerialNumber($id)
     {
 
-
         $number = '11224';
         $length = 9;
 
         // Convert $id to string to handle numeric IDs
-        $id = (string)$id;
+        $id = (string) $id;
 
         // Calculate how much padding is needed
         $paddingLength = $length - strlen($id);
 
         // Create the padding from $number and concatenate with $id
-        $paddedId = substr($number, 0, $paddingLength) . $id;
+        $paddedId = substr($number, 0, $paddingLength).$id;
 
         return $paddedId;
     }
-
 
     public static function numberToText($num)
     {
@@ -86,11 +79,11 @@ class Helper
         $units = [
             1 => 'thousand',
             2 => 'million',
-            3 => 'billion'
+            3 => 'billion',
         ];
 
         if ($number < 0) {
-            return 'minus ' . self::numberToText(abs($number));
+            return 'minus '.self::numberToText(abs($number));
         }
 
         if ($number < 21) {
@@ -98,29 +91,31 @@ class Helper
         }
 
         if ($number < 100) {
-            $tens = (int)($number / 10) * 10;
+            $tens = (int) ($number / 10) * 10;
             $units = $number % 10;
-            return $words[$tens] . ($units ? '-' . $words[$units] : '');
+
+            return $words[$tens].($units ? '-'.$words[$units] : '');
         }
 
         if ($number < 1000) {
-            $hundreds = (int)($number / 100);
+            $hundreds = (int) ($number / 100);
             $remainder = $number % 100;
-            return $words[$hundreds] . ' hundred' . ($remainder ? ' ' . self::numberToText($remainder) : '');
+
+            return $words[$hundreds].' hundred'.($remainder ? ' '.self::numberToText($remainder) : '');
         }
 
         foreach ($units as $unitValue => $unitName) {
             $unitPower = pow(1000, $unitValue);
             if ($number < $unitPower * 1000) {
-                $mainPart = (int)($number / $unitPower);
+                $mainPart = (int) ($number / $unitPower);
                 $remainder = $number % $unitPower;
-                return self::numberToText($mainPart) . ' ' . $unitName . ($remainder ? ' ' . self::numberToText($remainder) : '');
+
+                return self::numberToText($mainPart).' '.$unitName.($remainder ? ' '.self::numberToText($remainder) : '');
             }
         }
 
         return '';
     }
-
 
     public static function sendSms($phone, $message)
     {
@@ -129,13 +124,13 @@ class Helper
         $secret_key = config('site.bluck_secret_key');
         $sender_id = 'YTTC';
 
-        $url = "http://apismpp.revesms.com/sendtext?apikey=" . urlencode($api_key) .
-            "&secretkey=" . urlencode($secret_key) .
-            "&callerID=" . urlencode($sender_id) .
-            "&toUser=" . urlencode($phone) .
-            "&messageContent=" . urlencode($message);
+        $url = 'http://apismpp.revesms.com/sendtext?apikey='.urlencode($api_key).
+            '&secretkey='.urlencode($secret_key).
+            '&callerID='.urlencode($sender_id).
+            '&toUser='.urlencode($phone).
+            '&messageContent='.urlencode($message);
 
-        if (!empty($api_key)) {
+        if (! empty($api_key)) {
             $curl = curl_init($url);
 
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -148,11 +143,5 @@ class Helper
             curl_close($curl);
         }
 
-
     }
-
-
-
-
-
 }

@@ -25,16 +25,17 @@ class Geo
                 return $district['division_id'] == $division;
             });
         }
+
         return [
-            1  => ['division_id' => 1, 'name' => 'Cumilla'],
-            2  => ['division_id' => 1, 'name' => 'Feni'],
-            3  => ['division_id' => 1, 'name' => 'Brahmanbaria'],
-            4  => ['division_id' => 1, 'name' => 'Rangamati'],
-            5  => ['division_id' => 1, 'name' => 'Noakhali'],
-            6  => ['division_id' => 1, 'name' => 'Chandpur'],
-            7  => ['division_id' => 1, 'name' => 'Lakshmipur'],
-            8  => ['division_id' => 1, 'name' => 'Chattogram'],
-            9  => ['division_id' => 1, 'name' => "Cox's Bazar"],
+            1 => ['division_id' => 1, 'name' => 'Cumilla'],
+            2 => ['division_id' => 1, 'name' => 'Feni'],
+            3 => ['division_id' => 1, 'name' => 'Brahmanbaria'],
+            4 => ['division_id' => 1, 'name' => 'Rangamati'],
+            5 => ['division_id' => 1, 'name' => 'Noakhali'],
+            6 => ['division_id' => 1, 'name' => 'Chandpur'],
+            7 => ['division_id' => 1, 'name' => 'Lakshmipur'],
+            8 => ['division_id' => 1, 'name' => 'Chattogram'],
+            9 => ['division_id' => 1, 'name' => "Cox's Bazar"],
             10 => ['division_id' => 1, 'name' => 'Khagrachari'],
             11 => ['division_id' => 1, 'name' => 'Bandarban'],
             12 => ['division_id' => 2, 'name' => 'Sirajganj'],
@@ -101,9 +102,9 @@ class Geo
                 return $id; // Return the district ID if the name matches
             }
         }
+
         return null; // Return null if no match is found
     }
-
 
     public static function upazillas($district = null)
     {
@@ -112,6 +113,7 @@ class Geo
                 return $upazilla['district_id'] == $district;
             });
         }
+
         return [
             1 => ['district_id' => 1, 'name' => 'Debidwar'],
             2 => ['district_id' => 1, 'name' => 'Barura'],
@@ -691,9 +693,6 @@ class Geo
             576 => ['district_id' => 47, 'name' => 'Badda'],
             577 => ['district_id' => 47, 'name' => 'Adabor'],
 
-
         ];
     }
 }
-
-

@@ -35,7 +35,7 @@ class DocumentGenerationController extends Controller
         $request->validate([
             'template_id' => 'required|exists:document_templates,id',
             'student_ids' => 'required|array',
-            'student_ids.*' => 'exists:students,id'
+            'student_ids.*' => 'exists:students,id',
         ]);
 
         $template = DocumentTemplate::with('fields')->findOrFail($request->template_id);
@@ -46,7 +46,7 @@ class DocumentGenerationController extends Controller
         foreach ($students as $student) {
             $documents[] = [
                 'student' => $student,
-                'mappedFields' => $this->generatorService->generateForStudent($template, $student)
+                'mappedFields' => $this->generatorService->generateForStudent($template, $student),
             ];
         }
 

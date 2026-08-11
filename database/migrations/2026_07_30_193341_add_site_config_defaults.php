@@ -1,8 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\DB;
 
 class AddSiteConfigDefaults extends Migration
@@ -57,7 +55,7 @@ class AddSiteConfigDefaults extends Migration
             'site_name', 'site_tagline', 'site_phone', 'site_address', 'site_email', 'site_rjsc', 'copyright_text',
             'module_center_apply', 'module_student_result', 'module_success_students', 'module_video_gallery',
             'module_photo_gallery', 'module_verified_centers', 'module_sponsors', 'module_notice_ticker',
-            'module_contact_us', 'module_whatsapp', 'homepage_section_order', 'primary_color', 'secondary_color', 'accent_color'
+            'module_contact_us', 'module_whatsapp', 'homepage_section_order', 'primary_color', 'secondary_color', 'accent_color',
         ];
 
         DB::table('config_dictionaries')->whereIn('key', $keys)->delete();

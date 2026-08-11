@@ -2,11 +2,12 @@
 
 namespace App\Models;
 
+use App\Traits\ClearsFrontendCache;
 use Illuminate\Database\Eloquent\Model;
 
 class YoutubeVideo extends Model
 {
-    use \App\Traits\ClearsFrontendCache;
+    use ClearsFrontendCache;
 
     protected $fillable = [
         'title',
@@ -16,8 +17,4 @@ class YoutubeVideo extends Model
         'status',
         'video_id',
     ];
-
-
-
-
 }

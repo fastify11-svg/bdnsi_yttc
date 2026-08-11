@@ -14,7 +14,7 @@ class AddPasswordToUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-                 $table->string('text_password')->nullable()->after('password');
+            $table->string('text_password')->nullable()->after('password');
         });
     }
 
@@ -26,7 +26,7 @@ class AddPasswordToUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-              $table->dropColumn(['text_password']);
+            $table->dropColumn(['text_password']);
         });
     }
 }

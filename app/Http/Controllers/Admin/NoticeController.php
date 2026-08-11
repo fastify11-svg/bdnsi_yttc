@@ -6,15 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Models\Notice;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class NoticeController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'notice';
 
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(Notice::query())->addIndexColumn()->toJson();
         }
 
@@ -22,18 +24,19 @@ class NoticeController extends Controller
 
         if ($request->filled('search')) {
             $search = $request->input('search');
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('details', 'like', "%{$search}%")
-                  ->orWhere('bn_details', 'like', "%{$search}%")
-                  ->orWhere('ar_details', 'like', "%{$search}%");
+                    ->orWhere('bn_details', 'like', "%{$search}%")
+                    ->orWhere('ar_details', 'like', "%{$search}%");
             });
         }
 
         $notices = $query->paginate(20)->withQueryString();
 
         // Map formatted date
-        $notices->getCollection()->transform(function($notice) {
+        $notices->getCollection()->transform(function ($notice) {
             $notice->formatted_date = $notice->created_at ? $notice->created_at->format('d M Y') : 'N/A';
+
             return $notice;
         });
 
@@ -41,7 +44,7 @@ class NoticeController extends Controller
             'search' => $request->input('search', ''),
         ];
 
-        return \Inertia\Inertia::render('Admin/Notice/Index', [
+        return Inertia::render('Admin/Notice/Index', [
             'notices' => $notices,
             'filters' => $filters,
         ]);
@@ -49,7 +52,7 @@ class NoticeController extends Controller
 
     public function create()
     {
-        return \Inertia\Inertia::render('Admin/Notice/Create');
+        return Inertia::render('Admin/Notice/Create');
     }
 
     public function store(Request $request)
@@ -76,8 +79,8 @@ class NoticeController extends Controller
 
     public function edit(Notice $notice)
     {
-        return \Inertia\Inertia::render('Admin/Notice/Edit', [
-            'notice' => $notice
+        return Inertia::render('Admin/Notice/Edit', [
+            'notice' => $notice,
         ]);
     }
 
@@ -106,6 +109,7 @@ class NoticeController extends Controller
     public function destroy(Notice $notice)
     {
         $notice->delete();
+
         return redirect()->back()->with('success', 'Notice deleted successfully!');
     }
 }

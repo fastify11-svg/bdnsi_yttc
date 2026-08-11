@@ -38,7 +38,7 @@ trait ChecksPermission
             }
         }
 
-        if (!in_array($method, ($this->skipActions ?? []), true)) {
+        if (! in_array($method, ($this->skipActions ?? []), true)) {
             static::abort($actionPermissionMap[$method]);
         }
 
@@ -47,6 +47,6 @@ trait ChecksPermission
 
     protected static function abort($permission)
     {
-        abort_if(!optional(Auth::guard('admin')->user())->isAbleTo($permission), config('laratrust.middleware.handlers.abort.code'), config('laratrust.middleware.handlers.abort.message'));
+        abort_if(! optional(Auth::guard('admin')->user())->isAbleTo($permission), config('laratrust.middleware.handlers.abort.code'), config('laratrust.middleware.handlers.abort.message'));
     }
 }

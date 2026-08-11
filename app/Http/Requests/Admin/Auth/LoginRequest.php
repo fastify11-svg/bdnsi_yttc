@@ -1,18 +1,22 @@
 <?php
+
 namespace App\Http\Requests\Admin\Auth;
+
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
-use Illuminate\Http\Exceptions\ThrottleRequestsException;
+
 class LoginRequest extends FormRequest
 {
     public function authorize()
     {
         return true;
     }
+
     public function rules()
     {
         return [
@@ -20,6 +24,7 @@ class LoginRequest extends FormRequest
             'password' => 'required|string',
         ];
     }
+
     public function authenticate()
     {
         $this->ensureIsNotRateLimited();
@@ -31,6 +36,7 @@ class LoginRequest extends FormRequest
         }
         RateLimiter::clear($this->throttleKey());
     }
+
     public function ensureIsNotRateLimited()
     {
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
@@ -40,6 +46,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
         throw new ThrottleRequestsException('Too Many Attempts.');
     }
+
     public function throttleKey()
     {
         return Str::lower($this->input('email')).'|'.$this->ip().'|admin';

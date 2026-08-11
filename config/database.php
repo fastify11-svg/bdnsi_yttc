@@ -61,7 +61,7 @@ return [
             'options' => extension_loaded('pdo_mysql') ? array_filter([
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
-            'default_key_len' => env('MYSQL_DEFAULT_KEY_LEN', 255)
+            'default_key_len' => env('MYSQL_DEFAULT_KEY_LEN', 255),
         ],
 
         'pgsql' => [

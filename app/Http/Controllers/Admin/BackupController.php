@@ -17,7 +17,7 @@ class BackupController extends Controller
     {
         $backupDir = storage_path('app/backups');
 
-        if (!File::exists($backupDir)) {
+        if (! File::exists($backupDir)) {
             File::makeDirectory($backupDir, 0755, true);
         }
 
@@ -34,7 +34,7 @@ class BackupController extends Controller
             ->values();
 
         return Inertia::render('Admin/Backup/Index', [
-            'files' => $files
+            'files' => $files,
         ]);
     }
 
@@ -78,13 +78,13 @@ class BackupController extends Controller
         $filename = basename($filename);
 
         // Security: Only allow .sql files to be downloaded
-        if (!str_ends_with($filename, '.sql')) {
+        if (! str_ends_with($filename, '.sql')) {
             abort(403, 'Only SQL backup files can be downloaded.');
         }
 
-        $path = 'backups/' . $filename;
+        $path = 'backups/'.$filename;
 
-        if (!Storage::disk('local')->exists($path)) {
+        if (! Storage::disk('local')->exists($path)) {
             abort(404, 'Backup file not found.');
         }
 

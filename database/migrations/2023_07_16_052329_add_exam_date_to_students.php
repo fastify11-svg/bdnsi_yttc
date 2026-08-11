@@ -14,7 +14,7 @@ class AddExamDateToStudents extends Migration
     public function up()
     {
         Schema::table('students', function (Blueprint $table) {
-               $table->date('exam_date')->nullable()->after('date_of_birth');
+            $table->date('exam_date')->nullable()->after('date_of_birth');
         });
     }
 

@@ -2,50 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\CenterStatus;
 use App\Enums\CourseType;
+use App\Enums\Gender;
 use App\Enums\Religion;
 use App\Enums\SessionStatus;
 use App\Enums\StudentStatus;
-use App\Enums\Gender;
-use App\Lib\Helper;
-use App\Models\Center;
+use App\Jobs\SendStudentSmsJob;
 use App\Models\District;
+use App\Models\Division;
+use App\Models\Result;
 use App\Models\Session;
 use App\Models\Student;
-use App\Enums\BloodGroup;
 use App\Models\Subject;
 use App\Models\Upazila;
-use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\DB;
+use Inertia\Inertia;
 
 class StudentController extends Controller
 {
-
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(Student::hide()->select(['id', 'center_id', 'session_id', 'subject_id', 'name', 'status', 'roll'])
                 ->own()
                 ->with(['session', 'subject']))
                 ->addColumn('admit', function ($admit) {
-                    return '<a   style="background-color:green; padding:3px; border-redius:4px 4px 4px 4px; color:white"   target="_blank"   target="_blank" href="' . route("student.show", [$admit->id, 'admit' => 'admit']) . '">' . 'Admit' . '</a>';
+                    return '<a   style="background-color:green; padding:3px; border-redius:4px 4px 4px 4px; color:white"   target="_blank"   target="_blank" href="'.route('student.show', [$admit->id, 'admit' => 'admit']).'">'.'Admit'.'</a>';
                 })
                 ->addColumn('registration', function ($registration) {
                     $registrationLink = '<a style="background-color:green; padding:3px; border-radius:4px; color:white" target="_blank" href="'
-                        . route("student.show", [$registration->id, 'registration' => 'registration'])
-                        . '">Registration</a>';
+                        .route('student.show', [$registration->id, 'registration' => 'registration'])
+                        .'">Registration</a>';
 
                     $idCardLink = '<a style="background-color:green; padding:3px; border-radius:4px; color:white" target="_blank" href="'
-                        . route("student.show", [$registration->id, 'idcard' => 'idcard'])
-                        . '">Id Card</a>';
+                        .route('student.show', [$registration->id, 'idcard' => 'idcard'])
+                        .'">Id Card</a>';
 
-                    return $registrationLink . ' ' . $idCardLink;
+                    return $registrationLink.' '.$idCardLink;
                 })
                 ->addColumn('result', function ($result) {
-                    return '<a  style="background-color:green; padding:3px; border-redius:4px 4px 4px 4px; color:white"   target="_blank"       href="' . route('result', ['roll' => $result->roll]) . '">' . 'Result' . '</a>';
+                    return '<a  style="background-color:green; padding:3px; border-redius:4px 4px 4px 4px; color:white"   target="_blank"       href="'.route('result', ['roll' => $result->roll]).'">'.'Result'.'</a>';
                 })
                 ->rawColumns(['admit', 'registration', 'result'])
                 ->toJson();
@@ -56,26 +54,27 @@ class StudentController extends Controller
         if ($request->search) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name', 'LIKE', '%' . $search . '%')
-                  ->orWhere('roll', 'LIKE', '%' . $search . '%')
-                  ->orWhere('registration', 'LIKE', '%' . $search . '%')
-                  ->orWhere('phone', 'LIKE', '%' . $search . '%');
+                $q->where('name', 'LIKE', '%'.$search.'%')
+                    ->orWhere('roll', 'LIKE', '%'.$search.'%')
+                    ->orWhere('registration', 'LIKE', '%'.$search.'%')
+                    ->orWhere('phone', 'LIKE', '%'.$search.'%');
             });
         }
 
         $students = $query->latest()->paginate(25)->withQueryString();
-        return \Inertia\Inertia::render('Center/Student/Index', [
+
+        return Inertia::render('Center/Student/Index', [
             'students' => $students,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search']),
         ]);
     }
 
     public function create()
     {
-        return \Inertia\Inertia::render('Center/Student/Create', [
+        return Inertia::render('Center/Student/Create', [
             'sessions' => Session::select(['id', 'name'])->where('status', SessionStatus::Active)->get(),
             'subjects' => Subject::select(['id', 'name'])->get(),
-            'divisions' => \App\Models\Division::get(),
+            'divisions' => Division::get(),
             'districts' => District::get(),
             'upazilas' => Upazila::get()->mapWithKeys(function ($upazila) {
                 return [
@@ -83,9 +82,9 @@ class StudentController extends Controller
                         'id' => $upazila->id,
                         'district_id' => $upazila->district_id,
                         'name' => $upazila->name,
-                    ]
+                    ],
                 ];
-            })->toArray()
+            })->toArray(),
         ]);
     }
 
@@ -124,11 +123,12 @@ class StudentController extends Controller
         $validated['center_id'] = Auth::user()->center_id ?? 1;
         $validated['status'] = StudentStatus::Pending;
         $student = Student::create($validated);
-        $message = 'Congratulations!! ' . $student->name . ', You have successfully filled the application form for  '
-            . (Auth::user()->center->name ?? '') . ' Technician '
-            . ($student->subject->name ?? '') . ' under  '.config('site.setting.name').' Your Roll No: '
-            . $student->roll . ' and Registration No: ' . $student->registration . '. Thanks for staying with National '.config('site.setting.name');
-        \App\Jobs\SendStudentSmsJob::dispatch($student->phone, $message);
+        $message = 'Congratulations!! '.$student->name.', You have successfully filled the application form for  '
+            .(Auth::user()->center->name ?? '').' Technician '
+            .($student->subject->name ?? '').' under  '.config('site.setting.name').' Your Roll No: '
+            .$student->roll.' and Registration No: '.$student->registration.'. Thanks for staying with National '.config('site.setting.name');
+        SendStudentSmsJob::dispatch($student->phone, $message);
+
         return redirect()->route('student.index')->with('success', 'Student Created successfully');
     }
 
@@ -140,28 +140,26 @@ class StudentController extends Controller
         );
         if ($request->admit == 'admit') {
 
-
             return view('student.admit', [
-                'student' => $student
+                'student' => $student,
             ]);
         }
 
         if ($request->registration == 'registration') {
 
-
             return view('student.registration', [
-                'student' => $student
+                'student' => $student,
             ]);
         }
         if ($request->idcard == 'idcard') {
 
-
             return view('student.idcard', [
-                'student' => $student
+                'student' => $student,
             ]);
         }
+
         return view('student.show', [
-            'student' => $student
+            'student' => $student,
         ]);
     }
 
@@ -180,14 +178,14 @@ class StudentController extends Controller
             'student' => $student,
             'sessions' => Session::select(['id', 'name'])->where('status', SessionStatus::Active)->get(),
             'subjects' => Subject::select(['id', 'name'])->get(),
-            'divisions' => \App\Models\Division::get(),
+            'divisions' => Division::get(),
             'districts_keys' => District::get()->mapWithKeys(function ($district) {
                 return [
                     $district->id => [
                         'id' => $district->id,
                         'division_id' => $district->division_id,
                         'name' => $district->name,
-                    ]
+                    ],
                 ];
             }),
 
@@ -198,9 +196,9 @@ class StudentController extends Controller
                         'id' => $upazila->id,
                         'district_id' => $upazila->district_id,
                         'name' => $upazila->name,
-                    ]
+                    ],
                 ];
-            })->toArray()
+            })->toArray(),
         ]);
     }
 
@@ -220,8 +218,8 @@ class StudentController extends Controller
             'fathers_name' => 'required|string',
             'mothers_name' => 'required|string',
             'date_of_birth' => 'nullable',
-            'gender' => 'required|numeric|enum_value:' . Gender::class . ',false',
-            'religion' => 'required|numeric|enum_value:' . Religion::class . ',false',
+            'gender' => 'required|numeric|enum_value:'.Gender::class.',false',
+            'religion' => 'required|numeric|enum_value:'.Religion::class.',false',
             'present_address' => 'required|string',
             'permanent_address' => 'required|string',
             'passport' => 'nullable|string',
@@ -256,8 +254,8 @@ class StudentController extends Controller
             return response()->error('Can\'t delete student which is not in pending status');
         }
 
-        \Illuminate\Support\Facades\DB::transaction(function () use ($student) {
-            \App\Models\Result::where('student_id', $student->id)->delete();
+        DB::transaction(function () use ($student) {
+            Result::where('student_id', $student->id)->delete();
             $student->delete();
         });
 

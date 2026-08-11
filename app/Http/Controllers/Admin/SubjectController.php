@@ -4,26 +4,30 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Lib\Image;
+use App\Models\ConfigDictionary;
+use App\Models\Student;
 use App\Models\Subject;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Inertia\Inertia;
 
 class SubjectController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'subject';
 
     public function index(Request $request)
     {
 
-
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(Subject::query())->addIndexColumn()->toJson();
         }
 
         $subjects = Subject::latest()->get();
-        return \Inertia\Inertia::render('Admin/Subject/Index', compact('subjects'));
+
+        return Inertia::render('Admin/Subject/Index', compact('subjects'));
     }
 
     public function create()
@@ -48,6 +52,7 @@ class SubjectController extends Controller
         } else {
             unset($validated['photo']);
         }
+
         return response()->report(Subject::create($validated), 'Subject Created successfully', 200, 'Something went wrong', route('admin.subject.index'));
     }
 
@@ -74,17 +79,19 @@ class SubjectController extends Controller
         } else {
             unset($validated['photo']);
         }
+
         return response()->report($subject->update($validated), 'Subject Updated successfully', 200, 'Something went wrong', route('admin.subject.index'));
     }
 
     public function destroy(Subject $subject)
     {
-        if (\App\Models\Student::where('subject_id', $subject->id)->exists()) {
+        if (Student::where('subject_id', $subject->id)->exists()) {
             return response()->report(false, '', 400, 'Cannot delete this course because students are already enrolled in it!');
         }
         if ($subject->getRawOriginal('photo')) {
             Image::delete($subject, 'photo');
         }
+
         return response()->report($subject->delete(), 'Subject deleted successfully');
     }
 
@@ -95,21 +102,21 @@ class SubjectController extends Controller
             return response()->json(['error' => 'Please enter a course name first.'], 400);
         }
 
-        $apiSettings = \App\Models\ConfigDictionary::get('api_settings', []);
+        $apiSettings = ConfigDictionary::get('api_settings', []);
         $apiKey = $apiSettings['gemini_api_key'] ?? config('services.gemini.key');
 
-        if (!empty($apiKey)) {
+        if (! empty($apiKey)) {
             try {
                 $prompt = "You are an expert vocational and IT education curriculum planner for Bangladesh National Skills Institute (BDNSI). For a course named \"{$name}\", generate a JSON object with exactly the following keys (DO NOT use markdown formatting, DO NOT wrap in ```json, return ONLY raw valid JSON):\n{\n \"code\": \"BDNSI-... (short 3-4 uppercase letter code)\",\n \"duration\": \"6 Months (360 Hours) or 3 Months (180 Hours) or 1 Year (720 Hours)\",\n \"rate\": \"... (numeric fee in BDT between 5000 and 25000)\",\n \"education_qualification\": \"... (e.g. SSC / Equivalent or Above, HSC / Equivalent, or Minimum Class 8)\",\n \"type\": \"1\",\n \"course_details\": \"... (A detailed, highly engaging 3-paragraph curriculum description in English explaining course objectives, key modules/syllabus, laboratory facilities, career prospects, and why to enroll at BDNSI)\"\n}";
 
-                $response = Http::timeout(10)->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . $apiKey, [
+                $response = Http::timeout(10)->post('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key='.$apiKey, [
                     'contents' => [
                         [
                             'parts' => [
-                                ['text' => $prompt]
-                            ]
-                        ]
-                    ]
+                                ['text' => $prompt],
+                            ],
+                        ],
+                    ],
                 ]);
 
                 if ($response->successful()) {
@@ -122,7 +129,7 @@ class SubjectController extends Controller
                         return response()->json([
                             'success' => true,
                             'source' => 'Google Gemini AI (Live)',
-                            'data' => $json
+                            'data' => $json,
                         ]);
                     }
                 }
@@ -133,7 +140,7 @@ class SubjectController extends Controller
 
         // Smart Offline Fallback / Free AI Engine
         $lower = strtolower($name);
-        $code = 'BDNSI-' . strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', str_replace(' ', '', ucwords($name))), 0, 4));
+        $code = 'BDNSI-'.strtoupper(substr(preg_replace('/[^a-zA-Z]/', '', str_replace(' ', '', ucwords($name))), 0, 4));
         $duration = '6 Months (360 Hours)';
         $rate = '12000';
         $qual = 'SSC / Equivalent or Above';
@@ -206,8 +213,8 @@ class SubjectController extends Controller
                 'rate' => $rate,
                 'education_qualification' => $qual,
                 'type' => $type,
-                'course_details' => $details
-            ]
+                'course_details' => $details,
+            ],
         ]);
     }
 }

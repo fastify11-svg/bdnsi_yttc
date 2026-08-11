@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Scopes\CenterScope;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -14,15 +14,14 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Result extends Model
 {
-
     protected static function booted()
     {
-        static::addGlobalScope(new \App\Scopes\CenterScope());
+        static::addGlobalScope(new CenterScope);
 
         static::saving(function ($result) {
-            $total = (int)$result->written + (int)$result->practical + (int)$result->viva;
+            $total = (int) $result->written + (int) $result->practical + (int) $result->viva;
             if ($total > 0) {
-                $student = $result->student ?? \App\Models\Student::find($result->student_id);
+                $student = $result->student ?? Student::find($result->student_id);
                 if ($student) {
                     $courseType = $student->course_type;
                     $typeStr = is_object($courseType) ? ($courseType->value ?? $courseType->description) : $courseType;
@@ -41,8 +40,8 @@ class Result extends Model
                     }
                 }
 
-                $new_written = (int)round($total * 0.5);
-                $new_practical = (int)round($total * 0.3);
+                $new_written = (int) round($total * 0.5);
+                $new_practical = (int) round($total * 0.3);
                 $new_viva = $total - $new_written - $new_practical;
 
                 $result->written = $new_written;
@@ -72,7 +71,6 @@ class Result extends Model
         return $this->belongsTo(Student::class);
     }
 
-
     public function gpa()
     {
         $mark = $this->written + $this->practical + $this->viva;
@@ -93,5 +91,4 @@ class Result extends Model
                 return '';
         }
     }
-
 }

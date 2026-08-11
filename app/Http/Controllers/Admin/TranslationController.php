@@ -10,13 +10,14 @@ use Illuminate\Http\Request;
 class TranslationController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'translation';
+
     public function index(Request $request)
     {
 
-
-        if($request->ajax() && !$request->header('X-Inertia')){
-            return datatables( Translation::query())->addIndexColumn()->toJson();
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
+            return datatables(Translation::query())->addIndexColumn()->toJson();
         }
 
         return view('admin.translate.index');
@@ -37,19 +38,21 @@ class TranslationController extends Controller
         ]);
 
         Translation::create($request->all());
+
         return response()->success('Translation added successfully.');
     }
 
-    public function edit($id )
+    public function edit($id)
     {
-         $data=Translation::findOrFail($id);
+        $data = Translation::findOrFail($id);
+
         return view('admin.translate.edit', compact('data'));
     }
 
     public function update(Request $request, $id)
     {
-        $data=Translation::findOrFail($id);
-      $validated=  $request->validate([
+        $data = Translation::findOrFail($id);
+        $validated = $request->validate([
             'en' => 'nullable|string',
             'bn' => 'nullable|string',
             'ar' => 'nullable|string',
@@ -62,8 +65,9 @@ class TranslationController extends Controller
 
     public function destroy($id)
     {
-        $data=Translation::findOrFail($id);
+        $data = Translation::findOrFail($id);
         $data->delete();
-        return  response()->success('Translation deleted successfully.');
+
+        return response()->success('Translation deleted successfully.');
     }
 }

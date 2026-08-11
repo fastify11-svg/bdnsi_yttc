@@ -30,6 +30,7 @@ class CreateLicensesTable extends Migration
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      *

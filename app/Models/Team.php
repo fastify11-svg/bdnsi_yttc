@@ -4,12 +4,11 @@ namespace App\Models;
 
 use App\Casts\ImageField;
 use App\Traits\DeletesImage;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Team extends Model
 {
-    use DeletesImage, \App\Traits\ClearsFrontendCache;
+    use \App\Traits\ClearsFrontendCache, DeletesImage;
 
     protected $fillable = [
         'name',
@@ -17,7 +16,7 @@ class Team extends Model
         'image',
         'description',
         'status',
-        
+
         'email',
         'phone',
         'facebook_link',
@@ -36,6 +35,4 @@ class Team extends Model
     protected $casts = [
         'image' => ImageField::class.':team,images',
     ];
-
-
 }

@@ -15,16 +15,18 @@ class ConfigDictionary extends Model
     public $timestamps = false;
 
     protected $primaryKey = 'key';
+
     protected $keyType = 'string';
+
     public $incrementing = false;
 
     protected $fillable = [
         'key',
-        'value'
+        'value',
     ];
 
     protected $casts = [
-        'value' => 'json'
+        'value' => 'json',
     ];
 
     public static function set(string $key, $value, $refreshCache = true)
@@ -47,11 +49,12 @@ class ConfigDictionary extends Model
         }
 
         static::storeCache();
+
         return self::find($key)->value ?? $default;
     }
 
     /**
-     * @param string[] $keys
+     * @param  string[]  $keys
      */
     public static function getMany($keys, $defaults = [])
     {
@@ -59,6 +62,7 @@ class ConfigDictionary extends Model
         foreach ($keys as $key) {
             $results[$key] = self::get($key, $defaults[$key] ?? null);
         }
+
         return $results;
     }
 
@@ -70,6 +74,7 @@ class ConfigDictionary extends Model
             $result *= (int) (bool) self::set($key, $value, false);
         }
         self::storeCache();
+
         return (bool) $result;
     }
 
@@ -81,13 +86,10 @@ class ConfigDictionary extends Model
 
     public static function storeCache()
     {
-        Cache::remember(static::CACHE_KEY, 3600, function (){
+        Cache::remember(static::CACHE_KEY, 3600, function () {
             return self::all()->pluck('value', 'key')->all();
         });
     }
-
-
-
 
     protected static $cachedConfig = null;
 
@@ -99,11 +101,13 @@ class ConfigDictionary extends Model
 
         if (Cache::has(self::CACHE_KEY)) {
             self::$cachedConfig = Cache::get(self::CACHE_KEY);
+
             return self::$cachedConfig;
         }
 
         static::storeCache();
         self::$cachedConfig = Cache::get(self::CACHE_KEY, []);
+
         return self::$cachedConfig;
     }
 }

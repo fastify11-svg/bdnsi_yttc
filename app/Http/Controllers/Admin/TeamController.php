@@ -3,22 +3,27 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Lib\Image;
 use App\Models\Team;
 use App\Traits\ChecksPermission;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class TeamController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'team';
+
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(Team::orderBy('order_index', 'asc')->orderBy('id', 'desc')->get())->addIndexColumn()->toJson();
         }
 
         $teams = Team::orderBy('order_index', 'asc')->latest()->paginate(25);
-        return \Inertia\Inertia::render('Admin/Team/Index', compact('teams'));
+
+        return Inertia::render('Admin/Team/Index', compact('teams'));
     }
 
     public function create(Request $request)
@@ -33,7 +38,7 @@ class TeamController extends Controller
             'designation' => 'required',
             'image' => 'nullable', // made nullable since frontend will upload photo, wait let me check the model, it uses ImageField trait, so it should be file
             'description' => 'nullable',
-            
+
             // translations optional
             'bn_name' => 'nullable',
             'ar_name' => 'nullable',
@@ -53,20 +58,21 @@ class TeamController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $validated['image'] = \App\Lib\Image::storeFile($request->file('photo'), 'team');
+            $validated['image'] = Image::storeFile($request->file('photo'), 'team');
         } elseif ($request->hasFile('image')) {
-             $validated['image'] = \App\Lib\Image::storeFile($request->file('image'), 'team');
+            $validated['image'] = Image::storeFile($request->file('image'), 'team');
         }
 
         $validated['status'] = $request->has('status') ? $request->status : 1;
         $validated['order_index'] = $request->order_index ?? 0;
 
         Team::create($validated);
-        
+
         if ($request->header('X-Inertia')) {
             return redirect()->back()->with('success', 'Team Member Created successfully');
         }
-        return response()->success("Succesfully Created");
+
+        return response()->success('Succesfully Created');
     }
 
     public function show($id)
@@ -77,6 +83,7 @@ class TeamController extends Controller
     public function edit($id)
     {
         $data = Team::findOrFail($id);
+
         return view('admin.team.edit', compact('data'));
     }
 
@@ -88,7 +95,7 @@ class TeamController extends Controller
             'designation' => 'required',
             'image' => 'nullable',
             'description' => 'nullable',
-            
+
             // translations optional
             'bn_name' => 'nullable',
             'ar_name' => 'nullable',
@@ -108,30 +115,32 @@ class TeamController extends Controller
         ]);
 
         if ($request->hasFile('photo')) {
-            $validated['image'] = \App\Lib\Image::storeFile($request->file('photo'), 'team');
+            $validated['image'] = Image::storeFile($request->file('photo'), 'team');
         } elseif ($request->hasFile('image')) {
-             $validated['image'] = \App\Lib\Image::storeFile($request->file('image'), 'team');
+            $validated['image'] = Image::storeFile($request->file('image'), 'team');
         }
 
         $validated['status'] = $request->has('status') ? $request->status : 1;
         $validated['order_index'] = $request->order_index ?? 0;
 
         $data->update($validated);
-        
+
         if ($request->header('X-Inertia')) {
             return redirect()->back()->with('success', 'Team Member Updated successfully');
         }
-        return response()->success("Succesfully Updated");
+
+        return response()->success('Succesfully Updated');
     }
 
     public function destroy($id, Request $request)
     {
         $team = Team::findOrFail($id);
         $team->delete();
-        
+
         if ($request->header('X-Inertia')) {
             return redirect()->back()->with('success', 'Team Member Deleted successfully');
         }
-        return response()->success("Successfully Deleted");
+
+        return response()->success('Successfully Deleted');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Enums\CenterStatus;
+use App\Models\Center;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -56,9 +58,9 @@ class LoginRequest extends FormRequest
 
         $user = Auth::user();
         if ($user && $user->center_id) {
-            $center = \App\Models\Center::find($user->center_id);
+            $center = Center::find($user->center_id);
             $status = $center ? (is_object($center->status) ? $center->status->value : $center->status) : null;
-            if (!$center || ($status != 1 && $status !== \App\Enums\CenterStatus::Approved && strtolower((string)$status) !== 'approved')) {
+            if (! $center || ($status != 1 && $status !== CenterStatus::Approved && strtolower((string) $status) !== 'approved')) {
                 Auth::logout();
                 RateLimiter::hit($this->throttleKey());
                 throw ValidationException::withMessages([
@@ -75,7 +77,7 @@ class LoginRequest extends FormRequest
      *
      * @return void
      *
-     * @throws \Illuminate\Validation\ValidationException
+     * @throws ValidationException
      */
     public function ensureIsNotRateLimited()
     {

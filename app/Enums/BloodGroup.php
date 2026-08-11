@@ -17,18 +17,26 @@ use BenSampo\Enum\Enum;
  */
 final class BloodGroup extends Enum
 {
-    const A_Positive =   0;
-    const A_Negative =   1;
-    const B_Positive =   2;
-    const B_Negative =   3;
-    const O_Positive =   4;
-    const O_Negative =   5;
-    const AB_Positive =  6;
-    const AB_Negative =  7;
-    const Unknown =  8;
+    const A_Positive = 0;
 
-    public function __toString() : string
+    const A_Negative = 1;
+
+    const B_Positive = 2;
+
+    const B_Negative = 3;
+
+    const O_Positive = 4;
+
+    const O_Negative = 5;
+
+    const AB_Positive = 6;
+
+    const AB_Negative = 7;
+
+    const Unknown = 8;
+
+    public function __toString(): string
     {
-        return str_replace(['Positive','Negative', '_'], ['+','-',''], $this->key);
+        return str_replace(['Positive', 'Negative', '_'], ['+', '-', ''], $this->key);
     }
 }

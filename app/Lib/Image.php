@@ -29,20 +29,21 @@ class Image
     {
         $extension = strtolower($file->getClientOriginalExtension());
         $mime = $file->getMimeType();
-        
+
         // Exclude SVGs, GIFs, ICOs, and non-image files from Intervention compression
-        if (in_array($extension, ['svg', 'pdf', 'ico', 'gif']) || !str_starts_with($mime, 'image/')) {
+        if (in_array($extension, ['svg', 'pdf', 'ico', 'gif']) || ! str_starts_with($mime, 'image/')) {
             if (is_null($name)) {
-                $path = $file->store('public/' . $uploadPath, ['visibility' => 'public']);
+                $path = $file->store('public/'.$uploadPath, ['visibility' => 'public']);
             } else {
-                $path = $file->storeAs('public/' . $uploadPath, $name, ['visibility' => 'public']);
+                $path = $file->storeAs('public/'.$uploadPath, $name, ['visibility' => 'public']);
             }
+
             return str_replace('\\', '/', $path);
         }
 
-        $filename = $name ?? uniqid() . '_' . time() . '.' . $extension;
-        $path = 'public/' . $uploadPath . '/' . $filename;
-        
+        $filename = $name ?? uniqid().'_'.time().'.'.$extension;
+        $path = 'public/'.$uploadPath.'/'.$filename;
+
         try {
             // Open file using Intervention Image
             $image = \Intervention\Image\Facades\Image::make($file->getRealPath());
@@ -58,15 +59,16 @@ class Image
 
             // Put to storage
             Storage::put($path, (string) $encoded, 'public');
-            
+
             return str_replace('\\', '/', $path);
         } catch (\Exception $e) {
             // Fallback to normal upload if Intervention fails
             if (is_null($name)) {
-                $path = $file->store('public/' . $uploadPath, ['visibility' => 'public']);
+                $path = $file->store('public/'.$uploadPath, ['visibility' => 'public']);
             } else {
-                $path = $file->storeAs('public/' . $uploadPath, $name, ['visibility' => 'public']);
+                $path = $file->storeAs('public/'.$uploadPath, $name, ['visibility' => 'public']);
             }
+
             return str_replace('\\', '/', $path);
         }
     }
@@ -84,6 +86,7 @@ class Image
         }
 
         $path = preg_replace("/^public\\\?\/?/", '', $image);
+
         return asset(Storage::url($path));
     }
 }

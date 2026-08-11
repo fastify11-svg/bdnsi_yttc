@@ -14,7 +14,7 @@ class AddSeenToContactUsTable extends Migration
     public function up()
     {
         Schema::table('contact_us', function (Blueprint $table) {
-                $table->boolean('is_seen')->default(false);
+            $table->boolean('is_seen')->default(false);
         });
     }
 
@@ -26,7 +26,7 @@ class AddSeenToContactUsTable extends Migration
     public function down()
     {
         Schema::table('contact_us', function (Blueprint $table) {
-             $table->dropColumn(['is_seen']);
+            $table->dropColumn(['is_seen']);
         });
     }
 }

@@ -14,7 +14,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Center extends Model
 {
-    use HasFactory, DeletesImage, \App\Traits\ClearsFrontendCache;
+    use \App\Traits\ClearsFrontendCache, DeletesImage, HasFactory;
 
     protected $fillable = [
         'code',
@@ -58,28 +58,32 @@ class Center extends Model
         'nid_back_photo' => ImageField::class.':center/nid_photo',
     ];
 
-    public function students(){
-        return $this->hasMany(Student::class,'center_id')->where('status',StudentStatus::Approved);
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'center_id')->where('status', StudentStatus::Approved);
     }
 
-    public function allStudents(){
-        return $this->hasMany(Student::class,'center_id');
+    public function allStudents()
+    {
+        return $this->hasMany(Student::class, 'center_id');
     }
 
-    public function getPhotoAttribute($photo){
-        if (isset($photo)){
+    public function getPhotoAttribute($photo)
+    {
+        if (isset($photo)) {
             return Image::url($photo);
-        }else{
-            return  asset('images/avatar.png');
+        } else {
+            return asset('images/avatar.png');
         }
 
     }
 
     public function getCodeAttribute()
     {
-        if (isset($this->attributes['code']) && !empty($this->attributes['code'])) {
+        if (isset($this->attributes['code']) && ! empty($this->attributes['code'])) {
             return $this->attributes['code'];
         }
+
         return isset($this->attributes['id']) ? str_pad($this->attributes['id'], 6, '178', STR_PAD_LEFT) : null;
     }
 

@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Casts\ImageField;
 use App\Traits\DeletesImage;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -12,7 +11,7 @@ use Laratrust\Traits\LaratrustUserTrait;
 
 class Admin extends Authenticatable
 {
-    use HasFactory, LaratrustUserTrait, Notifiable, DeletesImage;
+    use DeletesImage, HasFactory, LaratrustUserTrait, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -23,7 +22,7 @@ class Admin extends Authenticatable
         'name',
         'email',
         'password',
-        'avatar'
+        'avatar',
     ];
 
     /**

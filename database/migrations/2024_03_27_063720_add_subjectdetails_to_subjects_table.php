@@ -14,10 +14,10 @@ class AddSubjectdetailsToSubjectsTable extends Migration
     public function up()
     {
         Schema::table('subjects', function (Blueprint $table) {
-             $table->string('duration')->nullable();
-             $table->string('rate')->nullable();
-             $table->string('education_qualification')->nullable();
-             $table->longText('course_details')->nullable();
+            $table->string('duration')->nullable();
+            $table->string('rate')->nullable();
+            $table->string('education_qualification')->nullable();
+            $table->longText('course_details')->nullable();
         });
     }
 

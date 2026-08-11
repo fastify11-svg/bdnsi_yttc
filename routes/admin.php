@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\AdminListController;
+use App\Http\Controllers\Admin\ApiSettingController;
 use App\Http\Controllers\Admin\Auth\AuthenticatedSessionController;
 use App\Http\Controllers\Admin\Auth\ConfirmablePasswordController;
 use App\Http\Controllers\Admin\Auth\EmailVerificationNotificationController;
@@ -8,8 +10,34 @@ use App\Http\Controllers\Admin\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\Auth\VerifyEmailController;
+use App\Http\Controllers\Admin\BackupController;
+use App\Http\Controllers\Admin\CenterController;
+use App\Http\Controllers\Admin\ConfigDictionaryController;
+use App\Http\Controllers\Admin\ContactUsController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\DocumentGenerationController;
+use App\Http\Controllers\Admin\DocumentTemplateController;
+use App\Http\Controllers\Admin\ExamController;
+use App\Http\Controllers\Admin\FooterLinkController;
+use App\Http\Controllers\Admin\FooterPartnerLogoController;
+use App\Http\Controllers\Admin\LicenseController;
+use App\Http\Controllers\Admin\NoticeController;
+use App\Http\Controllers\Admin\PasswordUpdateController;
+use App\Http\Controllers\Admin\ProfileUpdateController;
+use App\Http\Controllers\Admin\QuestionController;
+use App\Http\Controllers\Admin\ResultController;
+use App\Http\Controllers\Admin\SessionController;
 use App\Http\Controllers\Admin\SliderController;
+use App\Http\Controllers\Admin\SponsorController;
+use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\SubadminController;
+use App\Http\Controllers\Admin\SubjectController;
+use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\TranslationController;
+use App\Http\Controllers\Admin\UpazilaStoreController;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\WhatappLinkController;
+use App\Http\Controllers\Admin\YoutubeVideoController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('admin')->name('admin.')->group(function () {
@@ -21,21 +49,20 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware('auth:admin')
         ->name('dashboard');
 
-/*    Route::get('/slider', [SliderController::class, 'index'])
-        ->middleware('auth:admin')
-        ->name('slide.index');
+    /*    Route::get('/slider', [SliderController::class, 'index'])
+            ->middleware('auth:admin')
+            ->name('slide.index');
 
-    Route::get('/slider/create', [SliderController::class, 'create'])
-        ->middleware('auth:admin')
-        ->name('slide.create');*/
+        Route::get('/slider/create', [SliderController::class, 'create'])
+            ->middleware('auth:admin')
+            ->name('slide.create');*/
 
+    //    Route::get('/register', [RegisteredUserController::class, 'create'])
+    //        ->middleware('guest:admin')
+    //        ->name('register');
 
-//    Route::get('/register', [RegisteredUserController::class, 'create'])
-//        ->middleware('guest:admin')
-//        ->name('register');
-
-//    Route::post('/register', [RegisteredUserController::class, 'store'])
-//        ->middleware('guest:admin');
+    //    Route::post('/register', [RegisteredUserController::class, 'store'])
+    //        ->middleware('guest:admin');
 
     Route::get('/login', [AuthenticatedSessionController::class, 'create'])
         ->middleware('guest:admin')
@@ -87,60 +114,59 @@ Route::prefix('admin')->name('admin.')->group(function () {
         ->middleware('auth:admin')
         ->name('userCreate');
 
+    Route::middleware('auth:admin')->group(function () {
+        Route::resource('password-update', PasswordUpdateController::class)
+            ->only(['create', 'store']);
+        Route::resource('profile-update', ProfileUpdateController::class)
+            ->only(['create', 'store']);
+        Route::resource('user', UserController::class);
+        Route::post('subject/ai-suggest', [SubjectController::class, 'aiSuggest'])->name('subject.aiSuggest');
+        Route::resource('subject', SubjectController::class)->except(['show']);
 
-    Route::middleware('auth:admin')->group(function(){
-        Route::resource('password-update', \App\Http\Controllers\Admin\PasswordUpdateController::class)
-            ->only(['create','store']);
-        Route::resource('profile-update', \App\Http\Controllers\Admin\ProfileUpdateController::class)
-            ->only(['create','store']);
-        Route::resource('user', \App\Http\Controllers\Admin\UserController::class);
-        Route::post('subject/ai-suggest', [\App\Http\Controllers\Admin\SubjectController::class, 'aiSuggest'])->name('subject.aiSuggest');
-        Route::resource('subject', \App\Http\Controllers\Admin\SubjectController::class)->except(['show']);
-        
-        Route::patch('session/{session}/toggle-status', [\App\Http\Controllers\Admin\SessionController::class, 'toggleStatus'])->name('session.toggleStatus');
-        Route::resource('session', \App\Http\Controllers\Admin\SessionController::class)->except(['show']);
+        Route::patch('session/{session}/toggle-status', [SessionController::class, 'toggleStatus'])->name('session.toggleStatus');
+        Route::resource('session', SessionController::class)->except(['show']);
 
-        Route::get('student/export', [\App\Http\Controllers\Admin\StudentController::class, 'exportCsv'])->name('student.export');
-        Route::post('student/import', [\App\Http\Controllers\Admin\StudentController::class, 'importCsv'])->name('student.import');
-        Route::resource('student', \App\Http\Controllers\Admin\StudentController::class);
-        Route::resource('exam', \App\Http\Controllers\Admin\ExamController::class);
-        Route::resource('question', \App\Http\Controllers\Admin\QuestionController::class);
-        Route::get('admit-card/{id}',[\App\Http\Controllers\Admin\StudentController::class,'admit'])->name('student.admit');
-        Route::get('certificate/{id}',[\App\Http\Controllers\Admin\StudentController::class,'certificate'])->name('certificateStudent');
-        Route::get('without-backgroundcertificate/{id}',[\App\Http\Controllers\Admin\StudentController::class,'certificateWithoutBackground'])->name('certificateWithoutBackground');
-        
-        Route::resource('document-templates', \App\Http\Controllers\Admin\DocumentTemplateController::class);
-        Route::patch('document-templates/{template}/toggle-status', [\App\Http\Controllers\Admin\DocumentTemplateController::class, 'toggleStatus'])->name('document-templates.toggleStatus');
-        Route::get('document-templates/{id}/preview', [\App\Http\Controllers\Admin\DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
-        Route::get('document-templates/{template_id}/generate/{student_id}', [\App\Http\Controllers\Admin\DocumentGenerationController::class, 'generate'])->name('document-templates.generate');
-        Route::post('document-templates/bulk-generate', [\App\Http\Controllers\Admin\DocumentGenerationController::class, 'bulkGenerate'])->name('document-templates.bulk-generate');
-        Route::get('student-registration-form/{id}', [\App\Http\Controllers\Admin\StudentController::class, 'registrationForm'])->name('registrationForm');
+        Route::get('student/export', [StudentController::class, 'exportCsv'])->name('student.export');
+        Route::post('student/import', [StudentController::class, 'importCsv'])->name('student.import');
+        Route::resource('student', StudentController::class);
+        Route::resource('exam', ExamController::class);
+        Route::resource('question', QuestionController::class);
+        Route::get('admit-card/{id}', [StudentController::class, 'admit'])->name('student.admit');
+        Route::get('certificate/{id}', [StudentController::class, 'certificate'])->name('certificateStudent');
+        Route::get('without-backgroundcertificate/{id}', [StudentController::class, 'certificateWithoutBackground'])->name('certificateWithoutBackground');
 
-        Route::resource('result', \App\Http\Controllers\Admin\ResultController::class)->only(['index','create','store','show']);
-        Route::resource('slider', \App\Http\Controllers\Admin\SliderController::class);
-        Route::get('user/portal/{user}', [\App\Http\Controllers\Admin\UserController::class, 'portal'])->name('user.portal');
+        Route::resource('document-templates', DocumentTemplateController::class);
+        Route::patch('document-templates/{template}/toggle-status', [DocumentTemplateController::class, 'toggleStatus'])->name('document-templates.toggleStatus');
+        Route::get('document-templates/{id}/preview', [DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
+        Route::get('document-templates/{template_id}/generate/{student_id}', [DocumentGenerationController::class, 'generate'])->name('document-templates.generate');
+        Route::post('document-templates/bulk-generate', [DocumentGenerationController::class, 'bulkGenerate'])->name('document-templates.bulk-generate');
+        Route::get('student-registration-form/{id}', [StudentController::class, 'registrationForm'])->name('registrationForm');
 
-        Route::resource('center', \App\Http\Controllers\Admin\CenterController::class);
-        Route::patch('center/{center}/status', [\App\Http\Controllers\Admin\CenterController::class, 'updateStatus'])->name('center.updateStatus');
-        Route::resource('notice', \App\Http\Controllers\Admin\NoticeController::class);
-        Route::resource('adminList', \App\Http\Controllers\Admin\AdminListController::class)->only(['edit','update']);
-        Route::resource('configDictionary', \App\Http\Controllers\Admin\ConfigDictionaryController::class)->only(['create','store']);
-        Route::resource('team', \App\Http\Controllers\Admin\TeamController::class);
-        Route::resource('sub-admin', \App\Http\Controllers\Admin\SubadminController::class);
-        Route::resource('upazila-store', \App\Http\Controllers\Admin\UpazilaStoreController::class);
+        Route::resource('result', ResultController::class)->only(['index', 'create', 'store', 'show']);
+        Route::resource('slider', SliderController::class);
+        Route::get('user/portal/{user}', [UserController::class, 'portal'])->name('user.portal');
 
-        Route::get('contactUs', [\App\Http\Controllers\Admin\ContactUsController::class, 'index'])->name('contactUs');
-        Route::patch('contactUs/{id}/mark-read', [\App\Http\Controllers\Admin\ContactUsController::class, 'markAsRead'])->name('contactUs.markAsRead');
-        Route::post('contactUs/{id}/ai-analyze', [\App\Http\Controllers\Admin\ContactUsController::class, 'aiAnalyze'])->name('contactUs.aiAnalyze');
-        Route::delete('contactUs/{id}', [\App\Http\Controllers\Admin\ContactUsController::class, 'destroy'])->name('contactUs.destroy');
-        Route::resource('translation', \App\Http\Controllers\Admin\TranslationController::class);
-        Route::resource('sponsor', \App\Http\Controllers\Admin\SponsorController::class);
-        Route::resource('backup', \App\Http\Controllers\Admin\BackupController::class)->only(['index','update']);
-        Route::resource('whatapp-link', \App\Http\Controllers\Admin\WhatappLinkController::class);
-        Route::resource('youtube-video', \App\Http\Controllers\Admin\YoutubeVideoController::class);
-        Route::resource('license', \App\Http\Controllers\Admin\LicenseController::class);
-        Route::resource('api-settings', \App\Http\Controllers\Admin\ApiSettingController::class)->only(['index', 'store']);
-        Route::resource('footer-link', \App\Http\Controllers\Admin\FooterLinkController::class);
-        Route::resource('footer-logo', \App\Http\Controllers\Admin\FooterPartnerLogoController::class);
+        Route::resource('center', CenterController::class);
+        Route::patch('center/{center}/status', [CenterController::class, 'updateStatus'])->name('center.updateStatus');
+        Route::resource('notice', NoticeController::class);
+        Route::resource('adminList', AdminListController::class)->only(['edit', 'update']);
+        Route::resource('configDictionary', ConfigDictionaryController::class)->only(['create', 'store']);
+        Route::resource('team', TeamController::class);
+        Route::resource('sub-admin', SubadminController::class);
+        Route::resource('upazila-store', UpazilaStoreController::class);
+
+        Route::get('contactUs', [ContactUsController::class, 'index'])->name('contactUs');
+        Route::patch('contactUs/{id}/mark-read', [ContactUsController::class, 'markAsRead'])->name('contactUs.markAsRead');
+        Route::post('contactUs/{id}/ai-analyze', [ContactUsController::class, 'aiAnalyze'])->name('contactUs.aiAnalyze');
+        Route::delete('contactUs/{id}', [ContactUsController::class, 'destroy'])->name('contactUs.destroy');
+        Route::resource('translation', TranslationController::class);
+        Route::resource('sponsor', SponsorController::class);
+        Route::resource('backup', BackupController::class)->only(['index', 'update']);
+        Route::resource('whatapp-link', WhatappLinkController::class);
+        Route::resource('youtube-video', YoutubeVideoController::class);
+        Route::resource('license', LicenseController::class);
+        Route::resource('api-settings', ApiSettingController::class)->only(['index', 'store']);
+        Route::resource('footer-link', FooterLinkController::class);
+        Route::resource('footer-logo', FooterPartnerLogoController::class);
     });
 });

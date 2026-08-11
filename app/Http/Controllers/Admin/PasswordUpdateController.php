@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rules\Password;
 
 class PasswordUpdateController extends Controller
 {
@@ -19,10 +20,10 @@ class PasswordUpdateController extends Controller
     {
         $validated = $request->validate([
             'old_password' => 'required',
-            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()]
+            'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        if (!Hash::check($validated['old_password'], Auth::guard('admin')->user()->password)) {
+        if (! Hash::check($validated['old_password'], Auth::guard('admin')->user()->password)) {
             return response()->error('The old password does not match our records.');
         }
 

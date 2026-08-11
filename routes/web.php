@@ -1,9 +1,24 @@
 <?php
 
+use App\Http\Controllers\CenterRequestController;
+use App\Http\Controllers\CenterTotalResultController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FrontendController;
+use App\Http\Controllers\GeminiOcrController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PasswordUpdateController;
+use App\Http\Controllers\PortalController;
+use App\Http\Controllers\ProfileUpdateController;
+use App\Http\Controllers\ResultController;
+use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentSubmissionController;
+use App\Models\WhatappLink;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Session;
 
 /*
@@ -17,65 +32,64 @@ use Illuminate\Support\Facades\Session;
 |
 */
 
-Route::get('result', \App\Http\Controllers\ResultController::class)
+Route::get('result', ResultController::class)
     ->middleware(['module:toggle_result_verify', 'throttle:results'])
     ->name('result');
 
-
-
-Route::get('/', [HomeController::class,'index'])->name('welcome');
-Route::get('/license-view/{number?}', [HomeController::class,'license'])->name('license.view');
-Route::get('/all-course', [HomeController::class,'all_course'])->name('all_course');
-Route::get('/course-details/{id}', [HomeController::class,'courseDetails'])->name('course.details');
-Route::get('/institute-details/{id}', [HomeController::class,'instituteDetails'])->name('institute.details');
-Route::get('/page/{type}', [HomeController::class,'dynamicPage'])->name('dynamicPage');
-Route::get('/all-notice-list', [HomeController::class,'frontendNoticeList'])
+Route::get('/', [HomeController::class, 'index'])->name('welcome');
+Route::get('/license-view/{number?}', [HomeController::class, 'license'])->name('license.view');
+Route::get('/all-course', [HomeController::class, 'all_course'])->name('all_course');
+Route::get('/course-details/{id}', [HomeController::class, 'courseDetails'])->name('course.details');
+Route::get('/institute-details/{id}', [HomeController::class, 'instituteDetails'])->name('institute.details');
+Route::get('/page/{type}', [HomeController::class, 'dynamicPage'])->name('dynamicPage');
+Route::get('/all-notice-list', [HomeController::class, 'frontendNoticeList'])
     ->middleware('module:toggle_notice_board')
     ->name('frontendNoticeList');
-Route::get('/all-notice-list/{id}', [HomeController::class,'noticeDetails'])
+Route::get('/all-notice-list/{id}', [HomeController::class, 'noticeDetails'])
     ->middleware('module:toggle_notice_board')
     ->name('noticeDetails');
-Route::get('/video-gallery', [HomeController::class,'videoGallery'])
+Route::get('/video-gallery', [HomeController::class, 'videoGallery'])
     ->middleware('module:toggle_video_gallery')
     ->name('video.gallery');
-Route::get('/success-student', [HomeController::class,'successStudent'])
+Route::get('/success-student', [HomeController::class, 'successStudent'])
     ->middleware('module:toggle_success_students')
     ->name('successStudent');
-Route::get('/verified-center', [HomeController::class,'verifiedCenter'])
+Route::get('/verified-center', [HomeController::class, 'verifiedCenter'])
     ->middleware('module:toggle_verified_centers')
     ->name('verifiedCenter');
-Route::get('/verified-institute', [HomeController::class,'verifiedCenter'])
+Route::get('/verified-institute', [HomeController::class, 'verifiedCenter'])
     ->middleware('module:toggle_verified_centers')
     ->name('verifiedInstitute');
 
-Route::match(['get','post'],'/contact-us', [HomeController::class,'contactUs'])
+Route::match(['get', 'post'], '/contact-us', [HomeController::class, 'contactUs'])
     ->middleware(['module:toggle_contact_form', 'throttle:contact'])
     ->name('contactUs');
 
-Route::resource('center-request', \App\Http\Controllers\CenterRequestController::class)
-    ->only(['create','store'])
+Route::resource('center-request', CenterRequestController::class)
+    ->only(['create', 'store'])
     ->middleware(['module:toggle_center_apply', 'throttle:10,1']);
 
-Route::get('/dashboard', \App\Http\Controllers\DashboardController::class)->middleware(['auth'])->name('dashboard');
+Route::get('/dashboard', DashboardController::class)->middleware(['auth'])->name('dashboard');
 
-Route::get('success-student-details/{id}', [\App\Http\Controllers\FrontendController::class,'successStudentDetails'])->middleware('throttle:30,1')->name('successStudentDetails');
-Route::get('student-info/{id}', [\App\Http\Controllers\FrontendController::class,'studentInfo'])->middleware(['auth', 'throttle:30,1'])->name('studentInfo');
+Route::get('success-student-details/{id}', [FrontendController::class, 'successStudentDetails'])->middleware('throttle:30,1')->name('successStudentDetails');
+Route::get('student-info/{id}', [FrontendController::class, 'studentInfo'])->middleware(['auth', 'throttle:30,1'])->name('studentInfo');
 
-Route::middleware(['auth'])->group(function(){
-    Route::resource('student', \App\Http\Controllers\StudentController::class)->middleware('throttle:20,1');
-    Route::resource('student-submission', \App\Http\Controllers\StudentSubmissionController::class)->only(['create','store'])->middleware('throttle:10,1');
-    Route::get('center-student-result', \App\Http\Controllers\CenterTotalResultController::class)->name('centerStudentResult');
+Route::middleware(['auth'])->group(function () {
+    Route::resource('student', StudentController::class)->middleware('throttle:20,1');
+    Route::resource('student-submission', StudentSubmissionController::class)->only(['create', 'store'])->middleware('throttle:10,1');
+    Route::get('center-student-result', CenterTotalResultController::class)->name('centerStudentResult');
 
-    Route::resource('password-update', \App\Http\Controllers\PasswordUpdateController::class)->only(['create','store']);
-    Route::resource('profile-update', \App\Http\Controllers\ProfileUpdateController::class)->only(['create','store']);
+    Route::resource('password-update', PasswordUpdateController::class)->only(['create', 'store']);
+    Route::resource('profile-update', ProfileUpdateController::class)->only(['create', 'store']);
 });
 
-Route::get('portal/{user}', \App\Http\Controllers\PortalController::class)->name('portal');
+Route::get('portal/{user}', PortalController::class)->name('portal');
 
 Route::get('whatapp-link/{phone}', function ($phone) {
-    $data=\App\Models\WhatappLink::where('phone',$phone)->first();
-    return view('frontend.page.whatapplink',[
-        'data'=>$data
+    $data = WhatappLink::where('phone', $phone)->first();
+
+    return view('frontend.page.whatapplink', [
+        'data' => $data,
     ]);
 })->middleware('throttle:10,1')->name('whatapp.link');
 
@@ -85,14 +99,15 @@ Route::get('/lang-change', function (Request $request) {
         Session::put('locale', $locale);
         App::setLocale($locale);
     }
+
     return redirect()->back();
 });
 
 require __DIR__.'/auth.php';
 require __DIR__.'/admin.php';
 require __DIR__.'/student.php';
- 
-Route::post('/gemini/extract-ocr', [\App\Http\Controllers\GeminiOcrController::class, 'extractData'])->middleware(['throttle:10,1', 'auth:admin'])->name('gemini.ocr');
+
+Route::post('/gemini/extract-ocr', [GeminiOcrController::class, 'extractData'])->middleware(['throttle:10,1', 'auth:admin'])->name('gemini.ocr');
 
 Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()]);
@@ -100,11 +115,12 @@ Route::get('/health', function () {
 
 Route::get('/live_deploy', function () {
     try {
-        \Illuminate\Support\Facades\Schema::dropIfExists('semester_results');
-        \Illuminate\Support\Facades\DB::table('migrations')->where('migration', 'like', '%create_semester_results%')->delete();
-        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
-        return 'Deployed successfully: ' . \Illuminate\Support\Facades\Artisan::output();
-    } catch (\Exception $e) {
-        return 'Error: ' . $e->getMessage();
+        Schema::dropIfExists('semester_results');
+        DB::table('migrations')->where('migration', 'like', '%create_semester_results%')->delete();
+        Artisan::call('migrate', ['--force' => true]);
+
+        return 'Deployed successfully: '.Artisan::output();
+    } catch (Exception $e) {
+        return 'Error: '.$e->getMessage();
     }
 });

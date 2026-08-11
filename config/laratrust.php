@@ -1,5 +1,10 @@
 <?php
 
+use App\Models\Admin;
+use App\Models\Permission;
+use App\Models\Role;
+use App\Models\Team;
+
 return [
     /*
     |--------------------------------------------------------------------------
@@ -73,7 +78,7 @@ return [
     |
     */
     'user_models' => [
-        'admins' => \App\Models\Admin::class
+        'admins' => Admin::class,
     ],
 
     /*
@@ -88,14 +93,14 @@ return [
     */
     'models' => [
 
-        'role' => \App\Models\Role::class,
+        'role' => Role::class,
 
-        'permission' => \App\Models\Permission::class,
+        'permission' => Permission::class,
 
         /**
          * Will be used only if the teams functionality is enabled.
          */
-        'team' => \App\Models\Team::class,
+        'team' => Team::class,
     ],
 
     /*
@@ -184,7 +189,7 @@ return [
              */
             'abort' => [
                 'code' => 403,
-                'message' => 'User does not have any of the necessary access rights.'
+                'message' => 'User does not have any of the necessary access rights.',
             ],
 
             /**
@@ -197,10 +202,10 @@ return [
                 'url' => '/admin',
                 'message' => [
                     'key' => 'error',
-                    'content' => ''
-                ]
-            ]
-        ]
+                    'content' => '',
+                ],
+            ],
+        ],
     ],
 
     'teams' => [
@@ -299,7 +304,7 @@ return [
         | These middleware will get attached onto each Laratrust panel route.
         |
         */
-        'middleware' => ['web','auth:admin','role:admin'],
+        'middleware' => ['web', 'auth:admin', 'role:admin'],
 
         /*
         |--------------------------------------------------------------------------
@@ -340,5 +345,5 @@ return [
             // The user won't be able to delete the role.
             'not_deletable' => [],
         ],
-    ]
+    ],
 ];

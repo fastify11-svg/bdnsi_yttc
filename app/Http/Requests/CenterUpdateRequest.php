@@ -7,13 +7,11 @@ use App\Enums\Gender;
 use App\Enums\Religion;
 use App\Lib\Geo;
 use App\Lib\Helper;
-use App\Lib\Image;
 use App\Models\Center;
 use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
-use Illuminate\Validation\Rules\Unique;
 
 class CenterUpdateRequest extends FormRequest
 {
@@ -22,11 +20,10 @@ class CenterUpdateRequest extends FormRequest
         return true;
     }
 
-
     public function rules()
     {
         return [
-            'code' => ['required','string',Rule::unique('centers')->ignore($this->route('center')->id)],
+            'code' => ['required', 'string', Rule::unique('centers')->ignore($this->route('center')->id)],
             'name' => 'required|string',
             'owner_name' => 'required|string',
             'fathers_name' => 'required|string',
@@ -34,9 +31,9 @@ class CenterUpdateRequest extends FormRequest
             'religion' => 'required|numeric|enum_value:'.Religion::class.',false',
             'gender' => 'required|numeric|enum_value:'.Gender::class.',false',
             'nationality' => 'nullable|string',
-            'division' => ['required','numeric',Rule::in(array_keys(Geo::divisions()))],
-            'district' => ['required','numeric',Rule::in(array_keys(Geo::districts()))],
-            'upazilla' => ['required','numeric',Rule::in(array_keys(Geo::upazillas()))],
+            'division' => ['required', 'numeric', Rule::in(array_keys(Geo::divisions()))],
+            'district' => ['required', 'numeric', Rule::in(array_keys(Geo::districts()))],
+            'upazilla' => ['required', 'numeric', Rule::in(array_keys(Geo::upazillas()))],
             'post_office' => 'nullable|string',
             'address' => 'required|string',
             'mobile' => 'required|string|max:11|min:11',
@@ -56,14 +53,15 @@ class CenterUpdateRequest extends FormRequest
 
         $validated['code'] = $validated['code'] ?? random_int(111111, 999999);
 
-        if (User::where('center_id',$center->id)->count() > 0){
-            User::where('center_id',$center->id)->first()->update(['password'=> Hash::make($this->password)]);
+        if (User::where('center_id', $center->id)->count() > 0) {
+            User::where('center_id', $center->id)->first()->update(['password' => Hash::make($this->password)]);
         }
 
-       if ($center->status->is(CenterStatus::Pending())){
-           $message = 'Congratulations!! Dear, Your institute has been approved successfully by YTTC. Your institute Email: ' . $center->email . ' and password: ' . $validated['password'] . '. Please login to your institute portal here: ' . route('login') . '. Thanks for staying with YTTC.';
-             Helper::sendSms($center->mobile,$message);
-       }
+        if ($center->status->is(CenterStatus::Pending())) {
+            $message = 'Congratulations!! Dear, Your institute has been approved successfully by YTTC. Your institute Email: '.$center->email.' and password: '.$validated['password'].'. Please login to your institute portal here: '.route('login').'. Thanks for staying with YTTC.';
+            Helper::sendSms($center->mobile, $message);
+        }
+
         return $center->update($validated);
     }
 }

@@ -2,7 +2,13 @@
 
 namespace App\Http\Middleware;
 
+use App\Mixin\ResponseMixin;
+use App\Models\ContactUs;
+use App\Models\FooterLink;
+use App\Models\FooterPartnerLogo;
+use App\Models\SiteConfig;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -11,6 +17,7 @@ class HandleInertiaRequests extends Middleware
      * The root template that's loaded on the first page visit.
      *
      * @see https://inertiajs.com/server-side-setup#root-template
+     *
      * @var string
      */
     protected $rootView = 'app';
@@ -19,8 +26,6 @@ class HandleInertiaRequests extends Middleware
      * Determines the current asset version.
      *
      * @see https://inertiajs.com/asset-versioning
-     * @param  \Illuminate\Http\Request  $request
-     * @return string|null
      */
     public function version(Request $request): ?string
     {
@@ -31,8 +36,6 @@ class HandleInertiaRequests extends Middleware
      * Defines the props that are shared by default.
      *
      * @see https://inertiajs.com/shared-data
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
      */
     public function share(Request $request): array
     {
@@ -73,23 +76,24 @@ class HandleInertiaRequests extends Middleware
                     'avatar' => $adminUser->avatar ?? null,
                     'roles' => method_exists($adminUser, 'getRoleNames') ? $adminUser->getRoleNames() : [],
                     'permissions' => method_exists($adminUser, 'allPermissions') ? $adminUser->allPermissions()->pluck('name') : [],
-                    'unread_inquiries_count' => \Illuminate\Support\Facades\Cache::remember('unread_inquiries', 60, function() {
-                        return \App\Models\ContactUs::where('is_seen', false)->count();
+                    'unread_inquiries_count' => Cache::remember('unread_inquiries', 60, function () {
+                        return ContactUs::where('is_seen', false)->count();
                     }),
                 ] : null,
             ],
             'flash' => [
-                'success' => fn () => $request->session()->get(\App\Mixin\ResponseMixin::SUCCESS_MESSAGE_SESSION_KEY) ?? $request->session()->get('success'),
-                'error' => fn () => $request->session()->get(\App\Mixin\ResponseMixin::ERROR_MESSAGE_SESSION_KEY) ?? $request->session()->get('error'),
+                'success' => fn () => $request->session()->get(ResponseMixin::SUCCESS_MESSAGE_SESSION_KEY) ?? $request->session()->get('success'),
+                'error' => fn () => $request->session()->get(ResponseMixin::ERROR_MESSAGE_SESSION_KEY) ?? $request->session()->get('error'),
             ],
             'app_url' => url('/'),
             'locale' => app()->getLocale(),
             'site' => [
                 'name' => config('site.setting.name', 'BDNSI'),
-                'notice' => \App\Models\SiteConfig::firstCached()->marquee_notice ?? 'Welcome to BDNSI Portal',
+                'notice' => SiteConfig::firstCached()->marquee_notice ?? 'Welcome to BDNSI Portal',
             ],
             'site_config' => function () {
-                $c = \App\Models\SiteConfig::firstCached();
+                $c = SiteConfig::firstCached();
+
                 return $c ? $c->only([
                     'portal_name', 'tagline', 'header_logo', 'main_logo', 'favicon',
                     'site_phone', 'official_email', 'headquarter_address',
@@ -100,17 +104,17 @@ class HandleInertiaRequests extends Middleware
                     'toggle_sponsors', 'toggle_notice_board', 'toggle_contact_form', 'toggle_whatsapp',
                     'primary_color', 'secondary_color', 'accent_color',
                     'footer_top_bg_image', 'footer_side_bg_image', 'footer_disclaimer_text',
-                    'footer_planning_text', 'footer_tech_support_text'
-                ]) : (object)[];
+                    'footer_planning_text', 'footer_tech_support_text',
+                ]) : (object) [];
             },
             'footer_links' => function () {
-                return \Illuminate\Support\Facades\Cache::remember('footer_links', 3600, function () {
-                    return \App\Models\FooterLink::where('is_active', 1)->orderBy('sort_order', 'asc')->get();
+                return Cache::remember('footer_links', 3600, function () {
+                    return FooterLink::where('is_active', 1)->orderBy('sort_order', 'asc')->get();
                 });
             },
             'footer_logos' => function () {
-                return \Illuminate\Support\Facades\Cache::remember('footer_logos', 3600, function () {
-                    return \App\Models\FooterPartnerLogo::where('is_active', 1)->get();
+                return Cache::remember('footer_logos', 3600, function () {
+                    return FooterPartnerLogo::where('is_active', 1)->get();
                 });
             },
         ]);

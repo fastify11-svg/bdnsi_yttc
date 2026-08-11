@@ -7,6 +7,7 @@ const ERRORMESSAGE = 'Something went wrong';
 class ResponseMixin
 {
     public const SUCCESS_MESSAGE_SESSION_KEY = 'success_message';
+
     public const ERROR_MESSAGE_SESSION_KEY = 'error_message';
 
     public static function report(): callable

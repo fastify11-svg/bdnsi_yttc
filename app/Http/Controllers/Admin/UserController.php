@@ -13,32 +13,34 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Validation\Rule;
+use Inertia\Inertia;
 
 class UserController extends Controller
 {
     use ChecksPermission;
+
     protected $permissionPrefix = 'user';
+
     protected $mapExtraActionPermission = [
-        'portal' => 'user-update'
+        'portal' => 'user-update',
     ];
 
     public function index(Request $request)
     {
-        if ($request->ajax() && !$request->header('X-Inertia')) {
+        if ($request->ajax() && ! $request->header('X-Inertia')) {
             return datatables(User::query())->toJson();
         }
         $users = User::latest()->paginate(25);
-        return \Inertia\Inertia::render('Admin/User/Index', compact('users'));
-    }
 
+        return Inertia::render('Admin/User/Index', compact('users'));
+    }
 
     public function create()
     {
         return view('admin.user.create', [
-            'centers' => Center::select(['id', 'name'])->whereStatus(CenterStatus::Approved)->get()
+            'centers' => Center::select(['id', 'name'])->whereStatus(CenterStatus::Approved)->get(),
         ]);
     }
-
 
     public function store(Request $request)
     {
@@ -51,12 +53,10 @@ class UserController extends Controller
             'center_id' => 'required|exists:centers,id',
         ]);
 
-
         $validated['password'] = Hash::make($validated['password']);
 
         return response()->report(User::create($validated), 'User created successfully');
     }
-
 
     public function show(User $user)
     {
@@ -67,7 +67,7 @@ class UserController extends Controller
     {
         return view('admin.user.edit', [
             'user' => $user,
-            'centers' => Center::select(['id', 'name'])->whereStatus(CenterStatus::Approved)->get()
+            'centers' => Center::select(['id', 'name'])->whereStatus(CenterStatus::Approved)->get(),
         ]);
     }
 
@@ -101,15 +101,16 @@ class UserController extends Controller
 
     public function portal(User $user)
     {
-        abort_if(!Auth::user()->isA('admin'), 403);
+        abort_if(! Auth::user()->isA('admin'), 403);
         $cid = uniqid();
         Cache::put($cid, [
             'user_id' => $user->id,
-            'ip' => \request()->ip()
+            'ip' => \request()->ip(),
         ], 60);
         $url = URL::temporarySignedRoute(
             'portal', now()->addMinute(), ['user' => $user->id, 'cid' => $cid]
         );
+
         return <<<HTML
 <body style="padding: 2rem;">
 Open <a href="$url" target="_blank">$url</a> in incognito window.

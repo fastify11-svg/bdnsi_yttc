@@ -13,12 +13,14 @@ use BenSampo\Enum\Enum;
 final class StudentStatus extends Enum
 {
     const Pending = 0;
+
     const Requested = 1;
+
     const Approved = 2;
+
     const Hide = 3;
 
-
-    public  static  function getStatus()
+    public static function getStatus()
     {
         return [
             'Pending' => 0,
@@ -27,6 +29,4 @@ final class StudentStatus extends Enum
             'Hide' => 3,
         ];
     }
-
-
 }

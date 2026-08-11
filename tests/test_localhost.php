@@ -1,7 +1,12 @@
 <?php
-require __DIR__ . '/../vendor/autoload.php';
-$app = require_once __DIR__ . '/../bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+
+use App\Http\Controllers\Admin\SubjectController;
+use Illuminate\Contracts\Console\Kernel;
+use Illuminate\Http\Request;
+
+require __DIR__.'/../vendor/autoload.php';
+$app = require_once __DIR__.'/../bootstrap/app.php';
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
 echo "==================================================\n";
@@ -20,7 +25,7 @@ foreach ($urls as $url => $name) {
     if ($headers && strpos($headers[0], '200') !== false) {
         echo "✔️ OK (HTTP 200)\n";
     } else {
-        echo "❌ FAILED (" . ($headers[0] ?? 'No Response') . ")\n";
+        echo '❌ FAILED ('.($headers[0] ?? 'No Response').")\n";
     }
 }
 
@@ -41,12 +46,12 @@ $testCases = [
     'General Vocational Skill Training' => 'BDNSI-VOC',
 ];
 
-$controller = new \App\Http\Controllers\Admin\SubjectController();
+$controller = new SubjectController;
 $passed = 0;
 $total = count($testCases);
 
 foreach ($testCases as $courseName => $expectedCode) {
-    $request = \Illuminate\Http\Request::create(
+    $request = Request::create(
         '/admin/subject/ai-suggest',
         'POST',
         ['name' => $courseName],
@@ -61,7 +66,7 @@ foreach ($testCases as $courseName => $expectedCode) {
     if ($data && isset($data['success']) && $data['success']) {
         $actualCode = $data['data']['code'];
         if ($actualCode === $expectedCode || ($expectedCode === 'BDNSI-VOC' && strpos($actualCode, 'BDNSI') === 0)) {
-            echo "✔️ [PASS] \"{$courseName}\" -> Code: {$actualCode} | Fee: ৳" . $data['data']['rate'] . "\n";
+            echo "✔️ [PASS] \"{$courseName}\" -> Code: {$actualCode} | Fee: ৳".$data['data']['rate']."\n";
             $passed++;
         } else {
             echo "❌ [FAIL] \"{$courseName}\" -> Expected: {$expectedCode}, Got: {$actualCode}\n";

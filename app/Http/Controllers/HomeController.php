@@ -5,22 +5,20 @@ namespace App\Http\Controllers;
 use App\Enums\CenterStatus;
 use App\Enums\StudentStatus;
 use App\Models\Center;
-use App\Models\SiteConfig;
 use App\Models\ContactUs;
-use App\Models\Exam;
 use App\Models\License;
 use App\Models\Notice;
-use App\Models\Slider;
+use App\Models\SiteConfig;
 use App\Models\Student;
 use App\Models\Subject;
-use App\Models\Team;
 use App\Models\YoutubeVideo;
+use App\Services\FrontendDataService;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class HomeController extends Controller
 {
-    public function index(\App\Services\FrontendDataService $frontendDataService)
+    public function index(FrontendDataService $frontendDataService)
     {
         return Inertia::render('Welcome', $frontendDataService->getHomepageData());
     }
@@ -29,20 +27,20 @@ class HomeController extends Controller
     {
         $query = Center::where('status', CenterStatus::Approved);
         if ($request->search) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('code', 'LIKE', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('code', 'LIKE', '%'.$request->search.'%');
             });
         }
         $centers = $query->latest()->paginate(18);
 
-        if ($centers->isEmpty() && !$request->search) {
+        if ($centers->isEmpty() && ! $request->search) {
             $centers = Center::latest()->paginate(18);
         }
 
         return Inertia::render('VerifiedCenter', [
             'centers' => $centers,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search']),
         ]);
     }
 
@@ -50,30 +48,30 @@ class HomeController extends Controller
     {
         $query = Student::where('status', StudentStatus::Approved);
         if ($request->search) {
-            $query->where(function($q) use ($request) {
-                $q->where('name', 'LIKE', '%' . $request->search . '%')
-                  ->orWhere('roll', 'LIKE', '%' . $request->search . '%');
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'LIKE', '%'.$request->search.'%')
+                    ->orWhere('roll', 'LIKE', '%'.$request->search.'%');
             });
         }
         $students = $query->latest()->paginate(24);
 
-        if ($students->isEmpty() && !$request->search) {
+        if ($students->isEmpty() && ! $request->search) {
             $students = Student::latest()->paginate(24);
         }
 
         return Inertia::render('SuccessStudent', [
             'students' => $students,
-            'filters' => $request->only(['search'])
+            'filters' => $request->only(['search']),
         ]);
     }
 
     public function all_course(Request $request)
     {
         $courses = Subject::when($request->course_name, function ($q) use ($request) {
-            return $q->where(function($sub) use ($request) {
-                $sub->where('name', 'LIKE', '%' . $request->course_name . '%')
-                    ->orWhere('code', 'LIKE', '%' . $request->course_name . '%')
-                    ->orWhere('education_qualification', 'LIKE', '%' . $request->course_name . '%');
+            return $q->where(function ($sub) use ($request) {
+                $sub->where('name', 'LIKE', '%'.$request->course_name.'%')
+                    ->orWhere('code', 'LIKE', '%'.$request->course_name.'%')
+                    ->orWhere('education_qualification', 'LIKE', '%'.$request->course_name.'%');
             });
         })->latest()->paginate(40)->withQueryString();
 
@@ -95,7 +93,7 @@ class HomeController extends Controller
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'],
-                'message' => ($validated['subject'] ? '[Subject: ' . $validated['subject'] . '] ' : '') . $validated['message'],
+                'message' => ($validated['subject'] ? '[Subject: '.$validated['subject'].'] ' : '').$validated['message'],
             ]);
 
             return redirect()->back()->with('success', 'Thank you! Your message has been sent successfully. We will get back to you soon.');
@@ -108,29 +106,30 @@ class HomeController extends Controller
     {
         $content = '';
         $title = '';
-        
+
         if ($type === 'terms') {
             $title = 'Terms & Conditions';
-            $content = \App\Models\SiteConfig::firstCached()->terms_conditions ?? '';
+            $content = SiteConfig::firstCached()->terms_conditions ?? '';
         } elseif ($type === 'privacy') {
             $title = 'Privacy Policy';
-            $content = \App\Models\SiteConfig::firstCached()->privacy_policy ?? '';
+            $content = SiteConfig::firstCached()->privacy_policy ?? '';
         } elseif ($type === 'about') {
             $title = 'About Us';
-            $content = \App\Models\SiteConfig::firstCached()->about_full ?? '';
+            $content = SiteConfig::firstCached()->about_full ?? '';
         } else {
             abort(404);
         }
-        
+
         return Inertia::render('DynamicPage', [
             'title' => $title,
-            'content' => $content
+            'content' => $content,
         ]);
     }
 
     public function frontendNoticeList()
     {
         $notices = Notice::latest()->paginate(15);
+
         return Inertia::render('NoticeList', compact('notices'));
     }
 
@@ -138,30 +137,35 @@ class HomeController extends Controller
     {
         $course = Subject::findOrFail($id);
         $related_courses = Subject::where('id', '!=', $id)->latest()->limit(20)->get()->shuffle()->take(4);
+
         return Inertia::render('CourseDetails', compact('course', 'related_courses'));
     }
 
     public function instituteDetails($id)
     {
         $institute = Center::findOrFail($id);
+
         return Inertia::render('InstituteDetails', compact('institute'));
     }
 
     public function noticeDetails($id)
     {
         $notice = Notice::findOrFail($id);
+
         return Inertia::render('NoticeDetails', compact('notice'));
     }
 
     public function license($number = null)
     {
         $data = License::where('license_number', $number)->first();
+
         return Inertia::render('LicenseView', ['data' => $data]);
     }
 
     public function videoGallery()
     {
         $videos = YoutubeVideo::where('status', 1)->latest()->paginate(12);
+
         return Inertia::render('VideoGallery', compact('videos'));
     }
 }
