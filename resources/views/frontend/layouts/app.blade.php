@@ -22,7 +22,15 @@
     <meta name="msapplication-TileImage" content="{{ asset('frontend/logo.jpg')}}?v=423" />
     <meta name="google-site-verification" content="Z0nEijotHP7ZORKAfkTDJrSIefDv4G3NB5gaq9wngsE" />
     <meta name="description" content="{{config('site.setting.name')}} offers quality education in Bangladesh with modern methods, expert teachers, & diverse programs. Join now to shape your future!">
-
+    <meta property="og:title" content="{{config('site.setting.name')}}" />
+    <meta property="og:description" content="{{config('site.setting.name')}} offers quality education in Bangladesh with modern methods, expert teachers, & diverse programs. Join now to shape your future!" />
+    <meta property="og:image" content="{{\App\Lib\Image::url(\App\Models\ConfigDictionary::get('fav_icon'))??asset('images/student/logo.png')}}" />
+    <meta property="og:url" content="{{url()->current()}}" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{config('site.setting.name')}}" />
+    <meta name="twitter:description" content="{{config('site.setting.name')}} offers quality education in Bangladesh with modern methods, expert teachers, & diverse programs. Join now to shape your future!" />
+    <meta name="twitter:image" content="{{\App\Lib\Image::url(\App\Models\ConfigDictionary::get('fav_icon'))??asset('images/student/logo.png')}}" />
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-J104V2KMHD"></script>
     <script>
         window.dataLayer = window.dataLayer || [];

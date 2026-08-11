@@ -11,6 +11,16 @@
         $favIcon = $siteConfig?->favicon ? asset($siteConfig->favicon) : asset('favicon.ico');
     @endphp
     <title>{{ $siteName }}</title>
+    <meta name="description" content="{{ $siteName }} offers quality education in Bangladesh with modern methods, expert teachers, & diverse programs. Join now to shape your future!">
+    <meta property="og:title" content="{{ $siteName }}" />
+    <meta property="og:description" content="{{ $siteName }} offers quality education in Bangladesh with modern methods, expert teachers, & diverse programs. Join now to shape your future!" />
+    <meta property="og:image" content="{{ $favIcon }}" />
+    <meta property="og:url" content="{{ url()->current() }}" />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="{{ $siteName }}" />
+    <meta name="twitter:description" content="{{ $siteName }} offers quality education in Bangladesh with modern methods, expert teachers, & diverse programs. Join now to shape your future!" />
+    <meta name="twitter:image" content="{{ $favIcon }}" />
     <link rel="icon" type="image/x-icon" href="{{ $favIcon }}">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;600;700&display=swap"/>
     <!-- Application Styles & Scripts -->
