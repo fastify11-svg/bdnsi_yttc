@@ -5,7 +5,7 @@ const baseURL = 'https://nenobet.live';
 test.describe('Image loading and layout checks on live', () => {
 
   test('Check homepage images', async ({ page }) => {
-    const response = await page.goto(baseURL + '/');
+    const response = await page.goto('./');
     expect(response.status()).toBe(200);
 
     await page.waitForLoadState('networkidle');
@@ -21,7 +21,7 @@ test.describe('Image loading and layout checks on live', () => {
   });
 
   test('Check login page images', async ({ page }) => {
-    const response = await page.goto(baseURL + '/admin/login');
+    const response = await page.goto('./admin/login');
     expect(response.status()).toBe(200);
 
     await page.waitForLoadState('networkidle');
