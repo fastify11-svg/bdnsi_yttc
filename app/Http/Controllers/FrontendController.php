@@ -52,14 +52,14 @@ class FrontendController extends Controller
 
     public function successStudentDetails($id)
     {
-        $data = Student::hide()->whereHas('result')->where('status', StudentStatus::Approved)->findOrFail($id);
+        $data = Student::hide()->with(['center', 'subject', 'session'])->whereHas('result')->where('status', StudentStatus::Approved)->findOrFail($id);
 
         return view('page.successStudentDetails', compact('data'));
     }
 
     public function studentInfo($id)
     {
-        $data = Student::hide()->where('status', StudentStatus::Approved)->findOrFail($id);
+        $data = Student::hide()->with(['center', 'subject', 'session'])->where('status', StudentStatus::Approved)->findOrFail($id);
 
         return view('page.studentInfo', compact('data'));
     }
