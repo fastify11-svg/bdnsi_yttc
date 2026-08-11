@@ -37,7 +37,7 @@ jobs:
         run: php artisan key:generate
 
       - name: Run Database Migrations & Seeding
-        run: php artisan migrate:fresh --seed --force -vvv
+        run: php artisan migrate:fresh --seed --force -vvv > setup.log 2>&1 || (cat setup.log && exit 1)
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -62,7 +62,7 @@ jobs:
         run: wait-on http://127.0.0.1:8000 -t 30000
 
       - name: Run Playwright Tests
-        run: npx playwright test
+        run: npx playwright test > playwright-output.log 2>&1 || (cat playwright-output.log && exit 1)
         env:
           APP_URL: http://127.0.0.1:8000
           ADMIN_EMAIL: admin@gmail.com
@@ -91,3 +91,13 @@ jobs:
           name: playwright-report
           path: playwright-report/
           retention-days: 7
+
+      - name: Self-Healing Protocol (AI Auto-Fix)
+        if: failure()
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          echo "Test or build failed! Waking up AI Bot to fix the code..."
+          cd scripts
+          npm install
+          node self_heal.js

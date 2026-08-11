@@ -1,0 +1,11 @@
+{
+  "name": "bdnsi-self-heal-bot",
+  "version": "1.0.0",
+  "description": "Autonomous AI Bot for GitHub Actions",
+  "main": "self_heal.js",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.2.1",
+    "axios": "^1.6.2"
+  }
+}
