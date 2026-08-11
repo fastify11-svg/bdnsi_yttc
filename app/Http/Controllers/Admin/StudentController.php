@@ -32,7 +32,7 @@ use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class StudentController extends Controller
 {
-    private function renderDynamicTemplate($type, $student, $fallbackView)
+    private function renderDynamicTemplate(string $type, Student $student, string $fallbackView)
     {
         $template = DocumentTemplate::where('type', $type)->where('status', 1)->first();
         if ($template) {
@@ -67,7 +67,7 @@ class StudentController extends Controller
                 } elseif ($field->variable_key == 'cgpa') {
                     $val = $student->t_written_gpa() ? number_format($student->t_written_gpa(), 2) : '';
                 } elseif ($field->variable_key == 'grade') {
-                    $val = Helper::getGrade($student->t_written_gpa());
+                    $val = $student->t_written();
                 } elseif ($field->variable_key == 'student_phone') {
                     $val = $student->phone;
                 } elseif ($field->variable_key == 'student_image') {
@@ -91,14 +91,14 @@ class StudentController extends Controller
 
     protected $skipActions = ['admit', 'certificate', 'certificateWithoutBackground'];
 
-    public function admit($id)
+    public function admit(int $id)
     {
         $student = Student::where('id', $id)->firstOrFail();
 
         return $this->renderDynamicTemplate('admit_card', $student, 'admin.student.admitCard');
     }
 
-    public function certificate(Request $request, $id)
+    public function certificate(Request $request, int $id)
     {
         $student = Student::where('id', $id)->firstOrFail();
         if ($request->original == 'original') {
@@ -108,7 +108,7 @@ class StudentController extends Controller
         return $this->renderDynamicTemplate('certificate', $student, 'admin.student.certificate2');
     }
 
-    public function certificateWithoutBackground($id)
+    public function certificateWithoutBackground(int $id)
     {
         $student = Student::where('id', $id)->firstOrFail();
 
@@ -185,7 +185,7 @@ class StudentController extends Controller
             $query->where('course_type', $request->course_type);
         }
 
-        $students = $query->latest()->paginate(25)->withQueryString();
+        $students = $query->latest()->paginate(25)->appends($request->query());
 
         $centers = Center::select(['id', 'code', 'name'])->whereStatus(CenterStatus::Approved)->get();
         if ($centers->isEmpty()) {
@@ -380,8 +380,8 @@ class StudentController extends Controller
                     'result_publised' => $resultPublished,
                     'due_amount' => 0,
                     'paid_amount' => 0,
-                    'religion' => Religion::Islam,
-                    'blood_group' => BloodGroup::APositive,
+                    'religion' => Religion::Muslim,
+                    'blood_group' => BloodGroup::A_Positive,
                     'present_address' => 'N/A',
                     'permanent_address' => 'N/A',
                     'qualification' => 'SSC',
