@@ -1,9 +1,11 @@
 <?php
+
 require 'vendor/autoload.php';
 $app = require_once 'bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 
 $file = 'C:\Users\Naeem\Downloads\yttccomb_application.sql';
@@ -29,9 +31,9 @@ foreach ($matches[0] as $query) {
         $count++;
         // Approximate count of tuples
         $totalCourses += substr_count($query, '),(') + 1;
-    } catch (\Exception $e) {
+    } catch (Exception $e) {
         echo "Error on query: \n";
-        echo $e->getMessage() . "\n";
+        echo $e->getMessage()."\n";
     }
 }
 

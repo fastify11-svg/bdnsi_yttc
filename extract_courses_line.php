@@ -1,15 +1,17 @@
 <?php
+
 require 'vendor/autoload.php';
 $app = require_once 'bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 
 $file = 'C:\Users\Naeem\Downloads\yttccomb_application.sql';
-$handle = fopen($file, "r");
+$handle = fopen($file, 'r');
 
-if (!$handle) {
+if (! $handle) {
     echo "Error opening file\n";
     exit;
 }
@@ -18,26 +20,26 @@ DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 DB::table('subjects')->truncate();
 
 $inInsert = false;
-$currentQuery = "";
+$currentQuery = '';
 $count = 0;
 
 while (($line = fgets($handle)) !== false) {
-    if (strpos($line, "INSERT INTO `subjects`") === 0) {
+    if (strpos($line, 'INSERT INTO `subjects`') === 0) {
         $inInsert = true;
         $currentQuery = $line;
     } elseif ($inInsert) {
         $currentQuery .= $line;
-        if (trim($line) === "" || substr(rtrim($line), -1) === ';') {
+        if (trim($line) === '' || substr(rtrim($line), -1) === ';') {
             // End of query
             try {
                 DB::statement($currentQuery);
                 $count++;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 echo "Error on query $count\n";
                 // echo $e->getMessage() . "\n";
             }
             $inInsert = false;
-            $currentQuery = "";
+            $currentQuery = '';
         }
     }
 }

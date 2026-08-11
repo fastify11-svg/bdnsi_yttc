@@ -1,15 +1,17 @@
 <?php
+
 require 'vendor/autoload.php';
 $app = require_once 'bootstrap/app.php';
-$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel = $app->make(Kernel::class);
 $kernel->bootstrap();
 
+use Illuminate\Contracts\Console\Kernel;
 use Illuminate\Support\Facades\DB;
 
 $file = 'C:\Users\Naeem\Downloads\yttccomb_application.sql';
 $contents = file_get_contents($file);
 
-preg_match_all("/INSERT INTO `subjects`.*?;/is", $contents, $matches);
+preg_match_all('/INSERT INTO `subjects`.*?;/is', $contents, $matches);
 
 if (empty($matches[0])) {
     echo "No inserts found for subjects.\n";
@@ -24,9 +26,9 @@ foreach ($matches[0] as $query) {
     try {
         DB::statement($query);
         $count++;
-    } catch (\Exception $e) {
-        echo "Error on query: " . substr($query, 0, 100) . "...\n";
-        echo $e->getMessage() . "\n";
+    } catch (Exception $e) {
+        echo 'Error on query: '.substr($query, 0, 100)."...\n";
+        echo $e->getMessage()."\n";
     }
 }
 

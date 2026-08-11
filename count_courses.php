@@ -1,8 +1,9 @@
 <?php
+
 $file = 'C:\Users\Naeem\Downloads\yttccomb_application.sql';
 $contents = file_get_contents($file);
 
-preg_match_all("/INSERT INTO `subjects`.*?;/is", $contents, $matches);
+preg_match_all('/INSERT INTO `subjects`.*?;/is', $contents, $matches);
 
 $totalCourses = 0;
 foreach ($matches[0] as $query) {
@@ -11,4 +12,4 @@ foreach ($matches[0] as $query) {
     $tuples = substr_count($query, '),(') + 1;
     $totalCourses += $tuples;
 }
-echo "Total course tuples found: " . $totalCourses . "\n";
+echo 'Total course tuples found: '.$totalCourses."\n";

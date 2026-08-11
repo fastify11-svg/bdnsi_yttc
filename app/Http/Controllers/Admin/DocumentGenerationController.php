@@ -39,7 +39,7 @@ class DocumentGenerationController extends Controller
         ]);
 
         $template = DocumentTemplate::with('fields')->findOrFail($request->template_id);
-        $students = Student::whereIn('id', $request->student_ids)->get();
+        $students = Student::with(['center', 'session', 'subject'])->whereIn('id', $request->student_ids)->get();
 
         $documents = [];
 

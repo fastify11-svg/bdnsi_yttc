@@ -260,7 +260,7 @@ class StudentController extends Controller
             $query->where('course_type', $request->course_type);
         }
 
-        $students = $query->get();
+        $students = $query->with(['center', 'session', 'subject'])->get();
 
         $filename = 'students_'.date('Y_m_d_His').'.csv';
         $headers = [
