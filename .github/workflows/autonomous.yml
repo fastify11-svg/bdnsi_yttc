@@ -29,6 +29,7 @@ jobs:
           sed -i 's/DB_DATABASE=.*/DB_DATABASE=/' .env
           sed -i 's/APP_DEBUG=.*/APP_DEBUG=true/' .env
           sed -i 's/APP_ENV=.*/APP_ENV=testing/' .env
+          sed -i 's/CACHE_DRIVER=.*/CACHE_DRIVER=file/' .env
 
       - name: Install Composer Dependencies
         run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist

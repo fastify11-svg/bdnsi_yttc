@@ -14,7 +14,9 @@ class RemoveTextPasswordFromUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('text_password');
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->dropColumn('text_password');
+            }
         });
     }
 
@@ -26,7 +28,9 @@ class RemoveTextPasswordFromUsersTable extends Migration
     public function down()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('text_password')->nullable();
+            if (!Schema::hasColumn('users', 'text_password')) {
+                $table->string('text_password')->nullable();
+            }
         });
     }
 }

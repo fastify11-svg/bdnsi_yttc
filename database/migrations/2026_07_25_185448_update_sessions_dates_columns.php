@@ -14,7 +14,9 @@ class UpdateSessionsDatesColumns extends Migration
     public function up()
     {
         Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn(['start_date', 'end_date', 'duration']);
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->dropColumn(['start_date', 'end_date', 'duration']);
+            }
             $table->date('exam_date')->nullable();
             $table->date('result_published_date')->nullable();
         });
@@ -28,7 +30,9 @@ class UpdateSessionsDatesColumns extends Migration
     public function down()
     {
         Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn(['exam_date', 'result_published_date']);
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->dropColumn(['exam_date', 'result_published_date']);
+            }
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
             $table->unsignedTinyInteger('duration')->nullable();

@@ -13,6 +13,10 @@ class AddCascadeForeignKeysToLegacyTables extends Migration
      */
     public function up()
     {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('students', function (Blueprint $table) {
             $table->dropForeign(['center_id']);
             $table->foreign('center_id')->references('id')->on('centers')->onDelete('cascade');
@@ -31,6 +35,10 @@ class AddCascadeForeignKeysToLegacyTables extends Migration
      */
     public function down()
     {
+        if (Schema::getConnection()->getDriverName() === 'sqlite') {
+            return;
+        }
+
         Schema::table('students', function (Blueprint $table) {
             $table->dropForeign(['center_id']);
             $table->foreign('center_id')->references('id')->on('centers');

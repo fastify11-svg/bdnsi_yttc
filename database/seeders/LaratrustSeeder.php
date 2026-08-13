@@ -91,7 +91,9 @@ class LaratrustSeeder extends Seeder
         DB::table('permission_role')->delete();
         DB::table('permission_user')->delete();
         // DB::table('role_user')->delete();
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        if (Schema::getConnection()->getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        }
         if (config('laratrust_seeder.truncate_tables')) {
             DB::table('roles')->delete();
             DB::table('permissions')->delete();

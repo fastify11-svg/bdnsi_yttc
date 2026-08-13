@@ -14,7 +14,9 @@ class AddDurationToSessionsTable extends Migration
     public function up()
     {
         Schema::table('sessions', function (Blueprint $table) {
-            $table->unsignedInteger('duration')->nullable()->after('name');
+            if (!Schema::hasColumn('sessions', 'duration')) {
+                $table->unsignedInteger('duration')->nullable()->after('name');
+            }
         });
     }
 
@@ -26,7 +28,9 @@ class AddDurationToSessionsTable extends Migration
     public function down()
     {
         Schema::table('sessions', function (Blueprint $table) {
-            $table->dropColumn('duration');
+            if (Schema::getConnection()->getDriverName() !== 'sqlite') {
+                $table->dropColumn('duration');
+            }
         });
     }
 }
