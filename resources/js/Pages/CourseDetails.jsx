@@ -306,7 +306,7 @@ export default function CourseDetails({ course, related_courses = [] }) {
                             </span>
                             <div className="text-3xl md:text-4xl font-black text-gray-900 tracking-tight">
                                 {course.rate || course.course_fee ? (
-                                    <span className="text-[#7024A8]">৳ {course.rate || course.course_fee}</span>
+                                    <span className="text-[#7024A8]"><i className="fa-solid fa-bangladeshi-taka-sign"></i> {course.rate || course.course_fee}</span>
                                 ) : (
                                     <span className="text-emerald-600 text-2xl">Contact for Fee</span>
                                 )}
@@ -429,7 +429,7 @@ export default function CourseDetails({ course, related_courses = [] }) {
                                             <i className="fa-regular fa-clock text-[#7024A8]"></i> {rel.duration || '3 Months'}
                                         </span>
                                         <span className="font-extrabold text-[#7024A8] text-sm">
-                                            {rel.rate ? `৳ ${rel.rate}` : 'Fee Available'}
+                                            {rel.rate ? <><i className="fa-solid fa-bangladeshi-taka-sign"></i> {rel.rate}</> : 'Fee Available'}
                                         </span>
                                     </div>
                                 </div>

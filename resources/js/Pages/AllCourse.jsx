@@ -110,7 +110,7 @@ export default function AllCourse({ courses }) {
                                         {(course.rate || course.course_fee) && (
                                             <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-1 rounded border border-emerald-100 flex items-center gap-1 truncate max-w-full">
                                                 <i className="fa-solid fa-tag shrink-0"></i> 
-                                                <span className="truncate">৳{course.rate || course.course_fee}</span>
+                                                <span className="truncate"><i className="fa-solid fa-bangladeshi-taka-sign text-emerald-700"></i> {course.rate || course.course_fee}</span>
                                             </span>
                                         )}
                                     </div>
