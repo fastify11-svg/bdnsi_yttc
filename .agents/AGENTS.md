@@ -190,7 +190,7 @@ Launch these simultaneously using multiple tool calls:
 
 When creating multiple independent files, call all write tools simultaneously:
 
-```
+```text
 [write Controller] + [write Model] + [write React page] ← all at once
 ```
 
