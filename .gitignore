@@ -85,12 +85,31 @@ update_sessions.php
 # Build artifacts - should NOT be in git
 # public/build/
 
-# Playwright
 test-results/
 playwright-report/
 deploy.tar.gz
+deploy2.tar.gz
+deploy3.tar.gz
 vendor.zip
 vendor.tar.gz
 zip_vendor.js
 zip.php
-storage_public.zip  
+storage_public.zip
+update.zip
+public_build.zip
+
+# Large log files
+lh.log
+laravel.log
+lt.log
+lt_out.log
+pinggy.log
+
+# Local setup script (PC-specific)
+# setup_antigravity.ps1  <-- keep this tracked for reference
+
+# Ensure .agents/ config IS tracked (do NOT ignore)
+# .agents/ is intentionally tracked for IDE rules
+
+# Scratch files
+scratch/
