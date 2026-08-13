@@ -46,7 +46,7 @@ git add -A && git commit -m "message" && git push origin main
 
 ---
 
-## Autonomous Development Guidelines (v4.0)
+## Agentic Workflow Rules (v4.0)
 
 ### 1. No External Editor
 
@@ -116,19 +116,157 @@ After code changes:
 
 ---
 
+## Multi-Step Planning Mode (MANDATORY)
+
+### When to Create an Implementation Plan
+
+ALWAYS create `implementation_plan.md` artifact BEFORE writing code when:
+
+- Feature touches **3 or more files**
+- Feature requires a **database migration**
+- Feature is a **new page or module**
+- Request involves **API design**
+- Task is **ambiguous or underspecified**
+- Task may have **breaking changes**
+
+### When to Skip Planning (Simple Tasks)
+
+Skip planning for:
+
+- Single-file bug fixes
+- CSS/style tweaks
+- Adding a single route
+- Log inspection or cache clearing
+- Config value changes
+
+### Planning Template
+
+```text
+## Goal
+[What this accomplishes]
+
+## Affected Files
+- [NEW] path/to/new/file.php
+- [MODIFY] path/to/existing/file.jsx
+- [DELETE] path/to/removed/file.php
+
+## DB Changes
+- Migration: create_xxx_table
+- Columns: id, name, ...
+
+## API/Routes
+- GET /route → Controller@method
+
+## Verification
+- Playwright test: tests/e2e/xxx.spec.js
+- Manual check: [describe]
+```
+
+---
+
+## Parallel Execution Strategy
+
+### Tasks That CAN Run in Parallel
+
+Launch these simultaneously using multiple tool calls:
+
+| Parallel Group | Tasks |
+| --- | --- |
+| **Dev Servers** | `php artisan serve` + `npm run dev` |
+| **File Creation** | Migration + React Component + Playwright test stub |
+| **Research** | Read multiple files simultaneously |
+| **Verification** | Screenshot + run tests + check logs |
+
+### Tasks That MUST Run Sequentially
+
+```text
+1. Migration → Model → Controller → Route
+2. Backend complete → Frontend integration
+3. Code written → Tests run → Tests pass → Git push
+4. Git push → GitHub Actions → Deploy → Verify live
+```
+
+### Parallel Tool Call Pattern
+
+When creating multiple independent files, call all write tools simultaneously:
+
+```
+[write Controller] + [write Model] + [write React page] ← all at once
+```
+
+---
+
+## Verification Gates (Strict)
+
+### Gate 1 — Before Any Code Change
+
+- Read the file first (`view_file`)
+- Understand the current state
+- Plan the minimal change
+
+### Gate 2 — After Terminal Command
+
+- Check exit code (0 = success)
+- Read first 20 lines of output
+- If error → self-heal immediately (do not stop)
+
+### Gate 3 — After Feature Complete
+
+- Run `npx playwright test`
+- All tests must pass
+- No exceptions
+
+### Gate 4 — Before Deployment
+
+- Gate 3 must pass
+- `npm run build` must succeed
+- `git status` must be clean (or staged intentionally)
+
+### Gate 5 — After Deployment
+
+- Navigate to live URL via Chrome DevTools MCP
+- Take screenshot as proof
+- Verify no console errors
+
+---
+
+## Active Skills (Auto-loaded)
+
+| Skill | Trigger |
+| --- | --- |
+| `bdnsi-deploy` | "deploy", "push to live", "go live" |
+| `bdnsi-debug` | "500 error", "not working", "fix bug", "broken" |
+| `bdnsi-feature` | "build", "add feature", "new page", "implement" |
+
+---
+
 ## Project Architecture
 
 ```text
 D:\BDNSI/
-├── app/              # Laravel PHP (Models, Controllers, Middleware)
-├── resources/        # React components, Blade views, CSS
-├── routes/           # web.php, api.php
-├── database/         # Migrations, Seeders, Factories
-├── public/           # Public assets, compiled JS/CSS
-├── .github/workflows/ # CI/CD (autonomous.yml)
-├── .agents/          # Antigravity IDE config (AGENTS.md, mcp_config.json)
-├── tests/            # PHPUnit tests
-└── playwright.config.js # E2E test config
+├── app/                  # Laravel PHP (Models, Controllers, Middleware)
+├── resources/js/         # React components, Inertia pages
+├── resources/css/        # Tailwind CSS
+├── routes/               # web.php, api.php
+├── database/             # Migrations, Seeders, Factories
+├── public/build/         # Compiled Vite assets
+├── tests/e2e/            # Playwright E2E tests
+├── .github/workflows/    # CI/CD (autonomous.yml)
+├── .agents/              # Antigravity IDE workspace config
+│   ├── AGENTS.md         # This file — master rules
+│   ├── hooks.json        # Lifecycle hooks
+│   ├── mcp_config.json   # MCP servers
+│   ├── hooks/            # Hook scripts (Node.js)
+│   │   ├── pre_command_gate.js
+│   │   ├── post_command_audit.js
+│   │   ├── pre_invocation_reminder.js
+│   │   └── stop_guard.js
+│   ├── skills/           # Custom workflow skills
+│   │   ├── bdnsi-deploy/
+│   │   ├── bdnsi-debug/
+│   │   └── bdnsi-feature/
+│   └── logs/             # Command audit trail
+└── playwright.config.js  # E2E test config
 ```
 
 ## Known Issues & Fixes
