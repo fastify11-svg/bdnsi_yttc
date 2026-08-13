@@ -6,8 +6,7 @@
         "chrome-devtools-mcp@latest",
         "--categoryExtensions",
         "--autoConnect"
-      ],
-      "description": "Chrome DevTools MCP for browser automation, debugging, and testing"
+      ]
     }
   }
 }
