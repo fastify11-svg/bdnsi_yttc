@@ -61,8 +61,8 @@ export default function CourseList({ courses }) {
                                 {course.name}
                             </h3>
                             <div className="mt-2 space-y-1.5">
-                                <p className="text-[10px] text-slate-500 font-medium flex items-center gap-1.5"><i className="fa-regular fa-clock text-slate-400"></i> {course.duration || 'N/A'}</p>
-                                <p className="text-[10px] text-slate-500 font-medium flex items-center gap-1.5"><i className="fa-solid fa-bangladeshi-taka-sign text-slate-400"></i> {course.course_fee ? course.course_fee.toLocaleString() : 'Negotiable'}</p>
+                                <p className="text-[10px] text-slate-500 font-medium flex items-center gap-1.5"><i className="fa-regular fa-clock text-slate-400"></i> {course.duration || course.course_duration || 'N/A'}</p>
+                                <p className="text-[10px] text-slate-500 font-medium flex items-center gap-1.5"><i className="fa-solid fa-bangladeshi-taka-sign text-slate-400"></i> {(course.rate || course.course_fee) ? (course.rate || course.course_fee) : 'Negotiable'}</p>
                             </div>
                         </div>
                     </Link>
@@ -93,7 +93,7 @@ export default function CourseList({ courses }) {
                                                 {course.name}
                                             </h3>
                                             <div className="mt-1.5 space-y-1">
-                                                <p className="text-[9px] text-slate-500 font-medium flex items-center gap-1"><i className="fa-regular fa-clock text-slate-400"></i> {course.duration || 'N/A'}</p>
+                                                <p className="text-[9px] text-slate-500 font-medium flex items-center gap-1"><i className="fa-regular fa-clock text-slate-400"></i> {course.duration || course.course_duration || 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>
@@ -123,7 +123,7 @@ export default function CourseList({ courses }) {
                                                 {course.name}
                                             </h3>
                                             <div className="mt-1.5 space-y-1">
-                                                <p className="text-[9px] text-slate-500 font-medium flex items-center gap-1"><i className="fa-regular fa-clock text-slate-400"></i> {course.duration || 'N/A'}</p>
+                                                <p className="text-[9px] text-slate-500 font-medium flex items-center gap-1"><i className="fa-regular fa-clock text-slate-400"></i> {course.duration || course.course_duration || 'N/A'}</p>
                                             </div>
                                         </div>
                                     </Link>
