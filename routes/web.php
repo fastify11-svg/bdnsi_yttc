@@ -36,7 +36,7 @@ Route::get('result', ResultController::class)
     ->middleware(['module:toggle_result_verify', 'throttle:results'])
     ->name('result');
 
-Route::get('/', [HomeController::class, 'index'])->name('welcome');
+Route::get('/', function() { return 'hello from root'; })->name('welcome');
 Route::get('/license-view/{number?}', [HomeController::class, 'license'])->name('license.view');
 Route::get('/all-course', [HomeController::class, 'all_course'])->name('all_course');
 Route::get('/course-details/{id}', [HomeController::class, 'courseDetails'])->name('course.details');
@@ -124,3 +124,5 @@ Route::get('/live_deploy', function () {
         return 'Error: '.$e->getMessage();
     }
 });
+
+Route::get('/ping', function() { return 'pong'; });
