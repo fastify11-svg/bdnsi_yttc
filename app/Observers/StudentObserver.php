@@ -28,6 +28,24 @@ class StudentObserver
             $message = "Dear {$student->name}, your registration for {$courseName} has been approved successfully. Your Roll No is {$student->roll}. - ".config('site.setting.name', 'BDNSI');
 
             SendStudentSmsJob::dispatch($student->phone, $message);
+
+            // Generate License automatically
+            $licenseNumber = $student->registration ?? $student->roll ?? uniqid('LIC-');
+            if ($student->nid_or_birth) {
+                \App\Models\License::updateOrCreate(
+                    ['cnic' => $student->nid_or_birth],
+                    [
+                        'name' => $student->name,
+                        'father_name' => $student->fathers_name,
+                        'city' => $student->present_address,
+                        'license_number' => $licenseNumber,
+                        'issue_date' => now(),
+                        'valid_from' => now(),
+                        'valid_to' => now()->addYears(5), // typical license validity
+                        'allowed_vehicles' => ['M', 'CAR'], // default based on driving school
+                    ]
+                );
+            }
         }
     }
 
