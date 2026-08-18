@@ -34,7 +34,13 @@ class DocumentTemplateController extends Controller
             $validated['background_image'] = $request->file('background_image')->store('document_templates', 'public');
         }
 
-        DocumentTemplate::create($validated);
+        $template = DocumentTemplate::create($validated);
+
+        if ($template->status) {
+            DocumentTemplate::where('type', $template->type)
+                ->where('id', '!=', $template->id)
+                ->update(['status' => 0]);
+        }
 
         return redirect()->route('admin.document-templates.index')->with('success', 'Template created successfully.');
     }
@@ -81,6 +87,14 @@ class DocumentTemplateController extends Controller
     {
         $template = DocumentTemplate::with('fields')->findOrFail($id);
 
+        if ($template->is_builtin && $template->blade_view) {
+            $student = \App\Models\Student::with(['center', 'subject', 'session', 'result'])->first();
+            if (!$student) {
+                return "No student found in the database to generate a preview.";
+            }
+            return view($template->blade_view, compact('student'));
+        }
+
         // This view will just output plain HTML with absolute positioned fields
         return view('admin.document_template.preview', compact('template'));
     }
@@ -89,6 +103,12 @@ class DocumentTemplateController extends Controller
     {
         $template->status = ! $template->status;
         $template->save();
+
+        if ($template->status) {
+            DocumentTemplate::where('type', $template->type)
+                ->where('id', '!=', $template->id)
+                ->update(['status' => 0]);
+        }
 
         return redirect()->back()->with('success', 'Template status updated.');
     }

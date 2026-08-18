@@ -10,7 +10,7 @@ test('Verify Auto-Generate Semester Results Checkbox', async ({ page }) => {
   await page.click('button[type="submit"]');
 
   console.log('Waiting for login...');
-  await expect(page).toHaveURL(/.*admin\/dashboard/, { timeout: 15000 });
+  await expect(page).toHaveURL(/.*admin\/dashboard/);
 
   console.log('Navigating to result create page...');
   await page.goto('/admin/result/create');

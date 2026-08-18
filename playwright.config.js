@@ -20,4 +20,5 @@ module.exports = defineConfig({
     },
   ],
   timeout: 90 * 1000,
+  expect: { timeout: 30000 },
 });

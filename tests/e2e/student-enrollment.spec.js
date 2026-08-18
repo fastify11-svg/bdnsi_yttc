@@ -12,14 +12,15 @@ test.describe('Student Enrollment and License E2E Flow', () => {
 
   test('Admin should be able to create student and approve them to generate license', async ({ page }) => {
     // 1. Admin logs in
-    await page.goto('https://nenobet.live/admin/login');
+    await page.goto('./admin/login');
     await page.fill('input[name="email"]', getAdminEmail());
     await page.fill('input[name="password"]', getAdminPassword());
     await page.click('button[type="submit"]');
+    await expect(page).toHaveURL(/.*admin\/dashboard/);
     
     // 2. Navigate to Student creation page
-    await page.goto('https://nenobet.live/admin/student/create');
-    await expect(page.locator('text=Add New Student').first()).toBeVisible();
+    await page.goto('./admin/student/create');
+    await expect(page.locator('text=Add New Student Registration').first()).toBeVisible();
 
     // 3. Fill out Student form
     // Note: To make test robust without relying on specific centers/sessions, 
@@ -62,7 +63,7 @@ test.describe('Student Enrollment and License E2E Flow', () => {
 
     // 4. Verify License was generated
     // Since we created it, the license should be available in the licenses page
-    await page.goto('https://nenobet.live/admin/license');
+    await page.goto('./admin/license');
     
     // Check if the student's CNIC is in the license list
     await expect(page.locator(`text=${testCnic}`).first()).toBeVisible({ timeout: 15000 });

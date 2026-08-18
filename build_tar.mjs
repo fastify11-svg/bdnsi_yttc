@@ -29,11 +29,11 @@ const validFiles = allFiles.filter(f => {
 
 console.log(`Total valid files: ${validFiles.length}`);
 
-console.log("Creating deploy2.tar.gz...");
+console.log("Creating deploy.tar.gz...");
 tar.c(
   {
     gzip: true,
-    file: '../deploy2.tar.gz',
+    file: '../deploy.tar.gz',
     preservePaths: false,
     portable: true
   },

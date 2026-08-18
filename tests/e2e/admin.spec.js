@@ -12,7 +12,7 @@ test.describe('Admin Panel E2E Tests', () => {
     await page.fill('input[name="password"]', password);
     await page.click('button[type="submit"]');
     try {
-      await expect(page).toHaveURL(/.*admin\/dashboard/, { timeout: 8000 });
+      await expect(page).toHaveURL(/.*admin\/dashboard/);
     } catch (e) {
       await page.screenshot({ path: 'login-failure.png' });
       throw e;

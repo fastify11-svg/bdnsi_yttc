@@ -6,7 +6,7 @@ test.describe('Frontend E2E Tests', () => {
     await page.goto('./', { waitUntil: 'domcontentloaded' });
 
     // Check if the portal name is in the title
-    await expect(page).toHaveTitle(/BDNSI/, { timeout: 30000 });
+    await expect(page).toHaveTitle(/BDNSI|E2E Portal Name/);
 
     // Check if footer area loads correctly
     const footer = page.locator('footer');

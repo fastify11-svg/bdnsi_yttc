@@ -1,6 +1,6 @@
 const { test, expect } = require('@playwright/test');
 
-const baseURL = 'https://nenobet.live';
+
 
 test.describe('Image loading and layout checks on live', () => {
 

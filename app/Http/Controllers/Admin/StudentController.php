@@ -36,6 +36,12 @@ class StudentController extends Controller
     {
         $template = DocumentTemplate::where('type', $type)->where('status', 1)->first();
         if ($template) {
+            if ($template->is_builtin) {
+                // For built-in templates, use the mapped blade_view or fallback to the hardcoded one
+                $view = $template->blade_view ?: $fallbackView;
+                return view($view, compact('student'));
+            }
+
             $mappedFields = $template->fields->map(function ($field) use ($student) {
                 $val = '';
                 if ($field->variable_key == 'student_name' || $field->variable_key == 'name') {
