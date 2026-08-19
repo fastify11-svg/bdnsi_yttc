@@ -80,6 +80,7 @@ class Student extends Authenticatable
         'payment_status',
         'qualification',
         'course_type',
+        'team_id',
     ];
 
     protected $casts = [
@@ -95,6 +96,11 @@ class Student extends Authenticatable
     public function center()
     {
         return $this->belongsTo(Center::class);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id');
     }
 
     public function session()

@@ -42,6 +42,7 @@ class Center extends Model
         'nid_photo',
         'nid_back_photo',
         'status',
+        'team_id',
     ];
 
     protected $casts = [
@@ -61,6 +62,11 @@ class Center extends Model
     public function students()
     {
         return $this->hasMany(Student::class, 'center_id')->where('status', StudentStatus::Approved);
+    }
+
+    public function team()
+    {
+        return $this->belongsTo(Team::class, 'team_id');
     }
 
     public function allStudents()

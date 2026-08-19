@@ -168,6 +168,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('adminList', AdminListController::class)->only(['edit', 'update']);
         Route::resource('configDictionary', ConfigDictionaryController::class)->only(['create', 'store']);
         Route::resource('team', TeamController::class);
+        Route::get('team-performance', [App\Http\Controllers\Admin\TeamPerformanceController::class, 'index'])->name('team-performance.index');
+        Route::post('team-performance/targets', [App\Http\Controllers\Admin\TeamPerformanceController::class, 'store'])->name('team-performance.store');
         Route::resource('sub-admin', SubadminController::class);
         Route::resource('upazila-store', UpazilaStoreController::class);
 

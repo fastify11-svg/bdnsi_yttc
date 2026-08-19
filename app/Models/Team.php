@@ -35,4 +35,19 @@ class Team extends Model
     protected $casts = [
         'image' => ImageField::class.':team,images',
     ];
+
+    public function salesTargets()
+    {
+        return $this->hasMany(TeamSalesTarget::class);
+    }
+
+    public function centers()
+    {
+        return $this->hasMany(Center::class, 'team_id');
+    }
+
+    public function students()
+    {
+        return $this->hasMany(Student::class, 'team_id');
+    }
 }

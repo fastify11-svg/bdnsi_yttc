@@ -43,6 +43,13 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
             ]
         },
         {
+            title: 'TEAM OPERATIONS',
+            items: [
+                { label: 'Staff Directory', href: '/admin/team', icon: 'fa-users-gear' },
+                { label: 'Team Performance', href: '/admin/team-performance', icon: 'fa-chart-line' },
+            ]
+        },
+        {
             title: 'FINANCE & SETTINGS',
             items: [
                 { label: 'Financial Tracking', href: '/admin/financial', icon: 'fa-money-bill-wave' },
