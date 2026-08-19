@@ -4,7 +4,7 @@ import { Link, usePage } from '@inertiajs/inertia-react';
 import AdminLayout from '../../../Layouts/AdminLayout';
 import { getUrl } from '../../../utils/urlHelper';
 
-export default function Create({ divisions = [], districts = [], upazilas = [] }) {
+export default function Create({ divisions = [], districts = [], upazilas = [], teams = [] }) {
     const { errors } = usePage().props;
 
     const [form, setForm] = useState({
@@ -23,6 +23,7 @@ export default function Create({ divisions = [], districts = [], upazilas = [] }
         mobile: '',
         phone: '',
         email: '',
+        team_id: '',
         center_logo: null,
         director_photo: null,
         director_signature: null,
@@ -181,6 +182,21 @@ export default function Create({ divisions = [], districts = [], upazilas = [] }
                                 >
                                     <option value="0">Male</option>
                                     <option value="1">Female</option>
+                                </select>
+                            </div>
+
+                            {/* Team Member */}
+                            <div>
+                                <label className="block text-slate-700 font-bold mb-1">Managed By (Team Member)</label>
+                                <select
+                                    value={form.team_id}
+                                    onChange={e => setForm({ ...form, team_id: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 outline-none transition"
+                                >
+                                    <option value="">-- None --</option>
+                                    {teams.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name} ({t.designation})</option>
+                                    ))}
                                 </select>
                             </div>
                         </div>

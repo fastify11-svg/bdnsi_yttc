@@ -421,6 +421,7 @@ class StudentController extends Controller
         $divisions = Division::get();
         $districts = District::get(['id', 'division_id', 'name']);
         $upazilas = Upazila::get(['id', 'district_id', 'name']);
+        $teams = \App\Models\Team::all();
         $registration = Student::getLastFreeRegistration();
         $roll = Student::getLastFreeRoll();
 
@@ -432,6 +433,7 @@ class StudentController extends Controller
                 'divisions' => $divisions,
                 'districts' => $districts,
                 'upazilas' => $upazilas,
+                'teams' => $teams,
                 'registration' => $registration,
                 'roll' => $roll,
                 'genders' => Gender::getInstances(),
@@ -468,6 +470,7 @@ class StudentController extends Controller
             'picture' => 'required|image',
             'payment_status' => 'nullable|numeric|in:0,1',
             'course_type' => ['required', Rule::in(CourseType::asArray())],
+            'team_id' => 'nullable|exists:teams,id',
         ]);
 
         try {
@@ -560,6 +563,7 @@ class StudentController extends Controller
         $divisions = Division::get();
         $districts = District::get(['id', 'division_id', 'name']);
         $upazilas = Upazila::get(['id', 'district_id', 'name']);
+        $teams = \App\Models\Team::all();
 
         if ($request->header('X-Inertia') || ! $request->ajax()) {
             return Inertia::render('Admin/Student/Edit', [
@@ -570,6 +574,7 @@ class StudentController extends Controller
                 'divisions' => $divisions,
                 'districts' => $districts,
                 'upazilas' => $upazilas,
+                'teams' => $teams,
                 'genders' => Gender::getInstances(),
                 'religions' => Religion::getInstances(),
                 'courseTypes' => CourseType::getInstances(),
@@ -622,6 +627,7 @@ class StudentController extends Controller
                 'paid_amount' => 'required|numeric',
                 'payment_status' => 'nullable|numeric|in:0,1',
                 'course_type' => ['required', Rule::in(CourseType::asArray())],
+                'team_id' => 'nullable|exists:teams,id',
             ]);
             
             if (!$request->hasFile('picture')) {

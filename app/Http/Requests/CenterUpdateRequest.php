@@ -44,6 +44,7 @@ class CenterUpdateRequest extends FormRequest
             'nid_photo' => 'nullable|image',
             'trade_license' => 'nullable|image',
             'password' => 'nullable|confirmed|min:6',
+            'team_id' => 'nullable|exists:teams,id',
         ];
     }
 

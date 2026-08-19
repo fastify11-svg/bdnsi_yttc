@@ -14,7 +14,8 @@ export default function Edit({
     genders = [],
     religions = [],
     courseTypes = [],
-    statuses = {}
+    statuses = {},
+    teams = []
 }) {
     const { errors } = usePage().props;
 
@@ -44,6 +45,7 @@ export default function Edit({
         paid_amount: student.paid_amount || 0,
         due_amount: student.due_amount || 0,
         payment_status: student.payment_status ?? 1,
+        team_id: student.team_id || '',
         picture: null,
     });
 
@@ -157,6 +159,21 @@ export default function Edit({
                                 >
                                     {subjects.map(s => (
                                         <option key={s.id} value={s.id}>{s.name}</option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Team Member (Referred By) */}
+                            <div>
+                                <label className="block text-slate-700 font-bold mb-1">Referred By (Team Member)</label>
+                                <select
+                                    value={form.team_id}
+                                    onChange={e => setForm({ ...form, team_id: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
+                                >
+                                    <option value="">-- None --</option>
+                                    {teams.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name} ({t.designation})</option>
                                     ))}
                                 </select>
                             </div>

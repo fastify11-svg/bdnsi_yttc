@@ -15,7 +15,8 @@ export default function Create({
     roll = '',
     genders = [],
     religions = [],
-    courseTypes = []
+    courseTypes = [],
+    teams = []
 }) {
     const { errors } = usePage().props;
 
@@ -39,6 +40,7 @@ export default function Create({
         phone: '',
         session_id: sessions[0]?.id || '',
         subject_id: subjects[0]?.id || '',
+        team_id: '',
         course_type: 0,
         course_duration: 'Six Month',
         qualification: 'Ssc',
@@ -258,6 +260,21 @@ export default function Create({
                                     ))}
                                 </select>
                                 {errors.subject_id && <p className="text-rose-500 text-[11px] mt-1">{errors.subject_id}</p>}
+                            </div>
+
+                            {/* Team Member (Referred By) */}
+                            <div>
+                                <label className="block text-slate-700 font-bold mb-1">Referred By (Team Member)</label>
+                                <select
+                                    value={form.team_id}
+                                    onChange={e => setForm({ ...form, team_id: e.target.value })}
+                                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
+                                >
+                                    <option value="">-- None --</option>
+                                    {teams.map(t => (
+                                        <option key={t.id} value={t.id}>{t.name} ({t.designation})</option>
+                                    ))}
+                                </select>
                             </div>
 
                             {/* Course Type */}

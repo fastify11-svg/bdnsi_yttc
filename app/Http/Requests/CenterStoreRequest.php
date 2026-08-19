@@ -59,6 +59,7 @@ class CenterStoreRequest extends FormRequest
             'authority_signature' => 'nullable',
             'nid_photo' => 'nullable',
             'nid_back_photo' => 'nullable',
+            'team_id' => 'nullable|exists:teams,id',
         ];
     }
 

@@ -136,11 +136,13 @@ class CenterController extends Controller
             ];
         })->toArray();
 
+        $teams = \App\Models\Team::all();
         if ($request->header('X-Inertia') || ! $request->ajax()) {
             return Inertia::render('Admin/Center/Create', [
                 'divisions' => $divisions,
                 'districts' => $districts,
                 'upazilas' => $upazilas,
+                'teams' => $teams,
             ]);
         }
 
@@ -193,12 +195,14 @@ class CenterController extends Controller
             ];
         })->toArray();
 
+        $teams = \App\Models\Team::all();
         if ($request->header('X-Inertia') || ! $request->ajax()) {
             return Inertia::render('Admin/Center/Edit', [
                 'center' => $center,
                 'divisions' => $divisions,
                 'districts' => $districts,
                 'upazilas' => $upazilas,
+                'teams' => $teams,
             ]);
         }
 
