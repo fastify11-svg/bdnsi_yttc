@@ -39,6 +39,8 @@ Route::get('result', ResultController::class)
 Route::get('/', [HomeController::class, 'index'])->name('welcome');
 Route::get('/license-view/{number?}', [HomeController::class, 'license'])->name('license.view');
 Route::get('/all-course', [HomeController::class, 'all_course'])->name('all_course');
+Route::get('/verify', [\App\Http\Controllers\VerifyController::class, 'index'])->name('verify.index');
+Route::post('/verify', [\App\Http\Controllers\VerifyController::class, 'check'])->name('verify.check');
 Route::get('/course-details/{id}', [HomeController::class, 'courseDetails'])->name('course.details');
 Route::get('/institute-details/{id}', [HomeController::class, 'instituteDetails'])->name('institute.details');
 Route::get('/page/{type}', [HomeController::class, 'dynamicPage'])->name('dynamicPage');

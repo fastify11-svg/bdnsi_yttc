@@ -24,6 +24,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                 { label: 'Dashboard', href: '/admin/dashboard', icon: 'fa-gauge' },
                 { label: 'Center', href: '/admin/center', icon: 'fa-building-columns' },
                 { label: 'Student', href: '/admin/student', icon: 'fa-user-graduate' },
+                { label: 'Registration Review', href: '/admin/registration-review', icon: 'fa-user-check' },
                 { label: 'Course', href: '/admin/subject', icon: 'fa-book-open' },
                 { label: 'Session', href: '/admin/session', icon: 'fa-calendar-days' },
                 { label: 'Result', href: '/admin/result', icon: 'fa-square-poll-vertical' },
@@ -36,6 +37,7 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                 { label: 'Question', href: '/admin/question', icon: 'fa-circle-question' },
                 { label: 'Notice', href: '/admin/notice', icon: 'fa-bullhorn' },
                 { label: 'License', href: '/admin/license', icon: 'fa-id-card' },
+                { label: 'Issue Diplomas', href: '/admin/diplomas', icon: 'fa-award' },
                 { label: 'Document Builder', href: '/admin/document-templates', icon: 'fa-file-invoice' },
             ]
         },

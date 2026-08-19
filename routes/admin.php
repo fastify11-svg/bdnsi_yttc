@@ -138,6 +138,13 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::resource('document-templates', DocumentTemplateController::class);
         Route::patch('document-templates/{template}/toggle-status', [DocumentTemplateController::class, 'toggleStatus'])->name('document-templates.toggleStatus');
         Route::get('document-templates/{id}/preview', [DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
+        
+        Route::get('diplomas', [\App\Http\Controllers\Admin\DiplomaController::class, 'index'])->name('diplomas.index');
+        Route::post('diplomas/{id}/issue', [\App\Http\Controllers\Admin\DiplomaController::class, 'issue'])->name('diplomas.issue');
+
+        Route::get('registration-review', [\App\Http\Controllers\Admin\RegistrationReviewController::class, 'index'])->name('registration-review.index');
+        Route::post('registration-review/approve', [\App\Http\Controllers\Admin\RegistrationReviewController::class, 'approve'])->name('registration-review.approve');
+
         Route::get('document-templates/{template_id}/generate/{student_id}', [DocumentGenerationController::class, 'generate'])->name('document-templates.generate');
         Route::post('document-templates/bulk-generate', [DocumentGenerationController::class, 'bulkGenerate'])->name('document-templates.bulk-generate');
         Route::get('student-registration-form/{id}', [StudentController::class, 'registrationForm'])->name('registrationForm');
