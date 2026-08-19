@@ -623,6 +623,11 @@ class StudentController extends Controller
                 'payment_status' => 'nullable|numeric|in:0,1',
                 'course_type' => ['required', Rule::in(CourseType::asArray())],
             ]);
+            
+            if (!$request->hasFile('picture')) {
+                unset($validated['picture']);
+            }
+
 
             $validated['roll'] = $validated['roll']
                 ?? ($student->roll ?: Student::getLastFreeRoll());

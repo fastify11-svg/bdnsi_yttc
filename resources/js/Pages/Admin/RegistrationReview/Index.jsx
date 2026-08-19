@@ -155,9 +155,18 @@ export default function RegistrationReviewIndex({ students, filters = {} }) {
                                                 <span className="font-bold text-slate-700 text-xs">{student.session?.name}</span>
                                             </td>
                                             <td className="px-5 py-4 text-right">
-                                                <span className="bg-amber-100 text-amber-700 font-bold px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-wider shadow-sm border border-amber-200">
-                                                    <i className="fa-solid fa-hourglass-half mr-1"></i> Pending
-                                                </span>
+                                                <div className="flex items-center justify-end gap-2">
+                                                    <span className="bg-amber-100 text-amber-700 font-bold px-2.5 py-1.5 rounded-lg text-[10px] uppercase tracking-wider shadow-sm border border-amber-200">
+                                                        <i className="fa-solid fa-hourglass-half mr-1"></i> Pending
+                                                    </span>
+                                                    <Link
+                                                        href={getUrl(`/admin/student/${student.id}/edit`)}
+                                                        className="p-1.5 bg-indigo-50 text-indigo-600 hover:bg-indigo-100 rounded-lg text-xs font-semibold inline-flex items-center justify-center border border-indigo-200 transition shadow-sm"
+                                                        title="Edit Student Profile"
+                                                    >
+                                                        <i className="fa-solid fa-pen-to-square"></i>
+                                                    </Link>
+                                                </div>
                                             </td>
                                         </tr>
                                     ))

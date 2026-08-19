@@ -11,16 +11,18 @@ class CreateFooterLinksTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
-        Schema::create('footer_links', function (Blueprint $table) {
-            $table->id();
-            $table->string('label');
-            $table->string('url')->default('#');
-            $table->integer('sort_order')->default(0);
-            $table->boolean('is_active')->default(1);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('footer_links')) {
+            Schema::create('footer_links', function (Blueprint $table) {
+                $table->id();
+                $table->string('label');
+                $table->string('url')->default('#');
+                $table->integer('sort_order')->default(0);
+                $table->boolean('is_active')->default(true);
+                $table->timestamps();
+            });
+        }
     }
 
     /**
