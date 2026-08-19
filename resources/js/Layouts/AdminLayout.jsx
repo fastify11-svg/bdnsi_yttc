@@ -39,11 +39,13 @@ export default function AdminLayout({ children, title = 'Admin Dashboard' }) {
                 { label: 'License', href: '/admin/license', icon: 'fa-id-card' },
                 { label: 'Issue Diplomas', href: '/admin/diplomas', icon: 'fa-award' },
                 { label: 'Document Builder', href: '/admin/document-templates', icon: 'fa-file-invoice' },
+                { label: 'Grading Rules', href: '/admin/grade-scales', icon: 'fa-percent' },
             ]
         },
         {
-            title: 'SYSTEM & SETTINGS',
+            title: 'FINANCE & SETTINGS',
             items: [
+                { label: 'Financial Tracking', href: '/admin/financial', icon: 'fa-money-bill-wave' },
                 { label: 'User List', href: '/admin/user', icon: 'fa-users' },
                 { label: 'Sub Admin', href: '/admin/sub-admin', icon: 'fa-user-shield' },
                 { label: 'Contact Us', href: '/admin/contactUs', icon: 'fa-headset' },
