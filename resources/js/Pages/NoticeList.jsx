@@ -38,10 +38,10 @@ export default function NoticeList({ notices }) {
                                         </span>
                                     </div>
                                     <h3 className="font-bold text-slate-900 text-base sm:text-lg group-hover:text-[#7024A8] transition-colors leading-snug">
-                                        {notice.title}
+                                        {notice.title || 'Official Notice'}
                                     </h3>
                                     <p className="text-xs sm:text-sm text-slate-500 line-clamp-2 leading-relaxed">
-                                        {notice.description ? notice.description.replace(/<[^>]*>?/gm, '') : notice.title}
+                                        {notice.details ? notice.details.replace(/<[^>]*>?/gm, '') : ''}
                                     </p>
                                 </div>
                                 <Link

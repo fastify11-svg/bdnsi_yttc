@@ -13,9 +13,11 @@ export default function NoticeIndex({ notices = {}, filters = {} }) {
     const [processing, setProcessing] = useState(false);
 
     const { data, setData, post, reset, errors, processing: formProcessing } = useForm({
+        title: '',
         details: '',
         bn_details: '',
         ar_details: '',
+        file_path: null,
     });
 
     // Real-time search debounce
@@ -137,10 +139,10 @@ export default function NoticeIndex({ notices = {}, filters = {} }) {
                                                     {/* Title */}
                                                     <td className="px-6 py-4">
                                                         <p className="font-bold text-slate-900 text-sm max-w-xs truncate">
-                                                            {notice.details || notice.title || 'Untitled Notice'}
+                                                            {notice.title || notice.details || 'Untitled Notice'}
                                                         </p>
-                                                        {notice.bn_details && (
-                                                            <p className="text-xs text-slate-400 max-w-xs truncate">{notice.bn_details}</p>
+                                                        {notice.title && (
+                                                            <p className="text-xs text-slate-400 max-w-xs truncate">{notice.details}</p>
                                                         )}
                                                     </td>
 
@@ -222,7 +224,22 @@ export default function NoticeIndex({ notices = {}, filters = {} }) {
                         <form onSubmit={handleCreateNotice} className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-                                    English Title / Details *
+                                    Notice Title *
+                                </label>
+                                <input
+                                    type="text"
+                                    value={data.title}
+                                    onChange={(e) => setData('title', e.target.value)}
+                                    required
+                                    placeholder="e.g. Exam Schedule 2024"
+                                    className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                                />
+                                {errors.title && <p className="text-xs text-rose-600 mt-1">{errors.title}</p>}
+                            </div>
+
+                            <div>
+                                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+                                    Details / Content *
                                 </label>
                                 <textarea
                                     value={data.details}
@@ -237,15 +254,14 @@ export default function NoticeIndex({ notices = {}, filters = {} }) {
 
                             <div>
                                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wide mb-1.5">
-                                    Bangla Title / Details (বাংলা)
+                                    File Attachment (Optional PDF/Image)
                                 </label>
-                                <textarea
-                                    value={data.bn_details}
-                                    onChange={(e) => setData('bn_details', e.target.value)}
-                                    rows={2}
-                                    placeholder="বাংলা বিবরণ লিখুন..."
+                                <input
+                                    type="file"
+                                    onChange={(e) => setData('file_path', e.target.files[0])}
                                     className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-xs text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
-                                ></textarea>
+                                />
+                                {errors.file_path && <p className="text-xs text-rose-600 mt-1">{errors.file_path}</p>}
                             </div>
 
                             <button

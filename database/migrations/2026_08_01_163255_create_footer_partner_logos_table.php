@@ -13,15 +13,17 @@ class CreateFooterPartnerLogosTable extends Migration
      */
     public function up()
     {
-        Schema::create('footer_partner_logos', function (Blueprint $table) {
-            $table->id();
-            $table->string('title')->nullable();
-            $table->string('image_path');
-            $table->string('url')->nullable();
-            $table->integer('sort_order')->default(0);
-            $table->boolean('is_active')->default(1);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('footer_partner_logos')) {
+            Schema::create('footer_partner_logos', function (Blueprint $table) {
+                $table->id();
+                $table->string('title')->nullable();
+                $table->string('image_path');
+                $table->string('url')->nullable();
+                $table->integer('sort_order')->default(0);
+                $table->boolean('is_active')->default(1);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

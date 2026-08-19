@@ -63,16 +63,23 @@ class NoticeController extends Controller
             'bn_details' => 'nullable|string',
             'ar_details' => 'nullable|string',
             'image' => 'nullable',
+            'file_path' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
 
         $details = $validated['details'] ?? $validated['title'] ?? 'General Notice';
 
-        Notice::create([
+        $notice = Notice::create([
+            'title' => $validated['title'] ?? null,
             'details' => $details,
             'bn_details' => $validated['bn_details'] ?? $details,
             'ar_details' => $validated['ar_details'] ?? $details,
             'image' => $validated['image'] ?? null,
         ]);
+
+        if ($request->hasFile('file_path')) {
+            $path = \App\Lib\Image::storeFile($request->file('file_path'), 'notices_files');
+            $notice->update(['file_path' => $path]);
+        }
 
         return redirect()->route('notice.index')->with('success', 'Notice published successfully!');
     }
@@ -92,22 +99,31 @@ class NoticeController extends Controller
             'bn_details' => 'nullable|string',
             'ar_details' => 'nullable|string',
             'image' => 'nullable',
+            'file_path' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ]);
 
         $details = $validated['details'] ?? $validated['title'] ?? $notice->details;
 
         $notice->update([
+            'title' => $validated['title'] ?? $notice->title,
             'details' => $details,
             'bn_details' => $validated['bn_details'] ?? $details,
             'ar_details' => $validated['ar_details'] ?? $details,
             'image' => $validated['image'] ?? $notice->image,
         ]);
 
+        if ($request->hasFile('file_path')) {
+            \App\Lib\Image::delete($notice->file_path);
+            $path = \App\Lib\Image::storeFile($request->file('file_path'), 'notices_files');
+            $notice->update(['file_path' => $path]);
+        }
+
         return redirect()->route('notice.index')->with('success', 'Notice updated successfully!');
     }
 
     public function destroy(Notice $notice)
     {
+        \App\Lib\Image::delete($notice->file_path);
         $notice->delete();
 
         return redirect()->back()->with('success', 'Notice deleted successfully!');

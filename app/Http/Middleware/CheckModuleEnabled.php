@@ -17,7 +17,14 @@ class CheckModuleEnabled
     public function handle(Request $request, Closure $next, $moduleName)
     {
         if (! SiteConfig::isEnabled($moduleName)) {
-            abort(403, 'This module is currently disabled by the administrator.');
+            if ($request->wantsJson() && ! $request->header('X-Inertia')) {
+                return response()->json(['message' => 'This module is currently disabled by the administrator.'], 403);
+            }
+            
+            return \Inertia\Inertia::render('Frontend/ComingSoon', [
+                'module' => $moduleName,
+                'message' => 'This feature is currently being updated and will be available soon.'
+            ])->toResponse($request);
         }
 
         return $next($request);

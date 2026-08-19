@@ -6,15 +6,18 @@ import { getUrl } from '../../../utils/urlHelper';
 export default function Edit({ notice = {} }) {
     const { app_url } = usePage().props;
 
-    const { data, setData, put, processing, errors } = useForm({
+    const { data, setData, post, processing, errors } = useForm({
+        _method: 'PUT',
+        title: notice.title || '',
         details: notice.details || '',
         bn_details: notice.bn_details || '',
         ar_details: notice.ar_details || '',
+        file_path: null,
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        put(getUrl(`/admin/notice/${notice.id}`));
+        post(getUrl(`/admin/notice/${notice.id}`));
     };
 
     return (
@@ -38,6 +41,20 @@ export default function Edit({ notice = {} }) {
                     <form onSubmit={handleSubmit} className="space-y-5 text-xs">
                         <div>
                             <label className="block font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+                                Notice Title *
+                            </label>
+                            <input
+                                type="text"
+                                value={data.title}
+                                onChange={(e) => setData('title', e.target.value)}
+                                required
+                                className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            />
+                            {errors.title && <p className="text-rose-600 mt-1">{errors.title}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block font-bold text-slate-700 uppercase tracking-wide mb-1.5">
                                 English Details / Content *
                             </label>
                             <textarea
@@ -48,6 +65,21 @@ export default function Edit({ notice = {} }) {
                                 className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                             ></textarea>
                             {errors.details && <p className="text-rose-600 mt-1">{errors.details}</p>}
+                        </div>
+
+                        <div>
+                            <label className="block font-bold text-slate-700 uppercase tracking-wide mb-1.5">
+                                File Attachment (Optional PDF/Image)
+                            </label>
+                            {notice.file_url && (
+                                <a href={notice.file_url} target="_blank" rel="noreferrer" className="text-indigo-600 text-xs font-bold block mb-2 underline">View Current File</a>
+                            )}
+                            <input
+                                type="file"
+                                onChange={(e) => setData('file_path', e.target.files[0])}
+                                className="w-full px-3.5 py-2.5 bg-slate-50/50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                            />
+                            {errors.file_path && <p className="text-rose-600 mt-1">{errors.file_path}</p>}
                         </div>
 
                         <div>
