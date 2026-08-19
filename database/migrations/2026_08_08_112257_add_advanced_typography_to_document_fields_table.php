@@ -13,12 +13,14 @@ class AddAdvancedTypographyToDocumentFieldsTable extends Migration
      */
     public function up()
     {
-        Schema::table('document_fields', function (Blueprint $table) {
-            $table->integer('z_index')->default(1);
-            $table->string('letter_spacing')->nullable();
-            $table->string('text_transform')->nullable();
-            $table->string('text_shadow')->nullable();
-        });
+        if (!Schema::hasColumn('document_fields', 'z_index')) {
+            Schema::table('document_fields', function (Blueprint $table) {
+                $table->integer('z_index')->default(1);
+                $table->string('letter_spacing')->nullable();
+                $table->string('text_transform')->nullable();
+                $table->string('text_shadow')->nullable();
+            });
+        }
     }
 
     /**

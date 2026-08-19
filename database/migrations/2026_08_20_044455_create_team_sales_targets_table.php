@@ -13,17 +13,19 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('team_sales_targets', function (Blueprint $table) {
-            $table->id();
-            $table->unsignedBigInteger('team_id');
-            $table->date('target_date');
-            $table->integer('student_target')->default(0);
-            $table->integer('b2b_certificate_target')->default(0);
-            $table->timestamps();
+        if (!Schema::hasTable('team_sales_targets')) {
+            Schema::create('team_sales_targets', function (Blueprint $table) {
+                $table->id();
+                $table->unsignedBigInteger('team_id');
+                $table->date('target_date');
+                $table->integer('student_target')->default(0);
+                $table->integer('b2b_certificate_target')->default(0);
+                $table->timestamps();
 
-            // Unique constraint so a team member can only have one target per day
-            $table->unique(['team_id', 'target_date']);
-        });
+                // Unique constraint so a team member can only have one target per day
+                $table->unique(['team_id', 'target_date']);
+            });
+        }
     }
 
     /**

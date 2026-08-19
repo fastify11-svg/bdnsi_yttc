@@ -13,16 +13,18 @@ class CreateDocumentTemplatesTable extends Migration
      */
     public function up()
     {
-        Schema::create('document_templates', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('type')->default('certificate'); // certificate, admit_card, transcript, id_card
-            $table->string('background_image')->nullable();
-            $table->string('width')->default('800px');
-            $table->string('height')->default('600px');
-            $table->boolean('status')->default(true);
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('document_templates')) {
+            Schema::create('document_templates', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('type')->default('certificate'); // certificate, admit_card, transcript, id_card
+                $table->string('background_image')->nullable();
+                $table->string('width')->default('800px');
+                $table->string('height')->default('600px');
+                $table->boolean('status')->default(true);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

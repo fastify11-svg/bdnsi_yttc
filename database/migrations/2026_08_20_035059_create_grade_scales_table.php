@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('grade_scales', function (Blueprint $table) {
-            $table->id();
-            $table->tinyInteger('course_type')->unique(); // 0=Regular, 1=Short, 2=Diploma
-            $table->integer('max_marks')->default(100);
-            $table->json('rules')->nullable(); 
-            // example: [{"min_percent": 80, "max_percent": 100, "grade": "A+"}]
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('grade_scales')) {
+            Schema::create('grade_scales', function (Blueprint $table) {
+                $table->id();
+                $table->tinyInteger('course_type')->unique(); // 0=Regular, 1=Short, 2=Diploma
+                $table->integer('max_marks')->default(100);
+                $table->json('rules')->nullable(); 
+                // example: [{"min_percent": 80, "max_percent": 100, "grade": "A+"}]
+                $table->timestamps();
+            });
+        }
     }
 
     /**

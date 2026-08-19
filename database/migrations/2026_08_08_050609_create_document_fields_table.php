@@ -13,19 +13,21 @@ class CreateDocumentFieldsTable extends Migration
      */
     public function up()
     {
-        Schema::create('document_fields', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('document_template_id')->constrained('document_templates')->onDelete('cascade');
-            $table->string('variable_key'); // e.g. student_name
-            $table->string('position_x')->default('0px');
-            $table->string('position_y')->default('0px');
-            $table->string('font_size')->nullable();
-            $table->string('font_family')->nullable();
-            $table->string('font_weight')->nullable();
-            $table->string('color')->nullable();
-            $table->string('text_align')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('document_fields')) {
+            Schema::create('document_fields', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('document_template_id')->constrained('document_templates')->onDelete('cascade');
+                $table->string('variable_key'); // e.g. student_name
+                $table->string('position_x')->default('0px');
+                $table->string('position_y')->default('0px');
+                $table->string('font_size')->nullable();
+                $table->string('font_family')->nullable();
+                $table->string('font_weight')->nullable();
+                $table->string('color')->nullable();
+                $table->string('text_align')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

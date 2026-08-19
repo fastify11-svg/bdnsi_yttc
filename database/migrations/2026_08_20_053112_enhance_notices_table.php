@@ -13,10 +13,12 @@ class EnhanceNoticesTable extends Migration
      */
     public function up()
     {
-        Schema::table('notices', function (Blueprint $table) {
-            $table->string('title')->nullable()->after('id');
-            $table->string('file_path')->nullable()->after('image');
-        });
+        if (!Schema::hasColumn('notices', 'title')) {
+            Schema::table('notices', function (Blueprint $table) {
+                $table->string('title')->nullable()->after('id');
+                $table->string('file_path')->nullable()->after('image');
+            });
+        }
     }
 
     /**

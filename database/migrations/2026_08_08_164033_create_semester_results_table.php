@@ -13,14 +13,16 @@ class CreateSemesterResultsTable extends Migration
      */
     public function up()
     {
-        Schema::create('semester_results', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('student_id')->constrained()->onDelete('cascade');
-            $table->string('semester_name');
-            $table->decimal('semester_gpa', 8, 2)->nullable();
-            $table->json('subjects_data')->nullable();
-            $table->timestamps();
-        });
+        if (!Schema::hasTable('semester_results')) {
+            Schema::create('semester_results', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('student_id')->constrained()->onDelete('cascade');
+                $table->string('semester_name');
+                $table->decimal('semester_gpa', 8, 2)->nullable();
+                $table->json('subjects_data')->nullable();
+                $table->timestamps();
+            });
+        }
     }
 
     /**

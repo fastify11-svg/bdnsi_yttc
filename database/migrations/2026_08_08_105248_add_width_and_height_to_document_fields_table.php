@@ -13,10 +13,12 @@ class AddWidthAndHeightToDocumentFieldsTable extends Migration
      */
     public function up()
     {
-        Schema::table('document_fields', function (Blueprint $table) {
-            $table->string('width')->nullable()->after('color');
-            $table->string('height')->nullable()->after('width');
-        });
+        if (!Schema::hasColumn('document_fields', 'width')) {
+            Schema::table('document_fields', function (Blueprint $table) {
+                $table->string('width')->nullable()->after('color');
+                $table->string('height')->nullable()->after('width');
+            });
+        }
     }
 
     /**
