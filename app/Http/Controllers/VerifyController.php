@@ -9,8 +9,19 @@ use Inertia\Inertia;
 
 class VerifyController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->has('reg')) {
+            $student = Student::with(['center', 'subject', 'result'])
+                ->where('registration', $request->reg)
+                ->where('status', StudentStatus::Approved)
+                ->first();
+                
+            if ($student) {
+                return Inertia::render('Verify', ['student' => $student]);
+            }
+        }
+        
         return Inertia::render('Verify');
     }
 

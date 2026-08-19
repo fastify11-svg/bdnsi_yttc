@@ -75,13 +75,13 @@
                     text-align: {{ $field->text_align ?? 'left' }};
                 ">
                     @if($type === 'qrcode')
-                        <img src="data:image/svg+xml;base64,{{ $val }}" style="width:100px; height:100px;" alt="QR Code" />
+                        <img src="data:image/svg+xml;base64,{{ $val }}" style="width:{{ $field->width ?? '100px' }}; height:{{ $field->height ?? '100px' }};" alt="QR Code" />
                     @elseif($type === 'qrcode_dummy')
-                        <div style="width:100px; height:100px; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[QR]</div>
+                        <div style="width:{{ $field->width ?? '100px' }}; height:{{ $field->height ?? '100px' }}; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[QR]</div>
                     @elseif($type === 'image')
-                        <img src="{{ $val }}" style="width:120px; height:150px; object-fit:cover;" alt="Student Photo" />
+                        <img src="{{ $val }}" style="width:{{ $field->width ?? '120px' }}; height:{{ $field->height ?? '150px' }}; object-fit:cover;" alt="Student Photo" />
                     @elseif($type === 'image_dummy')
-                        <div style="width:120px; height:150px; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[PHOTO]</div>
+                        <div style="width:{{ $field->width ?? '120px' }}; height:{{ $field->height ?? '150px' }}; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[PHOTO]</div>
                     @else
                         {{ $val }}
                     @endif

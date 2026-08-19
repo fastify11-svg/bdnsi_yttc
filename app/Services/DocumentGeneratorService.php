@@ -70,7 +70,7 @@ class DocumentGeneratorService
                 return date('d M Y');
             case 'qr_code':
                 // Will generate a base64 encoded QR linking to student's verification route
-                $url = url('/student/result/'.($student->registration ?? $student->id));
+                $url = url('/verify?reg='.urlencode($student->registration ?? $student->id));
 
                 return $this->generateQrCode($url);
             case 'student_image':
