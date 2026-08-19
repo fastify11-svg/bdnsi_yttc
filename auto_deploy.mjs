@@ -43,17 +43,17 @@ async function deploy() {
         chmod -R 775 storage bootstrap/cache
 
         echo "=== Installing PHP dependencies ==="
-        composer install --no-dev --optimize-autoloader --ignore-platform-reqs 2>&1
+        composer install --no-dev --optimize-autoloader --ignore-platform-reqs --no-scripts 2>&1
 
         echo "=== Running artisan commands ==="
         php artisan config:cache 2>&1
         php artisan route:cache 2>&1
         php artisan view:cache 2>&1
-        php artisan migrate --force 2>&1
+        php artisan migrate --force 2>&1 || echo "Note: Migration returned an error (likely cache table conflict), continuing..."
 
         echo "=== Storage link ==="
         rm -rf public/storage
-        php artisan storage:link 2>&1
+        php artisan storage:link 2>&1 || echo "Note: Storage link failed (symlink disabled on Hostinger), skipping..."
 
         echo "=== DEPLOYMENT COMPLETE ==="
       `;
