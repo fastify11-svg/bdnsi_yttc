@@ -63,6 +63,9 @@ export default function Edit(props) {
         // Media
         { key: 'qr_code', label: 'QR Code', sample: '[QR]', type: 'image', group: 'Media' },
         { key: 'student_image', label: 'Student Photo', sample: '[PHOTO]', type: 'image', group: 'Media' },
+        // Tables
+        { key: 'semester_table_1_page', label: '1-Page Semester Grid', sample: '[1-Page Table Placeholder]', type: 'html', group: 'Tables' },
+        { key: 'semester_table_8_page', label: '8-Page Semester Breakdown', sample: '[8-Page Table Placeholder]', type: 'html', group: 'Tables' },
     ];
 
     const canvasRef = useRef(null);
@@ -205,8 +208,8 @@ export default function Edit(props) {
             letter_spacing: '0px',
             text_transform: 'none',
             text_shadow: 'none',
-            width: variable.type === 'image' ? '100px' : null,
-            height: variable.type === 'image' ? '100px' : null,
+            width: variable.type === 'image' ? '100px' : variable.type === 'html' ? '800px' : null,
+            height: variable.type === 'image' ? '100px' : variable.type === 'html' ? '400px' : null,
             isNew: true,
             sample: variable.sample
         };
@@ -231,6 +234,8 @@ export default function Edit(props) {
 
     const selectedField = fields.find(f => f.id === selectedFieldId);
     const isImageField = selectedField ? availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'image' : false;
+    const isHtmlField = selectedField ? availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'html' : false;
+    const hasDimensions = isImageField || isHtmlField;
 
     const [isSaving, setIsSaving] = useState(false);
     
@@ -400,13 +405,13 @@ export default function Edit(props) {
                                                 </div>
                                             </div>
 
-                                            {isImageField && (
+                                            {hasDimensions && (
                                                 <div className="grid grid-cols-2 gap-3 border-b border-gray-100 pb-3">
                                                     <div>
                                                         <label className="block text-[10px] uppercase text-gray-400 mb-1">Width</label>
                                                         <input 
                                                             type="text" 
-                                                            value={selectedField.width || '100px'} 
+                                                            value={selectedField.width || ''} 
                                                             onChange={e => updateSelectedField('width', e.target.value)}
                                                             className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                         />
@@ -415,7 +420,7 @@ export default function Edit(props) {
                                                         <label className="block text-[10px] uppercase text-gray-400 mb-1">Height</label>
                                                         <input 
                                                             type="text" 
-                                                            value={selectedField.height || '100px'} 
+                                                            value={selectedField.height || ''} 
                                                             onChange={e => updateSelectedField('height', e.target.value)}
                                                             className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
                                                         />
@@ -423,7 +428,7 @@ export default function Edit(props) {
                                                 </div>
                                             )}
 
-                                            {!isImageField && (
+                                            {!hasDimensions && (
                                                 <>
                                                     <div className="border-b border-gray-100 pb-3">
                                                         <label className="block text-[10px] uppercase text-gray-400 mb-1">Typography</label>
@@ -604,6 +609,7 @@ export default function Edit(props) {
                                         {fields.map(field => {
                                             const isSelected = selectedFieldId === field.id;
                                             const isImage = availableVariables.find(v => v.key === field.variable_key)?.type === 'image';
+                                            const isHtml = availableVariables.find(v => v.key === field.variable_key)?.type === 'html';
                                             const sampleText = field.sample || availableVariables.find(v => v.key === field.variable_key)?.sample || `[${field.variable_key}]`;
                                             
                                             return (
@@ -626,6 +632,18 @@ export default function Edit(props) {
                                                             color: '#6366f1',
                                                             fontSize: '12px',
                                                             fontWeight: 'bold'
+                                                        } : isHtml ? {
+                                                            width: field.width || '800px',
+                                                            height: field.height || '400px',
+                                                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                                            border: '2px dashed #10b981',
+                                                            display: 'flex',
+                                                            alignItems: 'center',
+                                                            justifyContent: 'center',
+                                                            color: '#10b981',
+                                                            fontSize: '16px',
+                                                            fontWeight: 'bold',
+                                                            padding: '20px'
                                                         } : {
                                                             fontSize: field.font_size || '16px',
                                                             fontFamily: field.font_family || 'Roboto',

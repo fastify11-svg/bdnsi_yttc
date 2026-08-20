@@ -121,7 +121,8 @@
                 filename:     '{{ $template->name }}.pdf',
                 image:        { type: 'jpeg', quality: 0.98 },
                 html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'px', format: [{{ (int)str_replace('px','',$template->width) }}, {{ (int)str_replace('px','',$template->height) }}], orientation: '{{ (int)str_replace("px","",$template->width) > (int)str_replace("px","",$template->height) ? "landscape" : "portrait" }}' }
+                jsPDF:        { unit: 'px', format: [{{ (int)str_replace('px','',$template->width) }}, {{ (int)str_replace('px','',$template->height) }}], orientation: '{{ (int)str_replace("px","",$template->width) > (int)str_replace("px","",$template->height) ? "landscape" : "portrait" }}' },
+                pagebreak:    { mode: ['css', 'legacy'] }
             };
             html2pdf().set(opt).from(element).save().then(function() {
                 document.getElementById('adv-toolbar').style.display = 'flex';

@@ -82,6 +82,8 @@
                         <img src="{{ $val }}" style="width:{{ $field->width ?? '120px' }}; height:{{ $field->height ?? '150px' }}; object-fit:cover;" alt="Student Photo" />
                     @elseif($type === 'image_dummy')
                         <div style="width:{{ $field->width ?? '120px' }}; height:{{ $field->height ?? '150px' }}; border:2px dashed #333; display:flex; align-items:center; justify-content:center;">[PHOTO]</div>
+                    @elseif($type === 'html')
+                        {!! $val !!}
                     @else
                         {{ $val }}
                     @endif
