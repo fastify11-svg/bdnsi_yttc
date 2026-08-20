@@ -15,7 +15,7 @@ test('Verify Auto-Generate Semester Results Checkbox', async ({ page }) => {
   console.log('Navigating to result create page...');
   await page.goto('/admin/result/create');
   
-  await page.waitForLoadState('networkidle');
+  // removed networkidle
 
   const html = await page.content();
   const fs = require('fs');

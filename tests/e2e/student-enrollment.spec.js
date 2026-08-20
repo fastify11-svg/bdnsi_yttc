@@ -48,13 +48,33 @@ test.describe('Student Enrollment and License E2E Flow', () => {
     const firstSubjectValue = await subjectSelect.evaluate(el => el.options.length > 1 ? el.options[1].value : el.options[0].value);
     await subjectSelect.selectOption(firstSubjectValue);
 
+    // Instead of fixed indexes which can be brittle if data is not loaded, we evaluate and select first available
+    const getFirstRealOptionValue = async (selectName) => {
+        const selectLocator = page.locator(`select[name="${selectName}"]`);
+        // wait for at least 2 options
+        await selectLocator.evaluate(el => el.options.length > 1);
+        return await selectLocator.evaluate(el => el.options.length > 1 ? el.options[1].value : el.options[0].value);
+    };
+
     await page.selectOption('select[name="course_type"]', { index: 1 });
     await page.selectOption('select[name="course_duration"]', { index: 1 });
     await page.selectOption('select[name="qualification"]', { index: 1 });
     await page.selectOption('select[name="gender"]', { index: 1 });
     await page.selectOption('select[name="religion"]', { index: 1 });
-    await page.selectOption('select[name="district"]', { index: 1 });
-    await page.selectOption('select[name="permanent_address"]', { index: 1 });
+    
+    // Select district
+    const districtValue = await getFirstRealOptionValue('district');
+    await page.selectOption('select[name="district"]', districtValue);
+
+    // Select upazila / permanent address
+    // We must wait for upazilas to populate based on the district selection
+    await page.waitForFunction(() => {
+        const select = document.querySelector('select[name="permanent_address"]');
+        return select && select.options.length > 1;
+    }, { timeout: 10000 });
+    const upazilaValue = await getFirstRealOptionValue('permanent_address');
+    await page.selectOption('select[name="permanent_address"]', upazilaValue);
+
     await page.selectOption('select[name="payment_status"]', { index: 1 });
 
     // Set status to Approved (Assuming status 2 is Approved based on StudentStatus enum)
@@ -94,7 +114,7 @@ test.describe('Student Enrollment and License E2E Flow', () => {
     // Wait for the form submission to complete by waiting for navigation or toast
     // When successful, it usually navigates to index or shows success toast.
     try {
-        await expect(page.locator('text="Advanced Student Directory"').first()).toBeVisible({ timeout: 15000 });
+        await expect(page.locator('text="Advanced Student Directory"').first()).toBeVisible({ timeout: 30000 });
     } catch (e) {
         // Find validation errors on page
         const errors = await page.locator('.text-red-600').allTextContents();

@@ -88,7 +88,8 @@ export default function VideoGallery({ videos = {} }) {
                                     </div>
                                 </div>
                             </div>
-                            )})}
+                            );
+                        })
                     ) : (
                         <div className="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200/80 p-8 space-y-3">
                             <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-2xl">

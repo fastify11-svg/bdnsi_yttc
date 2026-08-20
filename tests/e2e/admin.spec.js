@@ -5,7 +5,6 @@ test.describe('Admin Panel E2E Tests', () => {
   test.beforeEach(async ({ page }) => {
     // Login as admin before each test
     await page.goto('./admin/login');
-    await page.waitForLoadState('networkidle');
     const email = process.env.ADMIN_EMAIL || 'admin@gmail.com';
     const password = process.env.ADMIN_PASSWORD || '12345678';
     await page.fill('input[name="email"]', email);

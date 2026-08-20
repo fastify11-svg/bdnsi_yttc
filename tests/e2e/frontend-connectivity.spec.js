@@ -27,7 +27,7 @@ test.describe('Frontend Connectivity & Navigation Checks', () => {
     // Check search input
     await page.fill('input[placeholder="Search courses by title or keyword..."]', 'Welder');
     await page.click('button:has-text("Search")');
-    await page.waitForLoadState('networkidle');
+    // removed networkidle
   });
 
   test('Result Verification page loads and form is present', async ({ page }) => {

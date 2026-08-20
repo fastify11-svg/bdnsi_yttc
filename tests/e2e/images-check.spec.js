@@ -8,7 +8,7 @@ test.describe('Image loading and layout checks on live', () => {
     const response = await page.goto('./');
     expect(response.status()).toBe(200);
 
-    await page.waitForLoadState('networkidle');
+    // removed networkidle
 
     const images = await page.locator('img').all();
     for (const img of images) {
@@ -24,7 +24,7 @@ test.describe('Image loading and layout checks on live', () => {
     const response = await page.goto('./admin/login');
     expect(response.status()).toBe(200);
 
-    await page.waitForLoadState('networkidle');
+    // removed networkidle
 
     const images = await page.locator('img').all();
     for (const img of images) {
