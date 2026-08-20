@@ -53,6 +53,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          # Note: using Node 22 (npm 10.x) which requires --legacy-peer-deps
+          # because @inertiajs/inertia-react@0.8.1 declares react ^16-18 but we use react 19
           cache: 'npm'
 
       - name: Install Build Tools (for native modules)
@@ -62,11 +64,9 @@ jobs:
 
       - name: Install NPM Dependencies
         run: |
-          # Use --ignore-scripts to skip native module compilation (cpu-features in ssh2)
-          # cpu-features is optional for ssh2 and not needed in CI
-          npm install --ignore-scripts
-          # Re-run scripts for non-native packages only (vite, tailwind, etc.)
-          npm rebuild --ignore-scripts 2>/dev/null || true
+          # --legacy-peer-deps: fixes @inertiajs/inertia-react@0.8.1 requiring react ^16-18 (we have react 19)
+          # --ignore-scripts: skips cpu-features native C++ compilation (ssh2 optional dep, not needed in CI)
+          npm install --legacy-peer-deps --ignore-scripts
 
       # ─── 7. BUILD FRONTEND ───────────────────────────────────────────────
       - name: Compile Frontend Assets
