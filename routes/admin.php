@@ -137,6 +137,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
         Route::resource('document-templates', DocumentTemplateController::class);
         Route::patch('document-templates/{template}/toggle-status', [DocumentTemplateController::class, 'toggleStatus'])->name('document-templates.toggleStatus');
+        Route::post('document-templates/upload-asset', [DocumentTemplateController::class, 'uploadAsset'])->name('document-templates.upload-asset');
         Route::get('document-templates/{id}/preview', [DocumentTemplateController::class, 'preview'])->name('document-templates.preview');
         
         // Registration Review and Diploma Routing

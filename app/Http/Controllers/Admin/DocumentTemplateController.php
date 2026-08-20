@@ -27,6 +27,7 @@ class DocumentTemplateController extends Controller
             'type' => 'required|string|max:50',
             'width' => 'required|string|max:50',
             'height' => 'required|string|max:50',
+            'background_color' => 'nullable|string|max:50',
             'background_image' => 'nullable|image|max:2048',
         ]);
 
@@ -56,6 +57,11 @@ class DocumentTemplateController extends Controller
 
     public function update(Request $request, DocumentTemplate $documentTemplate)
     {
+        // Update template canvas properties if provided
+        if ($request->has('template_settings')) {
+            $documentTemplate->update($request->input('template_settings'));
+        }
+
         $fields = $request->input('fields', []);
 
         // Delete all old fields and recreate them (simpler than syncing manually)
@@ -77,10 +83,27 @@ class DocumentTemplateController extends Controller
                 'letter_spacing' => $fieldData['letter_spacing'] ?? null,
                 'text_transform' => $fieldData['text_transform'] ?? null,
                 'text_shadow' => $fieldData['text_shadow'] ?? null,
+                'content' => $fieldData['content'] ?? null,
+                'element_type' => $fieldData['element_type'] ?? null,
             ]);
         }
 
         return redirect()->back()->with('success', 'Layout saved successfully.');
+    }
+
+    public function uploadAsset(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|max:5120',
+        ]);
+
+        $path = $request->file('image')->store('document_templates/assets', 'public');
+
+        return response()->json([
+            'success' => true,
+            'path' => $path,
+            'url' => asset('storage/' . $path)
+        ]);
     }
 
     public function preview($id)

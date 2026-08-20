@@ -120,9 +120,17 @@ export default function Index({ videos = {}, filters = {} }) {
                                                         <div className="flex items-center gap-3">
                                                             <div className="relative w-20 h-12 rounded-xl overflow-hidden bg-slate-900 border border-slate-200 shrink-0 group">
                                                                 <img
-                                                                    src={video.image || `https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`}
+                                                                    src={video.image || `https://img.youtube.com/vi/${video.video_id}/maxresdefault.jpg`}
                                                                     alt={video.title}
                                                                     className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                                                                    onError={(e) => {
+                                                                        if (e.target.src.includes('maxresdefault.jpg')) {
+                                                                            e.target.src = `https://img.youtube.com/vi/${video.video_id}/hqdefault.jpg`;
+                                                                        } else {
+                                                                            e.target.onerror = null;
+                                                                            e.target.src = getUrl('/images/about.jpg');
+                                                                        }
+                                                                    }}
                                                                 />
                                                                 <div className="absolute inset-0 bg-black/20 flex items-center justify-center">
                                                                     <i className="fa-solid fa-play text-white text-xs drop-shadow"></i>

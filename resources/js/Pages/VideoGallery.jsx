@@ -14,6 +14,13 @@ export default function VideoGallery({ videos = {} }) {
         return cleanBase ? `${cleanBase}/${cleanPath}` : `/${cleanPath}`;
     };
 
+    const getYouTubeID = (url) => {
+        if (!url) return null;
+        const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+        const match = url.match(regExp);
+        return (match && match[2].length === 11) ? match[2] : null;
+    };
+
     return (
         <FrontendLayout>
             {/* Hero Banner */}
@@ -33,7 +40,9 @@ export default function VideoGallery({ videos = {} }) {
             <div className="max-w-7xl mx-auto px-4 py-12 space-y-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
                     {videoList.length > 0 ? (
-                        videoList.map((video, idx) => (
+                        videoList.map((video, idx) => {
+                            const vidId = video.video_id || getYouTubeID(video.link) || 'dQw4w9WgXcQ';
+                            return (
                             <div
                                 key={video.id || idx}
                                 className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-slate-200/80 flex flex-col justify-between group"
@@ -42,7 +51,7 @@ export default function VideoGallery({ videos = {} }) {
                                 <div className="aspect-video w-full bg-slate-950 relative overflow-hidden">
                                     <iframe
                                         className="w-full h-full border-0"
-                                        src={`https://www.youtube.com/embed/${video.video_id}?autoplay=0&rel=0`}
+                                        src={`https://www.youtube.com/embed/${vidId}?autoplay=0&rel=0`}
                                         title={video.title || `BDNSI Video ${idx}`}
                                         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                         allowFullScreen
@@ -79,7 +88,7 @@ export default function VideoGallery({ videos = {} }) {
                                     </div>
                                 </div>
                             </div>
-                        ))
+                            )})}
                     ) : (
                         <div className="col-span-full text-center py-16 bg-white rounded-3xl border border-slate-200/80 p-8 space-y-3">
                             <div className="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto text-2xl">

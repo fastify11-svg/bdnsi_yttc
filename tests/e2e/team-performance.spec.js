@@ -17,7 +17,7 @@ test.describe('Team Performance Module E2E', () => {
   test('Navigate to Team Performance Dashboard', async ({ page }) => {
     await page.goto('./admin/team-performance');
     await expect(page).toHaveURL(/.*admin\/team-performance/);
-    await expect(page.locator('text=Team Performance Overview')).toBeVisible();
+    await expect(page.locator('text=Team Performance & Targets')).toBeVisible();
     await expect(page.locator('text=Assign Daily Targets')).toBeVisible();
   });
 
@@ -35,7 +35,7 @@ test.describe('Team Performance Module E2E', () => {
       await page.click('button:has-text("Save Target")');
       
       // Wait for success toast
-      await expect(page.locator('text=Targets updated successfully')).toBeVisible();
+      await expect(page.locator('text=Targets updated successfully.')).toBeVisible();
     } else {
       console.log('No team members found for setting targets');
     }

@@ -32,6 +32,7 @@ export default function Create(props) {
         type: 'certificate',
         width: '1123px', // Default A4 Landscape pixels (96 DPI)
         height: '794px',
+        background_color: '#ffffff',
         background_image: null,
     });
 
@@ -246,10 +247,31 @@ export default function Create(props) {
                                     <div>
                                         <h3 className="text-lg leading-6 font-medium text-gray-900">Background Layer</h3>
                                         <p className="mt-1 text-sm text-gray-500">
-                                            Upload a high-quality empty background (JPEG/PNG).
+                                            Select a solid background color and optionally upload a background image (JPEG/PNG).
                                         </p>
                                     </div>
-                                    <div className="mt-4">
+                                    <div className="mt-4 grid grid-cols-1 gap-y-6 sm:grid-cols-2 gap-x-4">
+                                        <div>
+                                            <label htmlFor="background_color" className="block text-sm font-medium text-gray-700 mb-1">Background Color</label>
+                                            <div className="flex items-center space-x-3">
+                                                <input 
+                                                    type="color" 
+                                                    id="background_color"
+                                                    value={data.background_color} 
+                                                    onChange={e => setData('background_color', e.target.value)}
+                                                    className="w-10 h-10 rounded border-0 cursor-pointer shadow-sm p-0"
+                                                />
+                                                <input
+                                                    type="text"
+                                                    value={data.background_color}
+                                                    onChange={e => setData('background_color', e.target.value)}
+                                                    className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-24 sm:text-sm border-gray-300 rounded-md uppercase font-mono"
+                                                />
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">Background Image (Optional)</label>
                                         <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-xl hover:bg-gray-50 transition-colors">
                                             <div className="space-y-1 text-center">
                                                 <svg className="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48">
@@ -273,6 +295,7 @@ export default function Create(props) {
                                             </div>
                                         </div>
                                         {errors.background_image && <p className="mt-2 text-sm text-red-600">{errors.background_image}</p>}
+                                        </div>
                                     </div>
                                 </div>
 
@@ -300,8 +323,9 @@ export default function Create(props) {
                         <div className="w-full md:w-1/3 bg-gray-50 p-8 border-l border-gray-100 flex flex-col items-center justify-center min-h-[400px]">
                             <h4 className="text-sm font-semibold text-gray-500 uppercase tracking-wider mb-6 w-full text-center">Live Canvas Preview</h4>
                             
-                            <div className="relative flex items-center justify-center w-full h-full p-4 rounded-xl border border-gray-200 bg-white" 
+                            <div className="relative flex items-center justify-center w-full h-full p-4 rounded-xl border border-gray-200" 
                                  style={{ 
+                                     backgroundColor: data.background_color,
                                      aspectRatio: orientation === 'landscape' ? '1.414 / 1' : '1 / 1.414',
                                      maxHeight: '400px',
                                      boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)'
@@ -309,9 +333,9 @@ export default function Create(props) {
                                 {previewUrl ? (
                                     <img src={previewUrl} alt="Preview" className="max-w-full max-h-full object-contain rounded drop-shadow-sm" />
                                 ) : (
-                                    <div className="text-center text-gray-400">
-                                        <svg className="mx-auto h-12 w-12 text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                                        <span className="block text-sm">No Background Uploaded</span>
+                                    <div className={`text-center ${data.background_color.toLowerCase() === '#ffffff' ? 'text-gray-400' : 'text-gray-800 mix-blend-difference opacity-70'}`}>
+                                        <svg className={`mx-auto h-12 w-12 mb-2 ${data.background_color.toLowerCase() === '#ffffff' ? 'text-gray-300' : 'text-current'}`} fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        <span className="block text-sm">Solid Color Canvas</span>
                                         <span className="block text-xs mt-1 text-gray-300">({data.width} x {data.height})</span>
                                     </div>
                                 )}

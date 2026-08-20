@@ -64,8 +64,12 @@ export default function Edit(props) {
         { key: 'qr_code', label: 'QR Code', sample: '[QR]', type: 'image', group: 'Media' },
         { key: 'student_image', label: 'Student Photo', sample: '[PHOTO]', type: 'image', group: 'Media' },
         // Tables
+        // Tables
         { key: 'semester_table_1_page', label: '1-Page Semester Grid', sample: '[1-Page Table Placeholder]', type: 'html', group: 'Tables' },
         { key: 'semester_table_8_page', label: '8-Page Semester Breakdown', sample: '[8-Page Table Placeholder]', type: 'html', group: 'Tables' },
+        // Static Elements
+        { key: 'static_text', label: 'Custom Text Block', sample: 'Double click to edit', type: 'static_text', group: 'Static Elements' },
+        { key: 'static_image', label: 'Custom Image Layer', sample: '[Upload Image]', type: 'static_image', group: 'Static Elements' },
     ];
 
     const canvasRef = useRef(null);
@@ -208,8 +212,10 @@ export default function Edit(props) {
             letter_spacing: '0px',
             text_transform: 'none',
             text_shadow: 'none',
-            width: variable.type === 'image' ? '100px' : variable.type === 'html' ? '800px' : null,
-            height: variable.type === 'image' ? '100px' : variable.type === 'html' ? '400px' : null,
+            width: variable.type === 'image' || variable.type === 'static_image' ? '100px' : variable.type === 'html' ? '800px' : null,
+            height: variable.type === 'image' || variable.type === 'static_image' ? '100px' : variable.type === 'html' ? '400px' : null,
+            element_type: variable.type, // Store the type for backend rendering
+            content: variable.type === 'static_text' ? variable.sample : (variable.type === 'static_image' ? null : null),
             isNew: true,
             sample: variable.sample
         };
@@ -233,11 +239,42 @@ export default function Edit(props) {
     };
 
     const selectedField = fields.find(f => f.id === selectedFieldId);
-    const isImageField = selectedField ? availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'image' : false;
+    const isImageField = selectedField ? (availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'image' || availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'static_image') : false;
     const isHtmlField = selectedField ? availableVariables.find(v => v.key === selectedField.variable_key)?.type === 'html' : false;
     const hasDimensions = isImageField || isHtmlField;
 
     const [isSaving, setIsSaving] = useState(false);
+    
+    const handleAssetUpload = async (e, fieldId) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('asset', file);
+
+        try {
+            const response = await fetch(getUrl('/admin/document-templates/upload-asset'), {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                },
+                body: formData
+            });
+            const data = await response.json();
+            if (data.url) {
+                const newFields = fields.map(f => {
+                    if (f.id === fieldId) {
+                        return { ...f, content: data.url };
+                    }
+                    return f;
+                });
+                pushToHistory(newFields);
+            }
+        } catch (error) {
+            console.error('Error uploading asset:', error);
+            alert('Failed to upload asset.');
+        }
+    };
     
     const saveLayout = () => {
         setIsSaving(true);
@@ -369,6 +406,36 @@ export default function Edit(props) {
                                                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                                 </button>
                                             </div>
+
+                                            {/* Static Text Content */}
+                                            {selectedField.variable_key === 'static_text' && (
+                                                <div className="border-b border-gray-100 pb-3">
+                                                    <label className="block text-[10px] uppercase text-gray-400 mb-1">Text Content</label>
+                                                    <textarea 
+                                                        value={selectedField.content || ''} 
+                                                        onChange={e => updateSelectedField('content', e.target.value)}
+                                                        rows="3"
+                                                        className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                                        placeholder="Enter text..."
+                                                    ></textarea>
+                                                </div>
+                                            )}
+
+                                            {/* Static Image Content */}
+                                            {selectedField.variable_key === 'static_image' && (
+                                                <div className="border-b border-gray-100 pb-3">
+                                                    <label className="block text-[10px] uppercase text-gray-400 mb-1">Upload Image</label>
+                                                    <input 
+                                                        type="file" 
+                                                        accept="image/*"
+                                                        onChange={(e) => handleAssetUpload(e, selectedField.id)}
+                                                        className="w-full text-sm rounded border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 py-1"
+                                                    />
+                                                    {selectedField.content && (
+                                                        <div className="mt-2 text-xs text-green-600 font-medium">Image uploaded successfully</div>
+                                                    )}
+                                                </div>
+                                            )}
 
                                             {/* Layer & Position */}
                                             <div className="grid grid-cols-2 gap-3 border-b border-gray-100 pb-3">
@@ -584,12 +651,13 @@ export default function Edit(props) {
                                     className="transform-gpu origin-top-center transition-transform duration-200 ease-in-out"
                                     style={{ transform: `scale(${zoom})` }}
                                 >
-                                    <div 
+                                        <div 
                                         ref={canvasRef}
                                         className="relative bg-white shadow-2xl border border-gray-300"
                                         style={{ 
                                             width: template.width, 
                                             height: template.height,
+                                            backgroundColor: template.background_color || '#ffffff',
                                             backgroundImage: template.background_image ? `url(/storage/${template.background_image})` : 'none',
                                             backgroundSize: '100% 100%',
                                             backgroundRepeat: 'no-repeat',
@@ -608,9 +676,13 @@ export default function Edit(props) {
 
                                         {fields.map(field => {
                                             const isSelected = selectedFieldId === field.id;
-                                            const isImage = availableVariables.find(v => v.key === field.variable_key)?.type === 'image';
-                                            const isHtml = availableVariables.find(v => v.key === field.variable_key)?.type === 'html';
-                                            const sampleText = field.sample || availableVariables.find(v => v.key === field.variable_key)?.sample || `[${field.variable_key}]`;
+                                            const fieldType = availableVariables.find(v => v.key === field.variable_key)?.type;
+                                            const isImage = fieldType === 'image' || fieldType === 'static_image';
+                                            const isHtml = fieldType === 'html';
+                                            const isStaticText = fieldType === 'static_text';
+                                            
+                                            let sampleText = field.sample || availableVariables.find(v => v.key === field.variable_key)?.sample || `[${field.variable_key}]`;
+                                            if (isStaticText) sampleText = field.content || 'Double click to edit';
                                             
                                             return (
                                                 <div
@@ -659,7 +731,11 @@ export default function Edit(props) {
                                                         })
                                                     }}
                                                 >
-                                                    {sampleText}
+                                                    {fieldType === 'static_image' && field.content ? (
+                                                        <img src={field.content} alt="Static Layer" className="w-full h-full object-cover" />
+                                                    ) : (
+                                                        sampleText
+                                                    )}
                                                 </div>
                                             );
                                         })}

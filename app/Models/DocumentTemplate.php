@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class DocumentTemplate extends Model
 {
     protected $fillable = [
-        'name', 'type', 'background_image', 'width', 'height', 'status', 'is_builtin', 'blade_view'
+        'name', 'type', 'background_image', 'background_color', 'width', 'height', 'status', 'is_builtin', 'blade_view'
     ];
 
     public function fields()

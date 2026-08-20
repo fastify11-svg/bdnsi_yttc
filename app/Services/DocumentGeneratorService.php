@@ -11,7 +11,7 @@ class DocumentGeneratorService
     /**
      * Map student data to template fields.
      */
-    public function generateForStudent(DocumentTemplate $template, Student $student)
+    public function generateForStudent(DocumentTemplate $template, Student $student, $semesterIndex = null)
     {
         $mappedFields = [];
 
@@ -21,7 +21,7 @@ class DocumentGeneratorService
         foreach ($template->fields as $field) {
             $mappedFields[] = [
                 'field' => $field,
-                'value' => $this->getVariableValue($field->variable_key, $student),
+                'value' => $this->getVariableValue($field->variable_key, $student, $semesterIndex),
                 'type' => $this->getVariableType($field->variable_key),
             ];
         }
@@ -47,7 +47,7 @@ class DocumentGeneratorService
         return 'text';
     }
 
-    private function getVariableValue($key, Student $student)
+    private function getVariableValue($key, Student $student, $semesterIndex = null)
     {
         switch ($key) {
             case 'student_name':
@@ -78,7 +78,7 @@ class DocumentGeneratorService
             case 'semester_table_1_page':
                 return $this->generateSemesterTable1Page($student);
             case 'semester_table_8_page':
-                return $this->generateSemesterTable8Page($student);
+                return $this->generateSemesterTable8Page($student, $semesterIndex);
             default:
                 return '';
         }
@@ -103,17 +103,18 @@ class DocumentGeneratorService
             return 'No semester data found.';
         }
 
-        $html = '<div style="display: flex; flex-wrap: wrap; gap: 15px; justify-content: space-between; width: 100%;">';
+        $html = '<div style="width: 100%; font-family: sans-serif;">';
 
-        foreach ($semesters as $sem) {
-            $html .= '<div style="width: 48%; margin-bottom: 15px; box-sizing: border-box;">';
-            $html .= '<h4 style="text-align:center; margin-bottom: 5px; font-size: 14px; margin-top: 0;">'.htmlspecialchars($sem->semester_name).'</h4>';
-            $html .= '<table style="width:100%; border-collapse: collapse; font-size: 11px; text-align:center;">';
+        foreach ($semesters as $index => $sem) {
+            $marginRight = ($index % 2 === 0) ? '4%' : '0%';
+            $html .= '<div style="display: inline-block; width: 48%; margin-right: '.$marginRight.'; margin-bottom: 15px; vertical-align: top; box-sizing: border-box;">';
+            $html .= '<h4 style="text-align:center; margin-bottom: 4px; font-size: 12px; margin-top: 0;">'.htmlspecialchars($sem->semester_name).'</h4>';
+            $html .= '<table style="width:100%; border-collapse: collapse; font-size: 10px; text-align:center; border: 1px solid #d1d5db;">';
             $html .= '<thead style="background:#f3f4f6;"><tr>';
-            $html .= '<th style="border:1px solid #d1d5db; padding:4px; text-align:left;">Subject</th>';
-            $html .= '<th style="border:1px solid #d1d5db; padding:4px;">Cr</th>';
-            $html .= '<th style="border:1px solid #d1d5db; padding:4px;">Gr</th>';
-            $html .= '<th style="border:1px solid #d1d5db; padding:4px;">Pt</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:3px; text-align:left;">Subject</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:3px;">Cr</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:3px;">Gr</th>';
+            $html .= '<th style="border:1px solid #d1d5db; padding:3px;">Pt</th>';
             $html .= '</tr></thead><tbody>';
 
             $subjects = $sem->subjects_data ?? [];
@@ -125,22 +126,28 @@ class DocumentGeneratorService
             $totalPoints = 0;
             foreach ($subjects as $sub) {
                 $html .= '<tr>';
-                // Truncate long subject names if necessary to fit the grid
                 $subjName = htmlspecialchars($sub['name'] ?? '');
-                if (strlen($subjName) > 25) {
-                    $subjName = substr($subjName, 0, 22) . '...';
+                if (strlen($subjName) > 28) {
+                    $subjName = substr($subjName, 0, 25) . '...';
                 }
-                $html .= '<td style="border:1px solid #d1d5db; padding:4px; text-align:left;">'.$subjName.'</td>';
-                $html .= '<td style="border:1px solid #d1d5db; padding:4px;">'.($sub['credit'] ?? '').'</td>';
-                $html .= '<td style="border:1px solid #d1d5db; padding:4px;">'.($sub['grade'] ?? '').'</td>';
-                $html .= '<td style="border:1px solid #d1d5db; padding:4px;">'.number_format($sub['total_point'] ?? 0, 2).'</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:3px; text-align:left; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">'.$subjName.'</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:3px;">'.($sub['credit'] ?? '').'</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:3px;">'.($sub['grade'] ?? '').'</td>';
+                $html .= '<td style="border:1px solid #d1d5db; padding:3px;">'.number_format($sub['total_point'] ?? 0, 2).'</td>';
                 $html .= '</tr>';
                 $totalCredit += ($sub['credit'] ?? 0);
                 $totalPoints += ($sub['total_point'] ?? 0);
             }
 
+            $html .= '<tr style="background:#f9fafb; font-weight:bold;">';
+            $html .= '<td style="border:1px solid #d1d5db; padding:3px; text-align:right;">Total</td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:3px;">'.$totalCredit.'</td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:3px;"></td>';
+            $html .= '<td style="border:1px solid #d1d5db; padding:3px;">'.number_format($totalPoints, 2).'</td>';
+            $html .= '</tr>';
+
             $html .= '</tbody></table>';
-            $html .= '<div style="text-align: right; font-weight: bold; font-size: 12px; margin-top: 5px;">GPA: '.number_format($sem->semester_gpa, 2).'</div>';
+            $html .= '<div style="text-align: right; font-weight: bold; font-size: 11px; margin-top: 4px;">GPA: '.number_format($sem->semester_gpa, 2).'</div>';
             $html .= '</div>';
         }
         $html .= '</div>';
@@ -148,17 +155,20 @@ class DocumentGeneratorService
         return $html;
     }
 
-    private function generateSemesterTable8Page(Student $student)
+    private function generateSemesterTable8Page(Student $student, $semesterIndex = null)
     {
         $semesters = $student->semesterResults;
         if (! $semesters || $semesters->isEmpty()) {
             return 'No semester data found.';
         }
 
+        if ($semesterIndex !== null && isset($semesters[$semesterIndex])) {
+            $semesters = collect([$semesters[$semesterIndex]]);
+        }
+
         $html = '';
         foreach ($semesters as $index => $sem) {
-            // The magic is here: page-break-after! Except for the last one (optional, but harmless).
-            $html .= '<div class="html2pdf__page-break" style="page-break-after: always; margin-bottom: 20px;">';
+            $html .= '<div style="margin-bottom: 20px;">';
 
             $html .= '<h3 style="text-align:center; margin-bottom: 10px;">'.htmlspecialchars($sem->semester_name).' Marksheet</h3>';
             $html .= '<table style="width:100%; border-collapse: collapse; font-size: 14px; text-align:center;">';

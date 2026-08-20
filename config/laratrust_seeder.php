@@ -31,6 +31,7 @@ return [
             'sponsor' => 'c,r,u,d',
             'upazila-store' => 'c,r,u,d',
             'license' => 'c,r,u,d',
+            'youtube-video' => 'c,r,u,d',
         ],
         'sub_admin' => [
             'student' => 'c,r,u',

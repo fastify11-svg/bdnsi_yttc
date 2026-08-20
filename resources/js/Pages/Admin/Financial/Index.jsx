@@ -17,7 +17,7 @@ export default function FinancialIndex({ payments, stats, filters, auth }) {
 
     const handleFilterChange = (e) => {
         const { name, value } = e.target;
-        router.get(route('admin.financial.index'), {
+        router.get('/admin/financial', {
             ...filters,
             [name]: value
         }, { preserveState: true });
@@ -25,7 +25,7 @@ export default function FinancialIndex({ payments, stats, filters, auth }) {
 
     const submitPayment = (e) => {
         e.preventDefault();
-        post(route('admin.financial.store'), {
+        post('/admin/financial', {
             onSuccess: () => {
                 setShowModal(false);
                 reset();
@@ -34,7 +34,7 @@ export default function FinancialIndex({ payments, stats, filters, auth }) {
     };
 
     const updateStatus = (paymentId, newStatus) => {
-        router.put(route('admin.financial.update', paymentId), {
+        router.put(`/admin/financial/${paymentId}`, {
             status: newStatus
         }, { preserveScroll: true });
     };

@@ -52,7 +52,7 @@ function GradeScaleCard({ scale, courseName }) {
 
     const saveChanges = (e) => {
         e.preventDefault();
-        put(route('admin.grade-scales.update', scale.id), {
+        put(`/admin/grade-scales/${scale.id}`, {
             preserveScroll: true
         });
     };

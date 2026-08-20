@@ -128,3 +128,5 @@ Route::get('/live_deploy', function () {
 });
 
 Route::get('/ping', function() { return 'pong'; });
+
+Route::get('/test-transcript', function () { return view('admin.student.transcript', ['student' => (object)['name' => 'John Doe', 'roll' => '123', 'registration' => '456', 'course_type' => (object)['value' => 2]]]); });

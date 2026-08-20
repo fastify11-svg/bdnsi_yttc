@@ -19,7 +19,7 @@ export default function Index({ auth, date, teams }) {
     const handleDateChange = (e) => {
         const newDate = e.target.value;
         setSelectedDate(newDate);
-        Inertia.get(route('team-performance.index'), { date: newDate }, { preserveState: true });
+        Inertia.get('/admin/team-performance', { date: newDate }, { preserveState: true });
     };
 
     const handleTargetChange = (index, field, value) => {
@@ -30,7 +30,7 @@ export default function Index({ auth, date, teams }) {
 
     const submit = (e) => {
         e.preventDefault();
-        post(route('team-performance.store'));
+        post('/admin/team-performance/targets');
     };
 
     return (

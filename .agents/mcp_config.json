@@ -1,12 +1,12 @@
 {
   "mcpServers": {
     "chrome-devtools": {
-      "command": "npx",
+      "command": "npx.cmd",
       "args": [
         "chrome-devtools-mcp@latest",
-        "--categoryExtensions",
-        "--autoConnect"
+        "--categoryExtensions"
       ]
     }
   }
 }
+

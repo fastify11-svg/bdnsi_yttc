@@ -23,17 +23,11 @@ class FrontendDataService
         $config = SiteConfig::firstCached();
 
         $sliders = Cache::remember('homepage_sliders', 3600, function () {
-            $data = Slider::where('type', SliderType::Slider)
+            return Slider::where('type', SliderType::Slider)
                 ->where('status', 1)
                 ->orderBy('order_index', 'asc')
                 ->orderBy('created_at', 'desc')
                 ->get();
-
-            if ($data->isEmpty()) {
-                $data = Slider::where('status', 1)->orderBy('order_index', 'asc')->take(5)->get();
-            }
-
-            return $data;
         });
 
         $sponsors = Cache::remember('homepage_sponsors', 3600, function () {

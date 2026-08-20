@@ -130,10 +130,16 @@ class Helper
             '&toUser='.urlencode($phone).
             '&messageContent='.urlencode($message);
 
+        if (config('app.env') === 'testing' || config('app.env') === 'local') {
+            \Illuminate\Support\Facades\Log::info("Mock SMS to {$phone}: {$message}");
+            return;
+        }
+
         if (! empty($api_key)) {
             $curl = curl_init($url);
 
             curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_TIMEOUT, 5);
             $result = curl_exec($curl);
             if (curl_errno($curl)) {
                 $error_msg = curl_error($curl);

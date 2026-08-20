@@ -213,9 +213,89 @@
             text-transform: capitalize!important;
         }
 
+        /* 8-Semester Diploma Layout CSS */
+        .diploma-grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+            padding: 0 40px; /* To fit within admit-card-wrap padding */
+        }
+        .semester-card {
+            border: 1px solid #333;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #fff;
+        }
+        .semester-title {
+            background-color: #f1f5f9;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            padding: 4px;
+            border-bottom: 1px solid #333;
+        }
+        .semester-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+        }
+        .semester-table th, .semester-table td {
+            border: 1px solid #ccc;
+            padding: 4px;
+            text-align: center;
+        }
+        .semester-table th {
+            background-color: #fafafa;
+            font-weight: bold;
+        }
+        .semester-table td.subj-name {
+            text-align: left;
+        }
 
-
-    </style>
+        .diploma-header-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 10px 40px;
+            margin-top: -20px; /* adjust from default admit-card spacing */
+            font-size: 14px;
+            font-weight: bold;
+            background-color: #e2e8f0; /* subtle background like the reference */
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #cbd5e1;
+        }
+        .diploma-header-info div {
+            display: flex;
+        }
+        .diploma-header-info span.label {
+            width: 180px;
+            color: #334155;
+        }
+        .diploma-header-info span.value {
+            color: #0f172a;
+        }
+        .diploma-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-top: 30px;
+            padding: 0 50px;
+            position: absolute;
+            bottom: 100px;
+            width: 100%;
+        }
+        .diploma-sign-box {
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .diploma-sign-box hr {
+            border-top: 2px solid #000;
+            width: 200px;
+            margin-bottom: 5px;
+        }    </style>
 </head>
 
 <body>
@@ -224,7 +304,7 @@
     <button onclick="generate_pdf()" class="btn btn-secondary">Download</button>
     <a type="button" class="btn btn-warning px-5 mx-4" href="">Back</a>
 </div>
-@php($result=$student->result)
+<?php $result = $student->result ?? null; ?>
 <div class="admit-card-wrap" id="html2pdf" x-data="{ w: {{ optional($result)->written ?? 0 }}, p: {{ optional($result)->practical ?? 0 }}, v: {{ optional($result)->viva ?? 0 }} }">
     <div class="admit-card-header">
         <div class="d-flex align-items-center ">
@@ -237,6 +317,83 @@
             </div>
         </div>
     </div>
+
+    @if (isset($student->course_type) && $student->course_type->value == 2)
+        {{-- Diploma 8-Semester Layout --}}
+        <div class="diploma-header-info mx-5">
+            <div><span class="label">Student Name:</span> <span class="value">{{$student->name??'N/A'}}</span></div>
+            <div><span class="label">Roll No:</span> <span class="value">{{$student->roll??'N/A'}}</span></div>
+            
+            <div><span class="label">Campus:</span> <span class="value">{{$student->center->name??'N/A'}}</span></div>
+            <div><span class="label">Registration No:</span> <span class="value">{{$student->registration??'N/A'}}</span></div>
+            
+            <div><span class="label">Degree Program:</span> <span class="value">{{$student->subject->name??'N/A'}}</span></div>
+            <div><span class="label">Course Type:</span> <span class="value">Diploma</span></div>
+            
+            <div><span class="label">Examination:</span> <span class="value">Final Degree Assessment</span></div>
+            <div><span class="label">Course Duration:</span> <span class="value">{{$student->course_duration??'4 Years (Eight Semesters)'}}</span></div>
+        </div>
+
+        <div class="diploma-grid-container mx-4">
+            @php
+                $semesterNames = ['First Semester', 'Second Semester', 'Third Semester', 'Fourth Semester', 'Fifth Semester', 'Sixth Semester', 'Seventh Semester', 'Eighth Semester'];
+                $semesters = isset($student->semesterResults) ? $student->semesterResults : collect();
+            @endphp
+            
+            @foreach($semesterNames as $index => $semName)
+                @php
+                    // Try to find the semester data, or use a dummy for preview
+                    $semData = $semesters->where('semester_name', $semName)->first();
+                    $subjects = $semData ? ($semData->subjects_data ?? []) : [
+                        ['code' => 'DUM-101', 'subject' => 'Dummy Subject 1', 'credit' => '3', 'gpa' => '3.50', 'grade' => 'A'],
+                        ['code' => 'DUM-102', 'subject' => 'Dummy Subject 2', 'credit' => '3', 'gpa' => '3.80', 'grade' => 'A'],
+                        ['code' => 'DUM-103', 'subject' => 'Dummy Subject 3', 'credit' => '3', 'gpa' => '3.20', 'grade' => 'B'],
+                        ['code' => 'DUM-104', 'subject' => 'Dummy Subject 4', 'credit' => '3', 'gpa' => '3.90', 'grade' => 'A'],
+                        ['code' => 'DUM-105', 'subject' => 'Dummy Subject 5', 'credit' => '3', 'gpa' => '4.00', 'grade' => 'A+']
+                    ];
+                @endphp
+                <div class="semester-card">
+                    <div class="semester-title">{{$semName}}</div>
+                    <table class="semester-table">
+                        <thead>
+                            <tr>
+                                <th>Code No.</th>
+                                <th>Subject</th>
+                                <th>Cr. Hrs</th>
+                                <th>GPA</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($subjects as $subj)
+                            <tr>
+                                <td>{{$subj['code'] ?? 'N/A'}}</td>
+                                <td class="subj-name">{{$subj['subject'] ?? 'N/A'}}</td>
+                                <td>{{$subj['credit'] ?? '0'}}</td>
+                                <td>{{$subj['gpa'] ?? '0.00'}}</td>
+                                <td>{{$subj['grade'] ?? 'F'}}</td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            @endforeach
+        </div>
+
+        <div class="diploma-footer">
+            <div class="diploma-sign-box">
+                <hr />
+                Prepared by
+            </div>
+            <div class="diploma-sign-box">
+                <img src="{{asset('images/student/Exam-Controller2.png')}}" style="height: 60px; margin-bottom: -15px;" alt="Signature" />
+                <hr />
+                Checked by
+            </div>
+        </div>
+
+    @else
+        {{-- Existing Layout --}}
     <div style="position: relative;">
         <div style="position: absolute;   left:70%;margin-top:2%;">
             <div class=" text-center pe-2 " >
@@ -492,6 +649,7 @@
         </div>
 
     </div>
+    @endif
 </div>
 <script type="text/javascript">
     function generate_pdf() {

@@ -24,7 +24,29 @@ class DocumentGenerationController extends Controller
 
         $mappedFields = $this->generatorService->generateForStudent($template, $student);
 
-        return view('admin.document_template.preview', compact('template', 'mappedFields', 'student'));
+        // Check if template uses the 8-page semester table
+        $has8PageTable = collect($mappedFields)->contains(function($item) {
+            $key = $item['field']->variable_key ?? '';
+            return $key === 'semester_table_8_page';
+        });
+
+        $pages = [];
+
+        if ($has8PageTable) {
+            $student->loadMissing('semesterResults');
+            $semesters = $student->semesterResults;
+            if ($semesters && $semesters->count() > 0) {
+                foreach ($semesters as $index => $sem) {
+                    $pages[] = $this->generatorService->generateForStudent($template, $student, $index);
+                }
+            } else {
+                $pages[] = $mappedFields;
+            }
+        } else {
+            $pages[] = $mappedFields;
+        }
+
+        return view('admin.document_template.preview', compact('template', 'pages', 'student'));
     }
 
     /**
@@ -41,12 +63,32 @@ class DocumentGenerationController extends Controller
         $template = DocumentTemplate::with('fields')->findOrFail($request->template_id);
         $students = Student::with(['center', 'session', 'subject'])->whereIn('id', $request->student_ids)->get();
 
+        // Check if template uses the 8-page semester table
+        $has8PageTable = $template->fields->contains('variable_key', 'semester_table_8_page');
+
         $documents = [];
 
         foreach ($students as $student) {
+            $pages = [];
+            $mappedFields = $this->generatorService->generateForStudent($template, $student);
+
+            if ($has8PageTable) {
+                $student->loadMissing('semesterResults');
+                $semesters = $student->semesterResults;
+                if ($semesters && $semesters->count() > 0) {
+                    foreach ($semesters as $index => $sem) {
+                        $pages[] = $this->generatorService->generateForStudent($template, $student, $index);
+                    }
+                } else {
+                    $pages[] = $mappedFields;
+                }
+            } else {
+                $pages[] = $mappedFields;
+            }
+
             $documents[] = [
                 'student' => $student,
-                'mappedFields' => $this->generatorService->generateForStudent($template, $student),
+                'pages' => $pages,
             ];
         }
 
