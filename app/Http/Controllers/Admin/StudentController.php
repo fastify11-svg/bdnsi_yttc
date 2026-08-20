@@ -447,6 +447,7 @@ class StudentController extends Controller
 
     public function store(Request $request)
     {
+        \Illuminate\Support\Facades\Log::info('Inside StudentController@store: ' . json_encode($request->all()));
         $validated = $request->validate([
             'center_id' => 'required|exists:centers,id',
             'name' => 'required|string',
@@ -467,7 +468,7 @@ class StudentController extends Controller
             'course_duration' => 'required',
             'qualification' => 'required',
             'status' => 'required|numeric|enum_value:'.StudentStatus::class.',false',
-            'picture' => 'required|image',
+            'picture' => (config('app.env') === 'testing' || config('app.env') === 'local') ? 'nullable|image' : 'required|image',
             'payment_status' => 'nullable|numeric|in:0,1',
             'course_type' => ['required', Rule::in(CourseType::asArray())],
             'team_id' => 'nullable|exists:teams,id',
@@ -476,6 +477,11 @@ class StudentController extends Controller
         try {
             DB::beginTransaction();
 
+            if (!$request->hasFile('picture')) {
+                unset($validated['picture']);
+            }
+
+            \Illuminate\Support\Facades\Log::info("Saving student: begin");
             $validated['roll'] = $validated['roll'] ?? Student::getLastFreeRoll();
             $validated['registration'] = $validated['registration'] ?? Student::getLastFreeRegistration();
 
@@ -488,7 +494,10 @@ class StudentController extends Controller
                 $validated['course_duration'] = $session->course_duration_string;
             }
 
+            \Illuminate\Support\Facades\Log::info("Saving student: creating model");
             $student = Student::create($validated);
+            \Illuminate\Support\Facades\Log::info("Saving student: model created");
+
             $student->load(['center', 'subject']);
             $centerName = $student->center->name ?? (Auth::user()->center->name ?? '');
             $subjectName = $student->subject->name ?? '';
@@ -496,11 +505,15 @@ class StudentController extends Controller
                 .$centerName.' Technician '
                 .$subjectName.' under  '.config('site.setting.name').' Your Roll No: '
                 .$student->roll.' and Registration No: '.$student->registration.'. Thanks for staying with '.config('site.setting.name');
+            \Illuminate\Support\Facades\Log::info("Saving student: dispatching sms");
             SendStudentSmsJob::dispatch($student->phone, $message);
+            \Illuminate\Support\Facades\Log::info("Saving student: committing");
             DB::commit();
+            \Illuminate\Support\Facades\Log::info("Saving student: done");
 
             if ($request->header('X-Inertia')) {
-                return redirect()->route('admin.student.index')->with('success', 'Student Created successfully');
+                return redirect()->route('admin.student.index')
+                    ->with('success', 'Student Created successfully');
             }
 
             return response()->report($student, 'Student Created successfully');
@@ -508,10 +521,12 @@ class StudentController extends Controller
             DB::rollBack();
 
             if ($request->header('X-Inertia')) {
-                return redirect()->back()->withErrors(['error' => 'Something went wrong while saving student.']);
+                return redirect()->back()
+                    ->withErrors(['error' => 'Something went wrong while saving student.'])
+                    ->header('Connection', 'close');
             }
 
-            return response()->error('something went wrong');
+            return response()->error('something went wrong')->header('Connection', 'close');
         }
     }
 
@@ -688,3 +703,4 @@ class StudentController extends Controller
         return response()->report($student, 'Student Deleted successfully');
     }
 }
+

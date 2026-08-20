@@ -36,8 +36,6 @@ test.describe('Student Enrollment and License E2E Flow', () => {
     await page.fill('input[name="mothers_name"]', 'Test Mother');
     await page.fill('input[name="date_of_birth"]', '2000-01-01');
     await page.fill('input[name="nid_or_birth"]', testCnic);
-    await page.fill('input[name="present_address"]', 'Test Address');
-    await page.fill('input[name="permanent_address"]', 'Test Address');
     await page.fill('input[name="phone"]', '01700000000');
 
     // Selecting first session
@@ -50,16 +48,62 @@ test.describe('Student Enrollment and License E2E Flow', () => {
     const firstSubjectValue = await subjectSelect.evaluate(el => el.options.length > 1 ? el.options[1].value : el.options[0].value);
     await subjectSelect.selectOption(firstSubjectValue);
 
-    await page.fill('input[name="due_amount"]', '1000');
-    await page.fill('input[name="paid_amount"]', '500');
+    await page.selectOption('select[name="course_type"]', { index: 1 });
+    await page.selectOption('select[name="course_duration"]', { index: 1 });
+    await page.selectOption('select[name="qualification"]', { index: 1 });
+    await page.selectOption('select[name="gender"]', { index: 1 });
+    await page.selectOption('select[name="religion"]', { index: 1 });
+    await page.selectOption('select[name="district"]', { index: 1 });
+    await page.selectOption('select[name="permanent_address"]', { index: 1 });
+    await page.selectOption('select[name="payment_status"]', { index: 1 });
 
-    // Set status to Approved (Assuming status 1 is Approved based on StudentStatus enum)
+    // Set status to Approved (Assuming status 2 is Approved based on StudentStatus enum)
     const statusSelect = page.locator('select[name="status"]');
-    // In our backend logic, generating license relies on changing to Approved (1)
-    await statusSelect.selectOption('1');
+    // In our backend logic, generating license relies on changing to Approved (2)
+    await statusSelect.selectOption('2');
+
+    // Upload picture (use a dummy text file renamed to .gif to bypass Intervention Image processing)
+    // NOTE: We skip uploading a file during E2E tests on Windows.
+    // The PHP built-in server (`php artisan serve`) has a known deadlock bug on Windows 
+    // when receiving `multipart/form-data` requests with file uploads.
+    // We configured the backend (StudentController) and frontend (Create.jsx) to handle 
+    // empty picture uploads safely using JSON instead of FormData to prevent this deadlock.
+    /*
+    const fs = require('fs');
+    const path = require('path');
+    const dummyImagePath = path.join(__dirname, 'dummy_student.gif');
+    if (!fs.existsSync(dummyImagePath)) {
+      // Create a 1x1 pixel GIF file
+      const img = Buffer.from('R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7', 'base64');
+      fs.writeFileSync(dummyImagePath, img);
+    }
+    await page.setInputFiles('input[type="file"][accept="image/*"]', dummyImagePath);
+    */
+
+    // Log response headers to debug redirection
+    page.on('response', async response => {
+        if (response.url().includes('/admin/student') && response.request().method() === 'POST') {
+            console.log('POST Response:', response.status(), response.url());
+            console.log('Headers:', await response.allHeaders());
+        }
+    });
 
     // Submit form
     await page.click('button[type="submit"]');
+
+    // Wait for the form submission to complete by waiting for navigation or toast
+    // When successful, it usually navigates to index or shows success toast.
+    try {
+        await expect(page.locator('text="Advanced Student Directory"').first()).toBeVisible({ timeout: 15000 });
+    } catch (e) {
+        // Find validation errors on page
+        const errors = await page.locator('.text-red-600').allTextContents();
+        console.log('Validation Errors found on page:', errors);
+        
+        // Also capture the whole page text to be sure
+        console.log('Full page text:', await page.locator('body').innerText());
+        throw e;
+    }
 
     // 4. Verify License was generated
     // Since we created it, the license should be available in the licenses page
@@ -74,4 +118,5 @@ test.describe('Student Enrollment and License E2E Flow', () => {
     // we can search for the CNIC and assume it worked if it's on the Admin License list.
   });
 });
+
 

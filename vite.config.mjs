@@ -13,6 +13,11 @@ export default defineConfig({
         }),
         react(),
     ],
+    server: {
+        watch: {
+            ignored: ['**/playwright-report/**', '**/test-results/**']
+        }
+    },
     build: {
         rollupOptions: {
             output: {

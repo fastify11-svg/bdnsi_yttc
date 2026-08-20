@@ -163,14 +163,19 @@ export default function Create({
         e.preventDefault();
         setSubmitting(true);
 
-        const formData = new FormData();
-        Object.keys(form).forEach(key => {
-            if (form[key] !== null && form[key] !== undefined) {
-                formData.append(key, form[key]);
-            }
-        });
+        let payload;
+        if (form.picture instanceof File) {
+            payload = new FormData();
+            Object.keys(form).forEach(key => {
+                if (form[key] !== null && form[key] !== undefined) {
+                    payload.append(key, form[key]);
+                }
+            });
+        } else {
+            payload = form;
+        }
 
-        Inertia.post(getUrl('/admin/student'), formData, {
+        Inertia.post(getUrl('/admin/student'), payload, {
             onFinish: () => setSubmitting(false),
         });
     };
@@ -215,8 +220,9 @@ export default function Create({
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Institute / Center <span className="text-rose-500">*</span></label>
                                 <select
+                                    name="center_id"
                                     value={form.center_id}
-                                    onChange={e => setForm({ ...form, center_id: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, center_id: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -231,8 +237,7 @@ export default function Create({
                             {/* Session */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Academic Session <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.session_id}
+                                <select name="session_id" value={form.session_id}
                                     onChange={handleSessionChange}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
@@ -248,9 +253,8 @@ export default function Create({
                             {/* Subject / Course */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Course Name <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.subject_id}
-                                    onChange={e => setForm({ ...form, subject_id: e.target.value })}
+                                <select name="subject_id" value={form.subject_id}
+                                    onChange={e => setForm(prev => ({ ...prev, subject_id: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -265,9 +269,8 @@ export default function Create({
                             {/* Team Member (Referred By) */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Referred By (Team Member)</label>
-                                <select
-                                    value={form.team_id}
-                                    onChange={e => setForm({ ...form, team_id: e.target.value })}
+                                <select name="team_id" value={form.team_id}
+                                    onChange={e => setForm(prev => ({ ...prev, team_id: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                 >
                                     <option value="">-- None --</option>
@@ -280,9 +283,8 @@ export default function Create({
                             {/* Course Type */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Course Type <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.course_type}
-                                    onChange={e => setForm({ ...form, course_type: e.target.value })}
+                                <select name="course_type" value={form.course_type}
+                                    onChange={e => setForm(prev => ({ ...prev, course_type: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -295,9 +297,8 @@ export default function Create({
                             {/* Course Duration */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Course Duration <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.course_duration}
-                                    onChange={e => setForm({ ...form, course_duration: e.target.value })}
+                                <select name="course_duration" value={form.course_duration}
+                                    onChange={e => setForm(prev => ({ ...prev, course_duration: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -314,9 +315,8 @@ export default function Create({
                             {/* Qualification */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Qualification <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.qualification}
-                                    onChange={e => setForm({ ...form, qualification: e.target.value })}
+                                <select name="qualification" value={form.qualification}
+                                    onChange={e => setForm(prev => ({ ...prev, qualification: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -333,10 +333,10 @@ export default function Create({
                             {/* Exam Date */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Exam Date</label>
-                                <input
+                                <input name="exam_date"
                                     type="date"
                                     value={form.exam_date}
-                                    onChange={e => setForm({ ...form, exam_date: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, exam_date: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     placeholder="Auto-generated if empty"
                                 />
@@ -345,10 +345,10 @@ export default function Create({
                             {/* Result Published */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Result Published</label>
-                                <input
+                                <input name="result_publised"
                                     type="date"
                                     value={form.result_publised}
-                                    onChange={e => setForm({ ...form, result_publised: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, result_publised: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     placeholder="Auto-generated if empty"
                                 />
@@ -367,10 +367,8 @@ export default function Create({
                             {/* Student Name */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Student Full Name <span className="text-rose-500">*</span></label>
-                                <input
-                                    type="text"
-                                    value={form.name}
-                                    onChange={e => setForm({ ...form, name: e.target.value })}
+                                <input name="name" type="text" value={form.name}
+                                    onChange={e => setForm(prev => ({ ...prev, name: e.target.value }))}
                                     placeholder="Enter full name"
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
@@ -381,10 +379,10 @@ export default function Create({
                             {/* Roll Number */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Roll Number</label>
-                                <input
+                                <input name="roll"
                                     type="text"
                                     value={form.roll}
-                                    onChange={e => setForm({ ...form, roll: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, roll: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     placeholder="Auto-generated if empty"
                                 />
@@ -393,10 +391,10 @@ export default function Create({
                             {/* Registration Number */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Registration Number</label>
-                                <input
+                                <input name="registration"
                                     type="text"
                                     value={form.registration}
-                                    onChange={e => setForm({ ...form, registration: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, registration: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     placeholder="Auto-generated if empty"
                                 />
@@ -405,10 +403,10 @@ export default function Create({
                             {/* Passport */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Passport</label>
-                                <input
+                                <input name="passport"
                                     type="text"
                                     value={form.passport}
-                                    onChange={e => setForm({ ...form, passport: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, passport: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     placeholder="Passport No"
                                 />
@@ -417,10 +415,8 @@ export default function Create({
                             {/* NID / Birth No */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">NID / Birth NO</label>
-                                <input
-                                    type="text"
-                                    value={form.nid_or_birth}
-                                    onChange={e => setForm({ ...form, nid_or_birth: e.target.value })}
+                                <input name="nid_or_birth" type="text" value={form.nid_or_birth}
+                                    onChange={e => setForm(prev => ({ ...prev, nid_or_birth: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     placeholder="NID or Birth Reg No"
                                 />
@@ -429,10 +425,8 @@ export default function Create({
                             {/* Father's Name */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Father's Name <span className="text-rose-500">*</span></label>
-                                <input
-                                    type="text"
-                                    value={form.fathers_name}
-                                    onChange={e => setForm({ ...form, fathers_name: e.target.value })}
+                                <input name="fathers_name" type="text" value={form.fathers_name}
+                                    onChange={e => setForm(prev => ({ ...prev, fathers_name: e.target.value }))}
                                     placeholder="Father's name"
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
@@ -442,10 +436,8 @@ export default function Create({
                             {/* Mother's Name */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Mother's Name <span className="text-rose-500">*</span></label>
-                                <input
-                                    type="text"
-                                    value={form.mothers_name}
-                                    onChange={e => setForm({ ...form, mothers_name: e.target.value })}
+                                <input name="mothers_name" type="text" value={form.mothers_name}
+                                    onChange={e => setForm(prev => ({ ...prev, mothers_name: e.target.value }))}
                                     placeholder="Mother's name"
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
@@ -455,10 +447,10 @@ export default function Create({
                             {/* Mobile Phone */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Mobile Number (11 Digits) <span className="text-rose-500">*</span></label>
-                                <input
+                                <input name="phone"
                                     type="text"
                                     value={form.phone}
-                                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                                    onChange={e => setForm(prev => ({ ...prev, phone: e.target.value }))}
                                     placeholder="01700000000"
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-mono focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
@@ -469,10 +461,8 @@ export default function Create({
                             {/* Date of Birth */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Date of Birth</label>
-                                <input
-                                    type="date"
-                                    value={form.date_of_birth}
-                                    onChange={e => setForm({ ...form, date_of_birth: e.target.value })}
+                                <input name="date_of_birth" type="date" value={form.date_of_birth}
+                                    onChange={e => setForm(prev => ({ ...prev, date_of_birth: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                 />
                             </div>
@@ -480,9 +470,8 @@ export default function Create({
                             {/* Gender */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Gender <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.gender}
-                                    onChange={e => setForm({ ...form, gender: e.target.value })}
+                                <select name="gender" value={form.gender}
+                                    onChange={e => setForm(prev => ({ ...prev, gender: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -495,9 +484,8 @@ export default function Create({
                             {/* Religion */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Religion <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.religion}
-                                    onChange={e => setForm({ ...form, religion: e.target.value })}
+                                <select name="religion" value={form.religion}
+                                    onChange={e => setForm(prev => ({ ...prev, religion: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -521,8 +509,7 @@ export default function Create({
                             {/* District */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">District <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.district}
+                                <select name="district" value={form.district}
                                     onChange={handleDistrictChange}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
@@ -537,9 +524,8 @@ export default function Create({
                             {/* Thana/Police Station */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Thana/Police Station <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.permanent_address}
-                                    onChange={e => setForm({ ...form, permanent_address: e.target.value })}
+                                <select name="permanent_address" value={form.permanent_address}
+                                    onChange={e => setForm(prev => ({ ...prev, permanent_address: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                     required
                                 >
@@ -563,9 +549,8 @@ export default function Create({
                             {/* Account Status */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Approval Status <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.status}
-                                    onChange={e => setForm({ ...form, status: e.target.value })}
+                                <select name="status" value={form.status}
+                                    onChange={e => setForm(prev => ({ ...prev, status: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                 >
                                     <option value="2">Approved</option>
@@ -577,9 +562,8 @@ export default function Create({
                             {/* Payment Status */}
                             <div>
                                 <label className="block text-slate-700 font-bold mb-1">Payment Status <span className="text-rose-500">*</span></label>
-                                <select
-                                    value={form.payment_status}
-                                    onChange={e => setForm({ ...form, payment_status: e.target.value })}
+                                <select name="payment_status" value={form.payment_status}
+                                    onChange={e => setForm(prev => ({ ...prev, payment_status: e.target.value }))}
                                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:ring-2 focus:ring-purple-500/20 focus:border-[#7024A8] outline-none transition"
                                 >
                                     <option value="1">Paid</option>
@@ -592,11 +576,11 @@ export default function Create({
                                 <div className="flex-1 w-full">
                                     <label className="block text-slate-700 font-bold mb-1">Student Picture <span className="text-rose-500">*</span></label>
                                     <input
+                                        id="student_picture_input"
                                         type="file"
                                         accept="image/*"
                                         onChange={handleFileChange}
                                         className="w-full text-xs text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-extrabold file:bg-purple-50 file:text-[#7024A8] hover:file:bg-purple-100 transition"
-                                        required
                                     />
                                     {errors.picture && <p className="text-rose-500 text-[11px] mt-1">{errors.picture}</p>}
                                 </div>
