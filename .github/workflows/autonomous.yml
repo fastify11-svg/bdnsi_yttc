@@ -83,7 +83,7 @@ jobs:
         run: npm install -g wait-on
 
       - name: Start Laravel Server
-        run: php artisan serve --host=127.0.0.1 --port=8000 &
+        run: php artisan serve --host=127.0.0.1 --port=8000 > /dev/null 2>&1 &
 
       - name: Wait for Server to be Ready
         run: wait-on http://127.0.0.1:8000 -t 30000
